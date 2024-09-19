@@ -1,40 +1,26 @@
-# Welcome to Remix!
+# ChefFree
 
-- 📖 [Remix docs](https://remix.run/docs)
+## Description
 
-## Development
+A web app for storing and sharing recipes.
 
-Run the dev server:
+## Currently Under Development
 
-```shellscript
-npm run dev
-```
+- Stub out a home page.
+- Stub out an "About" page.
+- Add user auth with Clerk.
 
-## Deployment
+## Future Plans
 
-First, build your app for production:
+- Store recipes in a database.
+- Show feeds of recipes.
+- Connect with other users.
+- Share recipes with other users.
 
-```sh
-npm run build
-```
+## Revision History
 
-Then run the app in production mode:
+### 0.1.0
 
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+- Updated `.gitignore` to exclude `_sundry`, a folder used in development for storing private files related but not integral to the app.
+- Updated `package.json` to include the app name, version number, description, keywords, homepage, issues page, license, author, and repository.
+- Outlined initial development goals and future plans.

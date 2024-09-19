@@ -1,5 +1,9 @@
+# create-remix boilerplate
 node_modules
 
 /.cache
 /build
 .env
+
+# custom exclusions
+_sundry

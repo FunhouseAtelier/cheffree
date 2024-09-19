@@ -1,6 +1,24 @@
 {
   "name": "cheffree",
+  "version": "0.1.0",
+  "description": "A web app for storing and sharing recipes.",
+  "keywords": [
+    "chef",
+    "free",
+    "recipe",
+    "food"
+  ],
+  "homepage": "https://github.com/FunhouseAtelier/cheffree#readme",
+  "bugs": {
+    "url": "https://github.com/FunhouseAtelier/cheffree/issues",
+    "email": "funhouse_atelier@protonmail.com"
+  },
+  "license": "UNLICENSED",
   "private": true,
+  "author": {
+    "name": "Jason T Szabo"
+  },
+  "repository": "github:FunhouseAtelier/cheffree",
   "sideEffects": false,
   "type": "module",
   "scripts": {
