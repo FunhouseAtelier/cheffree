@@ -19,7 +19,7 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
-### 0.2.0
+### 0.1.1
 
 #### Summary
 
