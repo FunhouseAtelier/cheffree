@@ -8,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
+import { HeaderNavbar } from './components/navbars'
 
 import './tailwind.css'
 
@@ -43,7 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="h-screen w-screen bg-amber-100 text-zinc-800">
+      <body className="min-h-screen h-full min-w-screen w-full text-zinc-800 bg-gradient-to-br from-amber-100 via-amber-200 to-orange-200">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -53,5 +54,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />
+  return (
+    <>
+      <HeaderNavbar />
+      <Outlet />
+    </>
+  )
 }

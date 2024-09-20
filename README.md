@@ -6,7 +6,6 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Stub out a home page.
 - Stub out an "About" page.
 - Add user auth with Clerk.
 
@@ -18,6 +17,25 @@ A web app for storing and sharing recipes.
 - Share recipes with other users.
 
 ## Revision History
+
+### 0.1.2
+
+#### Summary
+
+Got rid of Remix logo images. Fixed problem with conditional semibold class for headings. Created a header navbar to display on every page, with styles that include sizing, colors, reactive display when hovering or activating with a smooth transition, and drop shadows for a subtle 3-D appearance. Fixed body not being sized based on the content, while still being minimally the size of the viewport and added a subtle color gradient to the background.
+
+#### Changes
+
+- Deleted Remix logos in `public` folder.
+- Edited `app/components/typography.tsx`
+  - Fixed conditional `font-semibold` class for headings. It was applying `false` as a class because a logical AND operator was used instead of a ternary.
+- Created `app/components/navbars.tsx`
+  - Created `NavbarLink`, `NavbarLinkGroup`, and `HeaderNavbar` components.
+  - Styled components and made them responsive.
+- Edited `app/root.tsx`
+  - Set `<body>` height and width to 100% of parent and minimums to 100% of viewport.
+  - Added a color gradient to `<body>` background.
+  - Set the `HeaderNavbar` component to display at the top of every page.
 
 ### 0.1.1
 

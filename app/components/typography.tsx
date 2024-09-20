@@ -34,8 +34,8 @@ export function Typography({
   const { children, tag, size, className } = props
   const responsiveTextClassList = classListByBaseSize[size]
   const classList = `${
-    tag in baseSizeByHeadingTag && 'font-semibold'
-  } ${responsiveTextClassList} ${className}`
+    tag in baseSizeByHeadingTag ? 'font-semibold ' : ''
+  }${responsiveTextClassList} ${className}`
   const Tag = tag
   return <Tag className={classList}>{children}</Tag>
 }
