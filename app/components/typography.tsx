@@ -12,13 +12,13 @@ const baseSizeByHeadingTag: {
 const classListByBaseSize: {
   [key in TextBaseSize]: string
 } = {
-  xs: 'text-xs sm:text-sm lg:text-base 2xl:text-lg',
-  sm: 'text-sm sm:text-base lg:text-lg 2xl:text-xl',
-  md: 'text-base sm:text-lg lg:text-xl 2xl:text-2xl',
-  lg: 'text-lg sm:text-xl lg:text-2xl 2xl:text-3xl',
-  xl: 'text-xl sm:text-2xl lg:text-3xl 2xl:text-4xl',
-  '2xl': 'text-2xl sm:text-3xl lg:text-4xl 2xl:text-5xl',
-  '3xl': 'text-3xl sm:text-4xl lg:text-5xl 2xl:text-6xl',
+  xs: 'text-xs sm:text-sm lg:text-base',
+  sm: 'text-sm sm:text-base lg:text-lg',
+  md: 'text-base sm:text-lg lg:text-xl',
+  lg: 'text-lg sm:text-xl lg:text-2xl',
+  xl: 'text-xl sm:text-2xl lg:text-3xl',
+  '2xl': 'text-2xl sm:text-3xl lg:text-4xl',
+  '3xl': 'text-3xl sm:text-4xl lg:text-5xl',
 }
 
 export function Typography({
@@ -35,7 +35,7 @@ export function Typography({
   const responsiveTextClassList = classListByBaseSize[size]
   const classList = `${
     tag in baseSizeByHeadingTag ? 'font-semibold ' : ''
-  }${responsiveTextClassList} ${className}`
+  }${responsiveTextClassList}${className ? ` ${className}` : ''}`
   const Tag = tag
   return <Tag className={classList}>{children}</Tag>
 }

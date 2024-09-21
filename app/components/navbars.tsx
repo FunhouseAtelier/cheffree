@@ -1,8 +1,3 @@
-/* TODO:
- * - make pages for all links
- * - active link styling
- */
-
 import { Link } from '@remix-run/react'
 
 const classList = {
@@ -11,14 +6,14 @@ const classList = {
     single:
       'px-2.5 lg:px-4 lg:border-2 rounded-[1rem] lg:rounded-[1.25rem] drop-shadow lg:drop-shadow-md',
     grouped:
-      'px-1.5 lg:px-2 first:pl-3 first:lg:pl-4 last:pr-3 last:lg:pr-4 first:rounded-l-[1rem] first:lg:rounded-l-[1.25rem] last:rounded-r-[1rem] last:lg:rounded-r-[1.25rem] first:border-l-0 last:border-r-0',
+      'px-1.5 lg:px-2 first:pl-3 first:lg:pl-4 first:rounded-l-[1rem] first:lg:rounded-l-[1.25rem] first:border-l-0',
+    groupedLast:
+      'pr-3 lg:pr-4 rounded-r-[1rem] lg:rounded-r-[1.25rem] border-r-0',
   },
-  navbarLinkGroup: {
-    all: 'flex items-center h-8 lg:h-10 text-lg lg:text-xl rounded-[1rem] lg:rounded-[1.25rem] drop-shadow lg:drop-shadow-md border lg:border-2 border-emerald-900',
-  },
-  headerNavbar: {
-    all: 'h-12 lg:h-16 px-2 lg:px-4 rounded-md flex gap-2 lg:gap-4 items-center drop-shadow lg:drop-shadow-md text-zinc-200 bg-gradient-to-br from-emerald-100 to-teal-200',
-  },
+  navbarLinkGroup:
+    'flex items-center h-8 lg:h-10 text-lg lg:text-xl rounded-[1rem] lg:rounded-[1.25rem] drop-shadow lg:drop-shadow-md border lg:border-2 border-emerald-900',
+  headerNavbar:
+    'h-12 lg:h-16 px-2 lg:px-4 rounded-md flex gap-2 lg:gap-4 items-center drop-shadow lg:drop-shadow-md text-zinc-200 bg-gradient-to-br from-emerald-100 to-teal-200',
 }
 
 export function NavbarLink({
@@ -34,7 +29,9 @@ export function NavbarLink({
     <Link
       to={to}
       prefetch="render"
-      className={`${classList.navbarLink.all} ${classList.navbarLink.single} ${className}`}
+      className={`${classList.navbarLink.all} ${classList.navbarLink.single}${
+        className ? ` ${className}` : ''
+      }`}
     >
       {children}
     </Link>
@@ -49,12 +46,18 @@ export function NavbarLinkGroup({
   className?: string
 }) {
   return (
-    <div className={`${classList.navbarLinkGroup.all} ${className}`}>
-      {links.map((link) => (
+    <div className={`${classList.navbarLinkGroup} ${className ?? ''}`}>
+      {links.map((link, index) => (
         <Link
+          key={index}
           to={link.to}
           prefetch="render"
-          className={`${classList.navbarLink.all} ${classList.navbarLink.grouped} ${link.className}`}
+          className={`${classList.navbarLink.all} ${
+            classList.navbarLink.grouped
+          } ${
+            /* NOTE: Cannot use the Tailwind last: utilitiy classes here because Remix prefetching adds more child elements */
+            index === links.length - 1 ? classList.navbarLink.groupedLast : ''
+          } ${link.className ? `${link.className}` : ''}`}
         >
           {link.label}
         </Link>
@@ -66,11 +69,11 @@ export function NavbarLinkGroup({
 export function HeaderNavbar() {
   return (
     <div className="p-2">
-      <nav className={`${classList.headerNavbar.all}`}>
+      <nav className={`${classList.headerNavbar}`}>
         <NavbarLinkGroup
           links={[
             { to: '/', label: '🧑🏽‍🍳' },
-            { to: '#about', label: 'ChefFree' },
+            { to: '/about', label: 'ChefFree' },
           ]}
         />
         <div className="grow"></div>

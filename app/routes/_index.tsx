@@ -1,9 +1,9 @@
-import { PageContainer } from '~/components/containers'
+import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 
-export default function Index() {
+export default function IndexRoute() {
   return (
-    <PageContainer>
+    <Container tag="main">
       <Heading className="my-2">Home Page</Heading>
       <hr className="border-zinc-800" />
       <Heading tag="h1" className="my-2">
@@ -54,6 +54,6 @@ export default function Index() {
       <Text tag="div" className="my-2">
         WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
       </Text>
-    </PageContainer>
+    </Container>
   )
 }
