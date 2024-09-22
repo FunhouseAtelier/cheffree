@@ -6,10 +6,10 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Set up Prisma and MongoDB database connection
-- Stub out onboarding flow
-- Stub out user profile page
-- Stub out app settings
+- Set up Prisma and MongoDB database connection.
+- Stub out onboarding flow.
+- Stub out user profile page.
+- Stub out app settings.
 
 ## Future Plans
 
