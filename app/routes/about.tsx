@@ -14,7 +14,8 @@ export default function AboutRoute() {
         and also as in freedom of information.
       </Text>
       <Text tag="p" className="my-1">
-        If you have any feedback about the app, please contact us at{' '}
+        If you have any feedback or questions about the app, please contact us
+        at{' '}
         <a
           href="mailto:funhouse_atelier@protonmail.com"
           className="text-pink-800 hover:underline active:text-pink-500"

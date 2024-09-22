@@ -4,7 +4,7 @@ import { Heading, Text } from '~/components/typography'
 export default function IndexRoute() {
   return (
     <Container tag="main">
-      <Heading className="my-2">Home Page</Heading>
+      <Heading className="my-2 text-center">Home Page</Heading>
       <hr className="border-zinc-800" />
       <Heading tag="h1" className="my-2">
         Heading 1

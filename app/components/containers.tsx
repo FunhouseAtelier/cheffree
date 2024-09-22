@@ -15,18 +15,25 @@ export function Container({
   children,
   tag = 'div',
   size = 'fluid',
+  center,
   className,
 }: {
   children: React.ReactNode
   tag?: ContainerTag
   size?: ContainerSize
+  center?: 'x' | 'y' | 'xy'
   className?: string
 }) {
   const maxWidthClass = maxWidthClassByContainerSize[size]
+  const flexboxClassList = center
+    ? ` flex${center.includes('x') ? ' justify-center' : ''}${
+        center.includes('y') ? ' items-center' : ''
+      }`
+    : ''
   const Tag = tag
   return (
     <Tag
-      className={`mx-auto p-2 break-words ${maxWidthClass}${
+      className={`mx-auto p-2 break-words ${maxWidthClass}${flexboxClassList}${
         className ? ` ${className}` : ''
       }`}
     >

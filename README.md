@@ -6,8 +6,10 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Stub out an "About" page.
-- Add user auth with Clerk.
+- Set up Prisma and MongoDB database connection
+- Stub out onboarding flow
+- Stub out user profile page
+- Stub out app settings
 
 ## Future Plans
 
@@ -17,6 +19,12 @@ A web app for storing and sharing recipes.
 - Share recipes with other users.
 
 ## Revision History
+
+### 0.1.4
+
+- Added active link styling to header navbar.
+- Added Clerk Sign Up and Log In.
+- Added user menu button and sign-up/log-in modal openers to header navbar.
 
 ### 0.1.3
 

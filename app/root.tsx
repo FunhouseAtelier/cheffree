@@ -1,5 +1,8 @@
-import type { MetaFunction } from '@remix-run/node'
-import type { LinksFunction } from '@remix-run/node'
+import type {
+  LinksFunction,
+  LoaderFunction,
+  MetaFunction,
+} from '@remix-run/node'
 
 import {
   Links,
@@ -9,6 +12,8 @@ import {
   ScrollRestoration,
 } from '@remix-run/react'
 import { HeaderNavbar } from './components/navbars'
+import { rootAuthLoader } from '@clerk/remix/ssr.server'
+import { ClerkApp } from '@clerk/remix'
 
 import './tailwind.css'
 
@@ -35,6 +40,8 @@ export const links: LinksFunction = () => [
   },
 ]
 
+export const loader: LoaderFunction = (args) => rootAuthLoader(args)
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -53,7 +60,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function App() {
+function App() {
   return (
     <>
       <HeaderNavbar />
@@ -61,3 +68,5 @@ export default function App() {
     </>
   )
 }
+
+export default ClerkApp(App)
