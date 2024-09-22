@@ -1,3 +1,9 @@
+import logger from '~/utilities/logger'
+
+const log = logger({ name: '@/app/components/typography.tsx', level: 2 })
+
+type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+type TextBaseSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
 const baseSizeByHeadingTag: {
   [key in HeadingTag]: TextBaseSize
 } = {
@@ -21,6 +27,27 @@ const classListByBaseSize: {
   '3xl': 'text-3xl sm:text-4xl lg:text-5xl',
 }
 
+type TextTag =
+  | 'blockquote'
+  | 'cite'
+  | 'code'
+  | 'dd'
+  | 'dfn'
+  | 'div'
+  | 'dt'
+  | 'em'
+  | 'figcaption'
+  | 'kbd'
+  | 'mark'
+  | 'p'
+  | 'pre'
+  | 'q'
+  | 'samp'
+  | 'small'
+  | 'span'
+  | 'strong'
+  | 'time'
+  | 'var'
 export function Typography({
   props,
 }: {
@@ -33,7 +60,7 @@ export function Typography({
 }) {
   const { children, tag, size, className } = props
   const responsiveTextClassList = classListByBaseSize[size]
-  const classList = `${
+  const classList = `leading-normal ${
     tag in baseSizeByHeadingTag ? 'font-semibold ' : ''
   }${responsiveTextClassList}${className ? ` ${className}` : ''}`
   const Tag = tag
@@ -67,25 +94,3 @@ export function Text({
 }) {
   return <Typography props={{ children, tag, size, className }} />
 }
-
-export type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-export type TextBaseSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
-export type TextTag =
-  | 'blockquote'
-  | 'cite'
-  | 'code'
-  | 'dd'
-  | 'dfn'
-  | 'div'
-  | 'dt'
-  | 'figcaption'
-  | 'kbd'
-  | 'mark'
-  | 'p'
-  | 'pre'
-  | 'q'
-  | 'samp'
-  | 'small'
-  | 'span'
-  | 'time'
-  | 'var'

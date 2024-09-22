@@ -1,5 +1,16 @@
+import type { LoaderFunctionArgs } from '@remix-run/node'
+
+import logger from '~/utilities/logger'
+import { requireOnboarded } from '~/services/auth.server'
 import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
+
+const log = logger({ name: '@/app/routes/about.tsx', level: 2 })
+
+export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
+  await requireOnboarded({ loaderFunctionArgs })
+  return {}
+}
 
 export default function AboutRoute() {
   return (

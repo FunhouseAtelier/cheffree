@@ -1,9 +1,10 @@
 import type {
   LinksFunction,
-  LoaderFunction,
+  LoaderFunctionArgs,
   MetaFunction,
 } from '@remix-run/node'
 
+import logger from '~/utilities/logger'
 import {
   Links,
   Meta,
@@ -16,6 +17,8 @@ import { rootAuthLoader } from '@clerk/remix/ssr.server'
 import { ClerkApp } from '@clerk/remix'
 
 import './tailwind.css'
+
+const log = logger({ name: '@/app/root.tsx', level: 2 })
 
 export const meta: MetaFunction = () => {
   return [
@@ -40,7 +43,7 @@ export const links: LinksFunction = () => [
   },
 ]
 
-export const loader: LoaderFunction = (args) => rootAuthLoader(args)
+export const loader = (args: LoaderFunctionArgs) => rootAuthLoader(args)
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

@@ -6,10 +6,8 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Set up Prisma and MongoDB database connection.
-- Stub out onboarding flow.
-- Stub out user profile page.
-- Stub out app settings.
+- Stubbed out user profile page.
+- Stubbed out app settings.
 
 ## Future Plans
 
@@ -20,6 +18,13 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
+### 0.1.5
+
+- Set up Prisma and MongoDB database connection.
+- Made custom TypeScript declarations inline.
+- Added logger utility function and initialized in every script.
+- Stubbed out onboarding flow.
+
 ### 0.1.4
 
 - Added active link styling to header navbar.
@@ -28,7 +33,7 @@ A web app for storing and sharing recipes.
 
 ### 0.1.3
 
-Revised all components and stubbed-out About page.
+Revised all components and stubbed out About page.
 
 ### 0.1.2
 

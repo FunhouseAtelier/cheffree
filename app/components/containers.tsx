@@ -1,3 +1,8 @@
+import logger from '~/utilities/logger'
+
+const log = logger({ name: '@/app/components/containers.tsx', level: 2 })
+
+type ContainerSize = 'fluid' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 const maxWidthClassByContainerSize: {
   [key in ContainerSize]: string
 } = {
@@ -11,6 +16,20 @@ const maxWidthClassByContainerSize: {
   fluid: 'max-w-full',
 }
 
+type ContainerTag =
+  | 'article'
+  | 'blockquote'
+  | 'dialog'
+  | 'div'
+  | 'figure'
+  | 'footer'
+  | 'form'
+  | 'header'
+  | 'main'
+  | 'menu'
+  | 'nav'
+  | 'section'
+  | 'table'
 export function Container({
   children,
   tag = 'div',
@@ -41,28 +60,3 @@ export function Container({
     </Tag>
   )
 }
-
-export type ContainerTag =
-  | 'article'
-  | 'blockquote'
-  | 'dialog'
-  | 'div'
-  | 'figure'
-  | 'footer'
-  | 'form'
-  | 'header'
-  | 'main'
-  | 'menu'
-  | 'nav'
-  | 'section'
-  | 'table'
-
-export type ContainerSize =
-  | 'fluid'
-  | '2xs'
-  | 'xs'
-  | 'sm'
-  | 'md'
-  | 'lg'
-  | 'xl'
-  | '2xl'

@@ -1,3 +1,4 @@
+import logger from '~/utilities/logger'
 import { Link } from '@remix-run/react'
 import { NavLink } from '@remix-run/react'
 import {
@@ -8,6 +9,8 @@ import {
   UserButton,
 } from '@clerk/remix'
 import { useLocation } from '@remix-run/react'
+
+const log = logger({ name: '@/app/components/navbars.ts', level: 2 })
 
 const classList = {
   navbarLink: {
@@ -28,6 +31,8 @@ const classList = {
     'h-12 lg:h-16 px-2 lg:px-4 rounded-md flex gap-2 lg:gap-4 items-center drop-shadow lg:drop-shadow-md text-zinc-200 bg-gradient-to-br from-emerald-100 to-teal-200',
   userButton: 'size-8 lg:size-10',
 }
+
+const customAuthPageRoutes = ['/sign-up', '/log-in']
 
 export function NavbarLink({
   children,
@@ -74,6 +79,13 @@ export function NavbarLink({
   )
 }
 
+interface NavbarLinkGroupLink {
+  to: string
+  label: string
+  isStateful?: boolean
+  className?: string
+  key: string | number
+}
 export function NavbarLinkGroup({
   links,
   className,
@@ -180,6 +192,7 @@ export function SignInModalOpener() {
 export function HeaderNavbar() {
   const location = useLocation()
   const pathname = location.pathname
+  log.debug(pathname)
 
   return (
     <div className="p-2">
@@ -201,18 +214,18 @@ export function HeaderNavbar() {
           />
         </SignedIn>
         <SignedOut>
-          {pathname === '/sign-up' ? <SignUpLink /> : <SignUpModalOpener />}
-          {pathname === '/log-in' ? <LogInLink /> : <SignInModalOpener />}
+          {customAuthPageRoutes.includes(pathname) ? (
+            <SignUpLink />
+          ) : (
+            <SignUpModalOpener />
+          )}
+          {customAuthPageRoutes.includes(pathname) ? (
+            <LogInLink />
+          ) : (
+            <SignInModalOpener />
+          )}
         </SignedOut>
       </nav>
     </div>
   )
-}
-
-export interface NavbarLinkGroupLink {
-  to: string
-  label: string
-  isStateful?: boolean
-  className?: string
-  key: string | number
 }

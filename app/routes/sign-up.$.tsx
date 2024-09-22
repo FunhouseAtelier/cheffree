@@ -1,6 +1,9 @@
+import logger from '~/utilities/logger'
 import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { SignUp } from '@clerk/remix'
+
+const log = logger({ name: '@/app/routes/sign-up.$.tsx', level: 2 })
 
 export default function SignUpRoute() {
   return (
