@@ -30,11 +30,15 @@ export async function createUser({
   const { userId } = await getAuth(actionFunctionArgs)
   if (!userId) throw redirect('/')
 
+  log.debug('authenticated session found')
+
   const clerkClient = createClerkClient({
     secretKey: process.env.CLERK_SECRET_KEY,
   })
   const { emailAddresses, primaryEmailAddressId } =
     await clerkClient.users.getUser(userId)
+
+  log.debug('session user data found')
 
   let email
   for (const emailAddress of emailAddresses) {
@@ -43,6 +47,8 @@ export async function createUser({
     }
   }
   if (!email) throw redirect('/')
+
+  log.debug('primary email address found')
 
   try {
     await prisma.user.upsert({
@@ -54,6 +60,7 @@ export async function createUser({
         displayName,
       },
     })
+    log.debug('new user record created')
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       switch (error.code) {
@@ -61,6 +68,7 @@ export async function createUser({
           log.error(error)
       }
     }
+    log.error('unexpected error when creating new user record')
     return {
       error: {
         form: 'Unable to create your profile at this time. Please try again later.',
@@ -74,9 +82,37 @@ export async function createUser({
         isOnboarded: true,
       },
     })
+    log.debug('onboarding status updated in Clerk metadata')
     return { success: true }
   } catch (err) {
+    log.error('unable to update onboarding status in Clerk metadata')
     return { error: { form: 'There was an error updating the user metadata.' } }
+  }
+}
+
+export async function getUserByClerkId({ clerkId }: { clerkId: string }) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { clerkId },
+    })
+    if (!user) return { success: true, me: null }
+    const me = {
+      id: user.id,
+      displayName: user.displayName,
+    }
+    return { success: true, me }
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      switch (error.code) {
+        default:
+          log.error(error)
+      }
+    }
+    return {
+      error: {
+        form: 'Unable to get user profile. Please try again later.',
+      },
+    }
   }
 }
 
@@ -98,30 +134,5 @@ export async function getMe({
 }): Promise<GetMeResult> {
   const { userId } = await getAuth(loaderFunctionArgs)
   if (!userId) return { success: true, me: null }
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        clerkId: userId,
-      },
-    })
-    if (!user) return { success: true, me: null }
-    const me = {
-      id: user.id,
-      displayName: user.displayName,
-    }
-    return { success: true, me }
-  } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      switch (error.code) {
-        default:
-          log.error(error)
-      }
-    }
-    return {
-      error: {
-        form: 'Unable to get your user profile. Please try again later.',
-      },
-    }
-  }
+  return await getUserByClerkId({ clerkId: userId })
 }

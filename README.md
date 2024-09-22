@@ -18,6 +18,10 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
+### 0.1.6
+
+- Changed Onboarding logic to check database instead of Clerk public Metadata, to avoid needing to double-submit the onboarding form, possibly because session data was not refreshed. It was not a timing issue, as a one-second delay before redirecting did not solve the problem.
+
 ### 0.1.5
 
 - Set up Prisma and MongoDB database connection.

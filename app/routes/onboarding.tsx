@@ -1,19 +1,19 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 
 import logger from '~/utilities/logger'
-import { requireOnboarded } from '~/services/auth.server'
+import { requireAuthenticated, requireOnboarded } from '~/services/auth.server'
 import { createUser } from '~/services/user.server'
 import { json } from '@remix-run/node'
-import { redirect, useActionData } from '@remix-run/react'
+import { redirectDocument, useActionData } from '@remix-run/react'
 import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
-
 import { useUser } from '@clerk/remix'
 
 const log = logger({ name: '@/app/routes/onboarding.tsx', level: 2 })
 
 export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
+  log.debug('received new route request')
   await requireOnboarded({
     loaderFunctionArgs,
     isReverseLogic: true,
@@ -31,7 +31,9 @@ export const action = async (actionFunctionArgs: ActionFunctionArgs) => {
   ) as unknown as OnboardingFormData
   const result = await createUser({ actionFunctionArgs, displayName })
   if (result.error) return json({ error: result.error })
-  throw redirect('/')
+  log.debug('completed onboarding with no errors')
+  // await new Promise((resolve) => setTimeout(resolve, 1000))
+  return redirectDocument('/')
 }
 
 export default function OnboardingRoute() {
