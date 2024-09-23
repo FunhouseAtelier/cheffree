@@ -18,6 +18,9 @@ const colors: {
 
 prefix.reg(loglevel)
 prefix.apply(loglevel, {
+  timestampFormatter(date) {
+    return date.toISOString()
+  },
   format(level, name, timestamp) {
     return `${chalk.gray(`[${timestamp}]`)} ${colors[
       level.toUpperCase() as LoglevelMessage

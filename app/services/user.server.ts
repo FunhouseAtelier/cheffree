@@ -1,22 +1,24 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 import logger from '~/utilities/logger'
 import prisma from './prisma.server'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { base58 } from 'base-id'
 
 const log = logger({ name: '@/app/services/user.server.tsx', level: 2 })
 
 interface CreateUserResult {
   success?: boolean
+  id58?: string
   error?: {
     form?: string
     displayName?: string
   }
 }
-export async function createUser({
+export async function onboardUser({
   actionFunctionArgs,
   displayName,
 }: {
@@ -25,6 +27,9 @@ export async function createUser({
 }): Promise<CreateUserResult> {
   if (!displayName || typeof displayName !== 'string') {
     return { error: { displayName: 'Please enter a display name.' } }
+  }
+  if (displayName.length > 32) {
+    return { error: { displayName: 'That display name is too long.' } }
   }
 
   const { userId } = await getAuth(actionFunctionArgs)
@@ -50,8 +55,9 @@ export async function createUser({
 
   log.debug('primary email address found')
 
+  let id58
   try {
-    await prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: { email },
       update: { clerkId: userId, displayName },
       create: {
@@ -61,6 +67,7 @@ export async function createUser({
       },
     })
     log.debug('new user record created')
+    id58 = base58.encode(user.id)
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       switch (error.code) {
@@ -71,7 +78,7 @@ export async function createUser({
     log.error('unexpected error when creating new user record')
     return {
       error: {
-        form: 'Unable to create your profile at this time. Please try again later.',
+        form: 'Failed to create your profile at this time. Please try again later.',
       },
     }
   }
@@ -83,7 +90,7 @@ export async function createUser({
       },
     })
     log.debug('onboarding status updated in Clerk metadata')
-    return { success: true }
+    return { success: true, id58 }
   } catch (err) {
     log.error('unable to update onboarding status in Clerk metadata')
     return { error: { form: 'There was an error updating the user metadata.' } }
@@ -97,7 +104,7 @@ export async function getUserByClerkId({ clerkId }: { clerkId: string }) {
     })
     if (!user) return { success: true, me: null }
     const me = {
-      id: user.id,
+      id58: base58.encode(user.id),
       displayName: user.displayName,
     }
     return { success: true, me }
@@ -110,14 +117,14 @@ export async function getUserByClerkId({ clerkId }: { clerkId: string }) {
     }
     return {
       error: {
-        form: 'Unable to get user profile. Please try again later.',
+        form: 'Failed to get user profile.',
       },
     }
   }
 }
 
 interface Me {
-  id: string
+  id58: string
   displayName: string
 }
 interface GetMeResult {
@@ -135,4 +142,59 @@ export async function getMe({
   const { userId } = await getAuth(loaderFunctionArgs)
   if (!userId) return { success: true, me: null }
   return await getUserByClerkId({ clerkId: userId })
+}
+
+interface User {
+  id58: string
+  clerkId: string
+  displayName: string
+  imageUrl: string
+  createdAt: Date
+  lastSeenAt: Date
+}
+interface GetUserById58Result {
+  success?: boolean
+  user?: User | null
+  error?: {
+    form?: string
+  }
+}
+export async function getUserById58(
+  id58: string
+): Promise<GetUserById58Result> {
+  try {
+    const foundUser = await prisma.user.findUnique({
+      where: { id: base58.decode(id58) },
+    })
+    if (!foundUser) return { success: true, user: null }
+    const { clerkId, displayName, createdAt, lastSeenAt } = foundUser
+
+    const foundClerkUser = await createClerkClient({
+      secretKey: process.env.CLERK_SECRET_KEY,
+    }).users.getUser(clerkId)
+    if (!foundUser) return { error: { form: 'Failed to get session user.' } }
+    const { imageUrl } = foundClerkUser
+
+    const user = {
+      id58,
+      clerkId,
+      displayName,
+      imageUrl,
+      createdAt,
+      lastSeenAt,
+    }
+    return { success: true, user }
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      switch (error.code) {
+        default:
+          log.error(error)
+      }
+    }
+    return {
+      error: {
+        form: 'Failed to get user profile.',
+      },
+    }
+  }
 }

@@ -60,7 +60,7 @@ export function Typography({
 }) {
   const { children, tag, size, className } = props
   const responsiveTextClassList = classListByBaseSize[size]
-  const classList = `leading-normal ${
+  const classList = `${
     tag in baseSizeByHeadingTag ? 'font-semibold ' : ''
   }${responsiveTextClassList}${className ? ` ${className}` : ''}`
   const Tag = tag

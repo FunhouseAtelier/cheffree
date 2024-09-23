@@ -2,7 +2,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 
 import logger from '~/utilities/logger'
 import { requireAuthenticated, requireOnboarded } from '~/services/auth.server'
-import { createUser } from '~/services/user.server'
+import { onboardUser } from '~/services/user.server'
 import { json } from '@remix-run/node'
 import { redirectDocument, useActionData } from '@remix-run/react'
 import { Container } from '~/components/containers'
@@ -29,11 +29,10 @@ export const action = async (actionFunctionArgs: ActionFunctionArgs) => {
   const { displayName } = Object.fromEntries(
     formData
   ) as unknown as OnboardingFormData
-  const result = await createUser({ actionFunctionArgs, displayName })
+  const result = await onboardUser({ actionFunctionArgs, displayName })
   if (result.error) return json({ error: result.error })
   log.debug('completed onboarding with no errors')
-  // await new Promise((resolve) => setTimeout(resolve, 1000))
-  return redirectDocument('/')
+  return redirectDocument(`/user/${result.id58}`)
 }
 
 export default function OnboardingRoute() {

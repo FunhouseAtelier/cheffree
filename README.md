@@ -6,8 +6,8 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Stubbed out user profile page.
-- Stubbed out app settings.
+- Stubbed out profile edit view.
+- Stubbed out app settings view.
 
 ## Future Plans
 
@@ -18,9 +18,16 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
+### 0.1.8
+
+### 0.1.7
+
+- Set limit of display name length at 64 bytes (32 regular characters; emojis count for multiple characters).
+- Stubbed out user profile page with display name, avatar image, how long ago they joined, how long ago they were last seen, and button stubs for editing the profile and changing the app settings.
+
 ### 0.1.6
 
-- Changed Onboarding logic to check database instead of Clerk public Metadata, to avoid needing to double-submit the onboarding form, possibly because session data was not refreshed. It was not a timing issue, as a one-second delay before redirecting did not solve the problem.
+- Changed onboarding logic to check database instead of Clerk public Metadata, to avoid needing to double-submit the onboarding form, possibly because session data was not refreshed. It was not a timing issue, as a one-second delay before redirecting did not solve the problem.
 
 ### 0.1.5
 
