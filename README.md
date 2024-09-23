@@ -18,6 +18,10 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
+### 0.1.9
+
+- changed banner color on user profiles to distinguish it from navbars.
+
 ### 0.1.8
 
 - Added links on home page to view user profiles.

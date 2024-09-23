@@ -49,7 +49,7 @@ export default function UserProfileRoute() {
     <Container tag="main" size="lg">
       <Container
         tag="header"
-        className="mt-2 h-[7.25rem] sm:h-[8.5rem] lg:h-[10.5rem] p-4 sm:p-5 lg:p-6 rounded sm:rounded-md lg:rounded-lg bg-green-200 drop-shadow lg:drop-shadow-md"
+        className="mt-2 h-[7.25rem] sm:h-[8.5rem] lg:h-[10.5rem] p-4 sm:p-5 lg:p-6 rounded sm:rounded-md lg:rounded-lg bg-lime-200 drop-shadow lg:drop-shadow-md"
       >
         <Heading className="truncate h-10 sm:h-[3.25rem] lg:h-16">
           {user.displayName}
