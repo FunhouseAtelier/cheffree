@@ -198,3 +198,29 @@ export async function getUserById58(
     }
   }
 }
+
+export async function getAllUsers() {
+  try {
+    const foundUsers = await prisma.user.findMany()
+
+    const users = foundUsers.map((user) => {
+      return {
+        id58: base58.encode(user.id),
+        displayName: user.displayName,
+      }
+    })
+    return { success: true, users }
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      switch (error.code) {
+        default:
+          log.error(error)
+      }
+    }
+    return {
+      error: {
+        form: 'Failed to get all user id58s.',
+      },
+    }
+  }
+}

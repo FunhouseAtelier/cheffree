@@ -20,6 +20,8 @@ A web app for storing and sharing recipes.
 
 ### 0.1.8
 
+- Added links on home page to view user profiles.
+
 ### 0.1.7
 
 - Set limit of display name length at 64 bytes (32 regular characters; emojis count for multiple characters).
