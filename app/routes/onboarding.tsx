@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 
 import logger from '@funhouse-atelier/logger'
-import { requireAuthenticated, requireOnboarded } from '~/services/auth.server'
+import { requireOnboarded } from '~/services/auth.server'
 import { onboardUser } from '~/services/user.server'
 import { json } from '@remix-run/node'
 import { redirectDocument, useActionData } from '@remix-run/react'
@@ -10,7 +10,7 @@ import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
 import { useUser } from '@clerk/remix'
 
-const log = logger({ name: '@/app/routes/onboarding.tsx', level: 3 })
+const log = logger({ name: '@/app/routes/onboarding.tsx', level: 2 })
 
 export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
   log.debug('received new route request')
@@ -63,6 +63,7 @@ export default function OnboardingRoute() {
                 defaultValue={defaultDisplayName}
                 placeholder="What do you want to be called?"
                 required
+                autoFocus
                 className="block w-full px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded text-base sm:text-lg lg:text-xl text-zinc-200 bg-amber-950 drop-shadow lg:drop-shadow-md"
               />
               <Text

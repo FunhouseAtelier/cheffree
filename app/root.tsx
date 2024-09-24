@@ -18,7 +18,7 @@ import { ClerkApp } from '@clerk/remix'
 
 import './tailwind.css'
 
-const log = logger({ name: '@/app/root.tsx', level: 3 })
+const log = logger({ name: '@/app/root.tsx', level: 2 })
 
 export const meta: MetaFunction = () => {
   return [

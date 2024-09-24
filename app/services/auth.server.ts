@@ -7,7 +7,7 @@ import { json, redirect } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
 import prisma from './prisma.server'
 
-const log = logger({ name: '@/app/services/auth.server.ts', level: 3 })
+const log = logger({ name: '@/app/services/auth.server.ts', level: 2 })
 
 export async function requireAuthenticated({
   loaderFunctionArgs,
@@ -21,7 +21,7 @@ export async function requireAuthenticated({
     })
   })
   if (userId) return { success: true }
-  throw redirect('/')
+  throw redirect('/log-in')
 }
 
 export async function requireOnboarded({

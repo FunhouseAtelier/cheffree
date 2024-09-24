@@ -6,9 +6,8 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Switched to @funhouse-atelier/logger package.
-- Stubbed out profile edit view.
-- Stubbed out app settings view.
+- Installed FontAwesome and used Web Fonts icons in place of emojis.
+- Added dual-side form validation with zod.
 - Improved user profiles layout.
 - Refactored all exisiting code.
 
@@ -18,13 +17,15 @@ A web app for storing and sharing recipes.
 - Show feeds of recipes.
 - Connect with other users.
 - Share recipes with other users.
+- Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
 
 ### 0.1.10
 
-- Switched to @funhouse-atelier/logger package.
--
+- Switched to newly published `@funhouse-atelier/logger` package.
+- Changed `requireAuthenticated()` to redirect to log in page if not authenticated.
+- Stubbed out app settings page.
 
 ### 0.1.9
 

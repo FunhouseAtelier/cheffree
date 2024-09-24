@@ -8,7 +8,7 @@ import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
-const log = logger({ name: '@/app/services/user.server.tsx', level: 3 })
+const log = logger({ name: '@/app/services/user.server.tsx', level: 2 })
 
 interface CreateUserResult {
   success?: boolean
@@ -222,5 +222,46 @@ export async function getAllUsers() {
         form: 'Failed to get all user id58s.',
       },
     }
+  }
+}
+
+interface UpdateUserResult {
+  success?: boolean
+  error?: {
+    displayName?: string
+  }
+}
+export async function updateUser({
+  actionFunctionArgs,
+  updates,
+}: {
+  actionFunctionArgs: ActionFunctionArgs
+  updates: { displayName?: string }
+}): Promise<UpdateUserResult> {
+  try {
+    const { userId: clerkId } = await getAuth(actionFunctionArgs)
+    if (!clerkId) throw redirect('/')
+    const { displayName } = updates
+
+    if (!displayName || typeof displayName !== 'string') {
+      return { error: { displayName: 'Please enter a display name.' } }
+    }
+    if (displayName.length > 32) {
+      return { error: { displayName: 'That display name is too long.' } }
+    }
+
+    await prisma.user.update({
+      where: { clerkId },
+      data: updates,
+    })
+    return { success: true }
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      switch (error.code) {
+        default:
+          log.error(error)
+      }
+    }
+    return { success: true }
   }
 }

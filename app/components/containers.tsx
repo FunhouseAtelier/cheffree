@@ -1,6 +1,6 @@
 import logger from '@funhouse-atelier/logger'
 
-const log = logger({ name: '@/app/components/containers.tsx', level: 3 })
+const log = logger({ name: '@/app/components/containers.tsx', level: 2 })
 
 type ContainerSize = 'fluid' | '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 const maxWidthClassByContainerSize: {

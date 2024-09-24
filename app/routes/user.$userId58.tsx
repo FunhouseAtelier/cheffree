@@ -10,7 +10,7 @@ import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { DateTime } from 'luxon'
 
-const log = logger({ name: '@/app/routes/user.$userId58.tsx', level: 3 })
+const log = logger({ name: '@/app/routes/user.$userId58.tsx', level: 2 })
 
 export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
   await requireOnboarded({ loaderFunctionArgs })
@@ -78,7 +78,7 @@ export default function UserProfileRoute() {
             />
           )}
         </div>
-        <div className="grow" />
+        {/* <div className="grow" />
         {user.clerkId === myClerkId && (
           <Container
             center="y"
@@ -91,7 +91,7 @@ export default function UserProfileRoute() {
               <Text size="lg">⚙️</Text>
             </button>
           </Container>
-        )}
+        )} */}
       </div>
     </Container>
   )

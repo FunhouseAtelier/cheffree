@@ -9,7 +9,7 @@ import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { Link } from '@remix-run/react'
 
-const log = logger({ name: '@/app/routes/_index.tsx', level: 3 })
+const log = logger({ name: '@/app/routes/_index.tsx', level: 2 })
 
 export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
   await requireOnboarded({ loaderFunctionArgs })

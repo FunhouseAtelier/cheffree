@@ -10,7 +10,7 @@ import {
 } from '@clerk/remix'
 import { useLocation } from '@remix-run/react'
 
-const log = logger({ name: '@/app/components/navbars.ts', level: 3 })
+const log = logger({ name: '@/app/components/navbars.ts', level: 2 })
 
 const classList = {
   navbarLink: {
@@ -205,6 +205,9 @@ export function HeaderNavbar() {
         />
         <div className="grow"></div>
         <SignedIn>
+          <NavbarLink to="/settings" isStateful={true}>
+            ⚙️
+          </NavbarLink>
           <UserButton
             appearance={{
               elements: {
