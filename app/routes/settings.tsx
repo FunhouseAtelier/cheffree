@@ -11,6 +11,7 @@ import { useLoaderData, useActionData } from '@remix-run/react'
 import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
+import { CheckIcon, XmarkIcon } from '~/components/icons'
 
 const log = logger({ name: '@app/routes/settings.tsx', level: 0 })
 
@@ -41,7 +42,6 @@ export default function AppSettingsRoute() {
 
   const [activeForm, setActiveForm] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState<string>(me.displayName)
-  // @ts-ignore
   const [formErrors, setFormErrors] = useState<{ displayName?: string } | null>(
     {}
   )
@@ -82,21 +82,25 @@ export default function AppSettingsRoute() {
                     setFormErrors(null)
                   }}
                 />
-                <div
-                  className="flex justify-center items-center"
+                <button
+                  type="submit"
+                  className="flex justify-center items-center size-8 sm:size-10 lg:size-11 rounded bg-green-800 text-zinc-200 drop-shadow lg:drop-shadow-md"
+                >
+                  <Text>
+                    <CheckIcon />
+                  </Text>
+                </button>
+                <button
+                  className="flex justify-center items-center size-8 sm:size-10 lg:size-11 rounded bg-red-800 text-zinc-200 drop-shadow lg:drop-shadow-md"
                   onClick={() => {
                     setDisplayName(me.displayName)
                     setActiveForm(null)
                     setFormErrors(null)
                   }}
                 >
-                  🗙
-                </div>
-                <button
-                  type="submit"
-                  className="flex justify-center items-center"
-                >
-                  ✔️
+                  <Text>
+                    <XmarkIcon />
+                  </Text>
                 </button>
               </div>
               <Text
@@ -112,11 +116,15 @@ export default function AppSettingsRoute() {
               <div className="my-1">
                 <Text className="font-semibold">Display Name</Text>
               </div>
-              <div
-                className="px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded text-base sm:text-lg lg:text-xl bg-amber-300"
-                onClick={() => setActiveForm('displayName')}
-              >
-                {displayName}
+              <div className="flex gap-2">
+                <div
+                  className="grow px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded text-base sm:text-lg lg:text-xl bg-amber-300"
+                  onClick={() => setActiveForm('displayName')}
+                >
+                  {displayName}
+                </div>
+                <div className="size-8 sm:size-10 lg:size-11" />
+                <div className="size-8 sm:size-10 lg:size-11" />
               </div>
               <div className=" my-0.5 h-[1.125rem] sm:h-[1.3125rem] lg:h-6" />
             </div>

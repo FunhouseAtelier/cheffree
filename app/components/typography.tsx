@@ -84,7 +84,7 @@ export function Heading({
 export function Text({
   children,
   tag = 'span',
-  size = 'sm',
+  size = 'md',
   className,
 }: {
   children: React.ReactNode

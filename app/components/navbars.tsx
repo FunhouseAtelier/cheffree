@@ -9,6 +9,7 @@ import {
   UserButton,
 } from '@clerk/remix'
 import { useLocation } from '@remix-run/react'
+import { KitchenSetIcon, GearIcon } from './icons'
 
 const log = logger({ name: '@/app/components/navbars.ts', level: 2 })
 
@@ -81,7 +82,7 @@ export function NavbarLink({
 
 interface NavbarLinkGroupLink {
   to: string
-  label: string
+  label: string | React.ReactElement
   isStateful?: boolean
   className?: string
   key: string | number
@@ -199,14 +200,14 @@ export function HeaderNavbar() {
       <nav className={`${classList.headerNavbar}`}>
         <NavbarLinkGroup
           links={[
-            { to: '/', label: '🧑🏽‍🍳', isStateful: true, key: 1 },
+            { to: '/', label: <KitchenSetIcon />, isStateful: true, key: 1 },
             { to: '/about', label: 'ChefFree', isStateful: true, key: 2 },
           ]}
         />
         <div className="grow"></div>
         <SignedIn>
           <NavbarLink to="/settings" isStateful={true}>
-            ⚙️
+            <GearIcon />
           </NavbarLink>
           <UserButton
             appearance={{

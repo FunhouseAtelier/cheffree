@@ -6,7 +6,6 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Installed FontAwesome and used Web Fonts icons in place of emojis.
 - Added dual-side form validation with zod.
 - Improved user profiles layout.
 - Refactored all exisiting code.
@@ -20,6 +19,14 @@ A web app for storing and sharing recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.12
+
+-
+
+### 0.1.11
+
+- Installed FontAwesome and used Web Fonts icons in place of emojis.
 
 ### 0.1.10
 
