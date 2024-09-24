@@ -7,43 +7,49 @@ import { redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { appSettingsFormSchema } from '~/utilities/zod.schemas'
 
 const log = logger({ name: '@/app/services/user.server.tsx', level: 2 })
 
-interface CreateUserResult {
+interface OnboardMeResult {
   success?: boolean
-  id58?: string
+  data?: {
+    id58: string
+  }
   error?: {
     form?: string
     displayName?: string
   }
 }
-export async function onboardUser({
+export async function onboardMe({
   actionFunctionArgs,
-  displayName,
+  updates,
 }: {
   actionFunctionArgs: ActionFunctionArgs
-  displayName: string
-}): Promise<CreateUserResult> {
-  if (!displayName || typeof displayName !== 'string') {
-    return { error: { displayName: 'Please enter a display name.' } }
-  }
-  if (displayName.length > 32) {
-    return { error: { displayName: 'That display name is too long.' } }
+  updates: { displayName: string }
+}): Promise<OnboardMeResult> {
+  const parseResult = appSettingsFormSchema.safeParse(updates)
+  if (parseResult.error) {
+    const parseErrors = parseResult.error.format()
+    const error: { [key: string]: string | undefined } = {}
+    if (parseErrors._errors.length) {
+      error.form = parseErrors._errors.join(' • ')
+    }
+    for (const inputName in updates) {
+      error[inputName] =
+        parseErrors[inputName as keyof typeof updates]?._errors.join(' • ')
+    }
+    return { error }
   }
 
   const { userId } = await getAuth(actionFunctionArgs)
   if (!userId) throw redirect('/')
-
-  log.debug('authenticated session found')
 
   const clerkClient = createClerkClient({
     secretKey: process.env.CLERK_SECRET_KEY,
   })
   const { emailAddresses, primaryEmailAddressId } =
     await clerkClient.users.getUser(userId)
-
-  log.debug('session user data found')
 
   let email
   for (const emailAddress of emailAddresses) {
@@ -53,20 +59,17 @@ export async function onboardUser({
   }
   if (!email) throw redirect('/')
 
-  log.debug('primary email address found')
-
   let id58
   try {
     const user = await prisma.user.upsert({
       where: { email },
-      update: { clerkId: userId, displayName },
+      update: { clerkId: userId, ...updates },
       create: {
         clerkId: userId,
         email,
-        displayName,
+        ...updates,
       },
     })
-    log.debug('new user record created')
     id58 = base58.encode(user.id)
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
@@ -75,10 +78,10 @@ export async function onboardUser({
           log.error(error)
       }
     }
-    log.error('unexpected error when creating new user record')
+    log.error('Unexpected error when creating new user record:\n', error)
     return {
       error: {
-        form: 'Failed to create your profile at this time. Please try again later.',
+        form: 'Unable to create your profile at this time.',
       },
     }
   }
@@ -89,11 +92,12 @@ export async function onboardUser({
         isOnboarded: true,
       },
     })
-    log.debug('onboarding status updated in Clerk metadata')
-    return { success: true, id58 }
-  } catch (err) {
-    log.error('unable to update onboarding status in Clerk metadata')
-    return { error: { form: 'There was an error updating the user metadata.' } }
+    return { success: true, data: { id58 } }
+  } catch (error) {
+    log.error('Unable to update onboarding status in Clerk metadata:', error)
+    return {
+      error: { form: 'Unable to update the Clerk metadata at this time.' },
+    }
   }
 }
 
@@ -217,6 +221,7 @@ export async function getAllUsers() {
           log.error(error)
       }
     }
+    log.error('Unexpected error when getting all user id58s:\n', error)
     return {
       error: {
         form: 'Failed to get all user id58s.',
@@ -225,29 +230,36 @@ export async function getAllUsers() {
   }
 }
 
-interface UpdateUserResult {
+interface UpdateMeResult {
   success?: boolean
   error?: {
+    form?: string
     displayName?: string
   }
 }
-export async function updateUser({
+export async function updateMe({
   actionFunctionArgs,
   updates,
 }: {
   actionFunctionArgs: ActionFunctionArgs
   updates: { displayName?: string }
-}): Promise<UpdateUserResult> {
+}): Promise<UpdateMeResult> {
   try {
     const { userId: clerkId } = await getAuth(actionFunctionArgs)
     if (!clerkId) throw redirect('/')
-    const { displayName } = updates
 
-    if (!displayName || typeof displayName !== 'string') {
-      return { error: { displayName: 'Please enter a display name.' } }
-    }
-    if (displayName.length > 32) {
-      return { error: { displayName: 'That display name is too long.' } }
+    const parseResult = appSettingsFormSchema.safeParse(updates)
+    if (parseResult.error) {
+      const parseErrors = parseResult.error.format()
+      const error: { [key: string]: string | undefined } = {}
+      if (parseErrors._errors.length) {
+        error.form = parseErrors._errors.join(' • ')
+      }
+      for (const inputName in updates) {
+        error[inputName] =
+          parseErrors[inputName as keyof typeof updates]?._errors.join(' • ')
+      }
+      return { error }
     }
 
     await prisma.user.update({
@@ -262,6 +274,7 @@ export async function updateUser({
           log.error(error)
       }
     }
-    return { success: true }
+    log.error('Unexpected error when updating user record:\n', error)
+    return { error: { form: 'Unable to update user record at this time.' } }
   }
 }

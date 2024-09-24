@@ -1,10 +1,12 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
+import type { OnboardingForm } from '~/utilities/zod.types'
 
 import logger from '@funhouse-atelier/logger'
 import { requireOnboarded } from '~/services/auth.server'
-import { onboardUser } from '~/services/user.server'
-import { json } from '@remix-run/node'
+import { onboardMe } from '~/services/user.server'
+import { useState, useEffect } from 'react'
 import { redirectDocument, useActionData } from '@remix-run/react'
+import { onboardingFormSchema } from '~/utilities/zod.schemas'
 import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
@@ -13,7 +15,6 @@ import { useUser } from '@clerk/remix'
 const log = logger({ name: '@/app/routes/onboarding.tsx', level: 2 })
 
 export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
-  log.debug('received new route request')
   await requireOnboarded({
     loaderFunctionArgs,
     isReverseLogic: true,
@@ -21,25 +22,62 @@ export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
   return {}
 }
 
-interface OnboardingFormData {
-  displayName: string
-}
 export const action = async (actionFunctionArgs: ActionFunctionArgs) => {
   const formData = await actionFunctionArgs.request.formData()
-  const { displayName } = Object.fromEntries(
-    formData
-  ) as unknown as OnboardingFormData
-  const result = await onboardUser({ actionFunctionArgs, displayName })
-  if (result.error) return json({ error: result.error })
-  log.debug('completed onboarding with no errors')
-  return redirectDocument(`/user/${result.id58}`)
+  const updates = Object.fromEntries(formData) as OnboardingForm
+  const { data, error } = await onboardMe({
+    actionFunctionArgs,
+    updates,
+  })
+  if (error) return { error }
+  /* avoid `data?` with discriminated union */
+  return redirectDocument(`/user/${data?.id58}`)
 }
 
 export default function OnboardingRoute() {
-  const { error } = useActionData<typeof action>() ?? {}
+  const { error: actionErrors } = useActionData<typeof action>() ?? {}
   const { isLoaded, user } = useUser()
-  const { fullName } = user ?? {}
-  const defaultDisplayName = fullName ?? ''
+
+  const [formValues, setFormValues] = useState<{ displayName: string }>({
+    displayName: '',
+  })
+  const [formErrors, setFormErrors] = useState<{
+    form?: string
+    displayName?: string
+  }>({})
+
+  useEffect(() => {
+    if (isLoaded) {
+      setFormValues({ ...formValues, displayName: user?.fullName ?? '' })
+    }
+  }, [isLoaded])
+
+  useEffect(() => {
+    if (actionErrors) {
+      setFormErrors(actionErrors)
+    }
+  }, [actionErrors])
+
+  const handleInput = (event: React.FormEvent) => {
+    const { name, value } = event.target as HTMLInputElement
+    const newFormValues = { ...formValues, [name]: value }
+    setFormValues(newFormValues)
+    const parseResult = onboardingFormSchema.safeParse(newFormValues)
+    if (parseResult.success) {
+      setFormErrors({})
+    } else {
+      const parseErrors = parseResult.error.format()
+      const newFormErrors: { [key: string]: string | undefined } = {}
+
+      for (const inputName in newFormValues) {
+        newFormErrors[inputName] =
+          parseErrors[inputName as keyof typeof newFormValues]?._errors.join(
+            ' • '
+          )
+      }
+      setFormErrors(newFormErrors)
+    }
+  }
 
   return (
     <Container tag="main" size="md">
@@ -60,10 +98,11 @@ export default function OnboardingRoute() {
                 id="display-name-input"
                 type="text"
                 name="displayName"
-                defaultValue={defaultDisplayName}
                 placeholder="What do you want to be called?"
                 required
                 autoFocus
+                value={formValues.displayName}
+                onInput={handleInput}
                 className="block w-full px-2 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2 rounded text-base sm:text-lg lg:text-xl text-zinc-200 bg-amber-950 drop-shadow lg:drop-shadow-md"
               />
               <Text
@@ -71,7 +110,7 @@ export default function OnboardingRoute() {
                 size="xs"
                 className="block my-0.5 h-[1.125rem] sm:h-[1.3125rem] lg:h-6 font-semibold text-red-700"
               >
-                {error?.displayName}
+                {formErrors.displayName}
               </Text>
             </fieldset>
             <button
@@ -84,7 +123,7 @@ export default function OnboardingRoute() {
               tag="strong"
               className="block my-1 h-[1.3125rem] sm:h-6 lg:h-[1.6875rem] font-semibold text-red-700"
             >
-              {error?.form}
+              {formErrors.form}
             </Text>
           </Form>
         </Container>

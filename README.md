@@ -6,7 +6,6 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Added dual-side form validation with zod.
 - Improved user profiles layout.
 - Refactored all exisiting code.
 
@@ -22,7 +21,7 @@ A web app for storing and sharing recipes.
 
 ### 0.1.12
 
--
+- Added controlled inputs and dual-side validation of form data with zod.
 
 ### 0.1.11
 
