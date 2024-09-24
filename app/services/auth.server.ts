@@ -1,13 +1,13 @@
 import type { LoaderFunctionArgs } from '@remix-run/node'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
-import logger from '~/utilities/logger'
+import logger from '@funhouse-atelier/logger'
 import { getUserByClerkId } from './user.server'
 import { json, redirect } from '@remix-run/node'
 import { getAuth } from '@clerk/remix/ssr.server'
 import prisma from './prisma.server'
 
-const log = logger({ name: '@/app/services/auth.server.ts', level: 2 })
+const log = logger({ name: '@/app/services/auth.server.ts', level: 3 })
 
 export async function requireAuthenticated({
   loaderFunctionArgs,

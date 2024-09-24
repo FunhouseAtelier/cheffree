@@ -1,4 +1,4 @@
-import logger from '~/utilities/logger'
+import logger from '@funhouse-atelier/logger'
 import { Link } from '@remix-run/react'
 import { NavLink } from '@remix-run/react'
 import {
@@ -10,7 +10,7 @@ import {
 } from '@clerk/remix'
 import { useLocation } from '@remix-run/react'
 
-const log = logger({ name: '@/app/components/navbars.ts', level: 2 })
+const log = logger({ name: '@/app/components/navbars.ts', level: 3 })
 
 const classList = {
   navbarLink: {

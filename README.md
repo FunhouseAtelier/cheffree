@@ -6,8 +6,11 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
+- Switched to @funhouse-atelier/logger package.
 - Stubbed out profile edit view.
 - Stubbed out app settings view.
+- Improved user profiles layout.
+- Refactored all exisiting code.
 
 ## Future Plans
 
@@ -18,9 +21,14 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
+### 0.1.10
+
+- Switched to @funhouse-atelier/logger package.
+-
+
 ### 0.1.9
 
-- changed banner color on user profiles to distinguish it from navbars.
+- Changed banner color on user profiles to distinguish it from navbars.
 
 ### 0.1.8
 

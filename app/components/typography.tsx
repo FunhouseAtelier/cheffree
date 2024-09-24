@@ -1,6 +1,6 @@
-import logger from '~/utilities/logger'
+import logger from '@funhouse-atelier/logger'
 
-const log = logger({ name: '@/app/components/typography.tsx', level: 2 })
+const log = logger({ name: '@/app/components/typography.tsx', level: 3 })
 
 type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 type TextBaseSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'

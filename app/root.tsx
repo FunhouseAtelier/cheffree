@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from '@remix-run/node'
 
-import logger from '~/utilities/logger'
+import logger from '@funhouse-atelier/logger'
 import {
   Links,
   Meta,
@@ -18,7 +18,7 @@ import { ClerkApp } from '@clerk/remix'
 
 import './tailwind.css'
 
-const log = logger({ name: '@/app/root.tsx', level: 2 })
+const log = logger({ name: '@/app/root.tsx', level: 3 })
 
 export const meta: MetaFunction = () => {
   return [

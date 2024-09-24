@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
 
-import logger from '~/utilities/logger'
+import logger from '@funhouse-atelier/logger'
 import { requireAuthenticated, requireOnboarded } from '~/services/auth.server'
 import { onboardUser } from '~/services/user.server'
 import { json } from '@remix-run/node'
@@ -10,7 +10,7 @@ import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
 import { useUser } from '@clerk/remix'
 
-const log = logger({ name: '@/app/routes/onboarding.tsx', level: 2 })
+const log = logger({ name: '@/app/routes/onboarding.tsx', level: 3 })
 
 export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
   log.debug('received new route request')

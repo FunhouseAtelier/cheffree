@@ -1,11 +1,11 @@
 import type { LoaderFunctionArgs } from '@remix-run/node'
 
-import logger from '~/utilities/logger'
+import logger from '@funhouse-atelier/logger'
 import { requireOnboarded } from '~/services/auth.server'
 import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 
-const log = logger({ name: '@/app/routes/about.tsx', level: 2 })
+const log = logger({ name: '@/app/routes/about.tsx', level: 3 })
 
 export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
   await requireOnboarded({ loaderFunctionArgs })

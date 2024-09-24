@@ -1,14 +1,14 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
-import logger from '~/utilities/logger'
+import logger from '@funhouse-atelier/logger'
 import prisma from './prisma.server'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
-const log = logger({ name: '@/app/services/user.server.tsx', level: 2 })
+const log = logger({ name: '@/app/services/user.server.tsx', level: 3 })
 
 interface CreateUserResult {
   success?: boolean

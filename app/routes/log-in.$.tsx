@@ -1,9 +1,9 @@
-import logger from '~/utilities/logger'
+import logger from '@funhouse-atelier/logger'
 import { Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { SignIn } from '@clerk/remix'
 
-const log = logger({ name: '@/app/routes/log-in.$.tsx', level: 2 })
+const log = logger({ name: '@/app/routes/log-in.$.tsx', level: 3 })
 
 export default function LogInRoute() {
   return (

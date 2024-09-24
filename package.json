@@ -1,6 +1,6 @@
 {
   "name": "cheffree",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "A web app for storing and sharing recipes.",
   "keywords": [
     "chef",
@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@clerk/remix": "^4.2.29",
+    "@funhouse-atelier/logger": "^1.0.0",
     "@prisma/client": "^5.19.1",
     "@remix-run/node": "^2.11.2",
     "@remix-run/react": "^2.11.2",
