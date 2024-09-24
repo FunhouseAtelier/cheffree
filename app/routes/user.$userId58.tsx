@@ -5,9 +5,7 @@ import { requireOnboarded } from '~/services/auth.server'
 import { getUserById58 } from '~/services/user.server'
 import { json } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { useAuth } from '@clerk/remix'
 import { Container } from '~/components/containers'
-import { Heading, Text } from '~/components/typography'
 import { DateTime } from 'luxon'
 
 const log = logger({ name: '@/app/routes/user.$userId58.tsx', level: 2 })
@@ -40,58 +38,75 @@ export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
 
 export default function UserProfileRoute() {
   const { user } = useLoaderData<typeof loader>()
-  const { userId: myClerkId } = useAuth()
 
   const joinedAt = DateTime.fromISO(user.createdAt).toRelative()
   const activeAt = DateTime.fromISO(user.lastSeenAt).toRelative()
 
   return (
     <Container tag="main" size="lg">
-      <Container
-        tag="header"
-        className="mt-2 h-[7.25rem] sm:h-[8.5rem] lg:h-[10.5rem] p-4 sm:p-5 lg:p-6 rounded sm:rounded-md lg:rounded-lg bg-lime-200 drop-shadow lg:drop-shadow-md"
+      <header
+        className="
+          text-base sm:text-lg lg:text-xl
+          my-[0.5em] p-[0.5em]
+          bg-lime-200
+          drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+        "
       >
-        <Heading className="truncate h-10 sm:h-[3.25rem] lg:h-16">
+        <h1
+          className="
+            text-xl sm:text-2xl lg:text-3xl
+            leading-relaxed sm:leading-relaxed lg:leading-relaxed
+            font-semibold truncate
+          "
+        >
           {user.displayName}
-        </Heading>
+        </h1>
         <div className="flex">
-          <div className="size-28 sm:size-[8.25rem] lg:size-[9.5rem] grow" />
-          <div className="text-right">
-            <div>
-              <Text className="font-semibold">Joined:</Text>{' '}
-              <Text>{joinedAt}</Text>
-            </div>
-            <div>
-              <Text className="font-semibold">Active:</Text>{' '}
-              <Text>{activeAt}</Text>
-            </div>
+          <div className="shrink-0 px-3 sm:px-3.5 lg:px-4">
+            <div className="w-24 sm:w-32 lg:w-36" />
           </div>
+          <ul className="grow">
+            <li className="leading-relaxed sm:leading-relaxed lg:leading-relaxed text-right">
+              <span className="font-semibold">Joined:</span> {joinedAt}
+            </li>
+            <li className="leading-relaxed sm:leading-relaxed lg:leading-relaxed text-right">
+              <span className="font-semibold">Active:</span> {activeAt}
+            </li>
+          </ul>
         </div>
-      </Container>
-      <div className="flex h-24 sm:h-28 lg:h-32 pl-4 sm:pl-5 lg:pl-6">
-        <div className="-mt-12 sm:-mt-14 lg:-mt-16 size-24 sm:size-28 lg:size-32 rounded sm:rounded-md lg:rounded-lg drop-shadow lg:drop-shadow-md">
-          {!!user && (
-            <img
-              src={user.imageUrl}
-              alt="user avatar"
-              className="rounded sm:rounded-md lg:rounded-lg"
-            />
+      </header>
+      <div className="flex">
+        <div className="shrink-0 -mt-16 sm:-mt-[4.5rem] lg:-mt-20 px-3 sm:px-4 lg:px-5">
+          {user ? (
+            <>
+              <a href={user.imageUrl} target="_blank">
+                <img
+                  src={user.imageUrl}
+                  alt="user avatar"
+                  className="w-24 sm:w-32 lg:w-36 rounded sm:rounded-md lg:rounded-lg drop-shadow sm:drop-shadow-md lg:drop-shadow-lg"
+                />
+              </a>
+              <div className="my-2 text-zinc-500 text-sm sm:text-base lg:text-lg">
+                <button className="block w-full text-center">USER</button>
+                <button className="block w-full text-center">
+                  INTERACTION
+                </button>
+                <button className="block w-full text-center">BUTTONS</button>
+              </div>
+            </>
+          ) : (
+            <div className="w-24 sm:w-32 lg:w-36" />
           )}
         </div>
-        {/* <div className="grow" />
-        {user.clerkId === myClerkId && (
-          <Container
-            center="y"
-            className="gap-2 sm:gap-[0.75rem] lg:gap-4 h-12 sm:h-14 lg:h-16 py-1 sm:py-1.5 lg:py-2"
-          >
-            <button className="flex justify-center items-center size-10 sm:size-11 lg:size-12 border lg:border-2 rounded sm:rounded-md lg:rounded-lg border-emerald-900 bg-emerald-800/80 hover:bg-emerald-800 transition-colors duration-300 ease-out active:bg-emerald-500 active:transition-none drop-shadow lg:drop-shadow-md">
-              <Text size="lg">✏️</Text>
-            </button>
-            <button className="flex justify-center items-center size-10 sm:size-11 lg:size-12 border lg:border-2 rounded sm:rounded-md lg:rounded-lg border-emerald-900 bg-emerald-800/80 hover:bg-emerald-800 transition-colors duration-300 ease-out active:bg-emerald-500 active:transition-none drop-shadow lg:drop-shadow-md">
-              <Text size="lg">⚙️</Text>
-            </button>
-          </Container>
-        )} */}
+        <div className="grow min-h-full flex justify-center items-center text-zinc-500 text-lg sm:text-xl lg:text-2xl">
+          USER STATS
+        </div>
+      </div>
+      <div className="text-right text-zinc-500 text-base sm:text-lg lg:text-xl">
+        [TAB-1] [TAB-2] [TAB-3]
+      </div>
+      <div className="text-center text-zinc-500 text-xl sm:text-2xl lg:text-3xl">
+        USER ACTIVITY
       </div>
     </Container>
   )

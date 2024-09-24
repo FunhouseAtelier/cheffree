@@ -6,7 +6,6 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Improved user profiles layout.
 - Refactored all exisiting code.
 
 ## Future Plans
@@ -18,6 +17,10 @@ A web app for storing and sharing recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.13
+
+- Improved user profiles layout and outlined future additions.
 
 ### 0.1.12
 

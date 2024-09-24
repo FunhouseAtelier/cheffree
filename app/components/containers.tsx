@@ -52,7 +52,7 @@ export function Container({
   const Tag = tag
   return (
     <Tag
-      className={`mx-auto p-2 break-words ${maxWidthClass}${flexboxClassList}${
+      className={`mx-auto py-1 sm:py-1.5 lg:py-2 px-2 sm:px-3 lg:px-4 break-words ${maxWidthClass}${flexboxClassList}${
         className ? ` ${className}` : ''
       }`}
     >
