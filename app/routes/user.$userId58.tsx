@@ -48,6 +48,7 @@ export default function UserProfileRoute() {
         className="
           text-base sm:text-lg lg:text-xl
           my-[0.5em] p-[0.5em]
+          rounded-sm sm:rounded lg:rounded-md
           bg-lime-200
           drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
         "
@@ -86,7 +87,7 @@ export default function UserProfileRoute() {
                   className="w-24 sm:w-32 lg:w-36 rounded sm:rounded-md lg:rounded-lg drop-shadow sm:drop-shadow-md lg:drop-shadow-lg"
                 />
               </a>
-              <div className="my-2 text-zinc-500 text-sm sm:text-base lg:text-lg">
+              <div className="my-2 text-zinc-500 text-sm sm:text-base lg:text-lg border border-zinc-300">
                 <button className="block w-full text-center">USER</button>
                 <button className="block w-full text-center">
                   INTERACTION
@@ -98,15 +99,17 @@ export default function UserProfileRoute() {
             <div className="w-24 sm:w-32 lg:w-36" />
           )}
         </div>
-        <div className="grow min-h-full flex justify-center items-center text-zinc-500 text-lg sm:text-xl lg:text-2xl">
-          USER STATS
+        <div className="grow min-h-full flex justify-center items-center text-zinc-500 text-lg sm:text-xl lg:text-2xl border border-zinc-300">
+          USER BIO (scrollable)
         </div>
       </div>
-      <div className="text-right text-zinc-500 text-base sm:text-lg lg:text-xl">
-        [TAB-1] [TAB-2] [TAB-3]
+      <div className="mt-4 flex justify-end text-right text-zinc-500 text-base sm:text-lg lg:text-xl">
+        <div className="border border-zinc-300 p-2">TAB-1</div>
+        <div className="border border-zinc-300 p-2">TAB-2</div>
+        <div className="border border-zinc-300 p-2">TAB-3</div>
       </div>
-      <div className="text-center text-zinc-500 text-xl sm:text-2xl lg:text-3xl">
-        USER ACTIVITY
+      <div className="flex justify-center items-center text-zinc-500 text-xl sm:text-2xl lg:text-3xl border border-zinc-300 min-h-64">
+        USER STATS/ACTIVITY (tab-switched)
       </div>
     </Container>
   )

@@ -18,6 +18,10 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
+### 0.1.14
+
+- Improved user profiles future additions outline.
+
 ### 0.1.13
 
 - Improved user profiles layout and outlined future additions.
