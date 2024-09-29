@@ -1,4 +1,5 @@
 import logger from '@funhouse-atelier/logger'
+import { Link } from '@remix-run/react'
 
 const log = logger({ name: '@/app/components/typography.tsx', level: 2 })
 
@@ -20,13 +21,37 @@ const classListByBaseSize: {
 } = {
   xs: 'text-xs sm:text-sm lg:text-base',
   sm: 'text-sm sm:text-base lg:text-lg',
-  /* NOTE: line-height for text-lg and text-xl are the same: 1.75rem */
   md: 'text-base sm:text-lg lg:text-xl',
   lg: 'text-lg sm:text-xl lg:text-2xl',
   xl: 'text-xl sm:text-2xl lg:text-3xl',
   '2xl': 'text-2xl sm:text-3xl lg:text-4xl',
-  /* NOTE: line-height for text-5xl is 1 */
   '3xl': 'text-3xl sm:text-4xl lg:text-5xl',
+}
+
+export const Heading = ({
+  children,
+  tag = 'h1',
+  size = baseSizeByHeadingTag[tag],
+  className,
+}: {
+  children: React.ReactNode
+  tag?: HeadingTag
+  size?: TextBaseSize
+  className?: string
+}) => {
+  const Tag = tag
+  return (
+    <Tag
+      className={`
+    ${classListByBaseSize[size]}
+    leading-relaxed sm:leading-relaxed lg:leading-relaxed
+    font-semibold mt-[0.25em] mb-[0.5em]
+    ${className ?? ''}
+  `}
+    >
+      {children}
+    </Tag>
+  )
 }
 
 type TextTag =
@@ -50,40 +75,7 @@ type TextTag =
   | 'strong'
   | 'time'
   | 'var'
-export function Typography({
-  props,
-}: {
-  props: {
-    children: React.ReactNode
-    tag: HeadingTag | TextTag
-    size: TextBaseSize
-    className?: string
-  }
-}) {
-  const { children, tag, size, className } = props
-  const responsiveTextClassList = classListByBaseSize[size]
-  const classList = `${
-    tag in baseSizeByHeadingTag ? 'font-semibold ' : ''
-  }${responsiveTextClassList}${className ? ` ${className}` : ''}`
-  const Tag = tag
-  return <Tag className={classList}>{children}</Tag>
-}
-
-export function Heading({
-  children,
-  tag = 'h1',
-  size = baseSizeByHeadingTag[tag],
-  className,
-}: {
-  children: React.ReactNode
-  tag?: HeadingTag
-  size?: TextBaseSize
-  className?: string
-}) {
-  return <Typography props={{ children, tag, size, className }} />
-}
-
-export function Text({
+export const Text = ({
   children,
   tag = 'span',
   size = 'md',
@@ -93,6 +85,75 @@ export function Text({
   tag?: TextTag
   size?: TextBaseSize
   className?: string
-}) {
-  return <Typography props={{ children, tag, size, className }} />
+}) => {
+  const Tag = tag
+  return (
+    <Tag
+      className={`
+        ${classListByBaseSize[size]}
+        leading-relaxed sm:leading-relaxed lg:leading-relaxed
+        ${tag === 'p' ? 'my-[0.75em]' : ''}
+        ${className ?? ''}
+      `}
+    >
+      {children}
+    </Tag>
+  )
+}
+
+export const TextLink = ({
+  children,
+  to,
+  prefetch = 'viewport',
+  size = 'md',
+  className,
+}: {
+  children: React.ReactNode
+  to: string
+  prefetch?: 'none' | 'intent' | 'render' | 'viewport'
+  size?: TextBaseSize
+  className?: string
+}) => {
+  return (
+    <Link
+      to={to}
+      prefetch={prefetch}
+      className={`
+        ${classListByBaseSize[size]}
+        leading-relaxed sm:leading-relaxed lg:leading-relaxed
+        text-pink-900
+        hover:underline active:text-pink-500
+        ${className ?? ''}
+      `}
+    >
+      {children}
+    </Link>
+  )
+}
+
+export const TextExternalLink = ({
+  children,
+  href,
+  size = 'md',
+  className,
+}: {
+  children: React.ReactNode
+  href: string
+  size?: TextBaseSize
+  className?: string
+}) => {
+  return (
+    <a
+      href={href}
+      className={`
+        ${classListByBaseSize[size]}
+        leading-relaxed sm:leading-relaxed lg:leading-relaxed
+        text-pink-900
+        hover:underline active:text-pink-500
+        ${className ?? ''}
+      `}
+    >
+      {children}
+    </a>
+  )
 }

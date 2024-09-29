@@ -8,7 +8,6 @@ import {
   faXmark,
   faCheck,
 } from '@fortawesome/free-solid-svg-icons'
-// import { faDiscord, faGithub } from '@fortawesome/free-brands-svg-icons'
 
 const log = logger({ name: '@app/components/icons.tsx', level: 2 })
 

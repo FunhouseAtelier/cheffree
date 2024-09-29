@@ -1,17 +1,17 @@
-import type { LoaderFunctionArgs } from '@remix-run/node'
+import type { LoaderFunction } from '@remix-run/node'
 
 import logger from '@funhouse-atelier/logger'
-import { requireOnboarded } from '~/services/auth.server'
+
 import { getUserById58 } from '~/services/user.server'
 import { json } from '@remix-run/node'
+import { base58 } from 'base-id'
 import { useLoaderData } from '@remix-run/react'
-import { Container } from '~/components/containers'
+import { MainContainer } from '~/components/containers'
 import { DateTime } from 'luxon'
 
 const log = logger({ name: '@/app/routes/user.$userId58.tsx', level: 2 })
 
-export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
-  await requireOnboarded({ loaderFunctionArgs })
+export const loader: LoaderFunction = async (loaderFunctionArgs) => {
   const { userId58 } = loaderFunctionArgs.params
   if (!userId58) {
     throw json(null, {
@@ -19,34 +19,40 @@ export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
       statusText: 'Missing userId58 param.',
     })
   }
-  const { user, error } = await getUserById58(userId58)
-  if (error) {
+  const getUserById58Result = await getUserById58({ userId58 })
+  if (getUserById58Result.failure) {
     throw json(null, {
       status: 500,
-      statusText: 'Unable to get user from database.',
+      statusText: 'Failed to fetch user data.',
     })
   }
-  if (!user) {
+  const foundUser = getUserById58Result.success.data.user
+  if (!foundUser) {
     throw json(null, {
       status: 404,
       statusText: 'User not found.',
     })
   }
-
-  return json({ user })
+  const { id, displayName, imageUrl, createdAt, updatedAt } = foundUser
+  const user = {
+    id58: base58.encode(id),
+    displayName,
+    imageUrl,
+    createdAt,
+    updatedAt,
+  }
+  return { user }
 }
 
 export default function UserProfileRoute() {
   const { user } = useLoaderData<typeof loader>()
-
-  const joinedAt = DateTime.fromISO(user.createdAt).toRelative()
-  const activeAt = DateTime.fromISO(user.lastSeenAt).toRelative()
+  const joined = DateTime.fromISO(user.createdAt).toRelative()
+  const active = DateTime.fromISO(user.updatedAt).toRelative()
 
   return (
-    <Container tag="main" size="lg">
+    <MainContainer size="lg">
       <header
         className="
-          text-base sm:text-lg lg:text-xl
           my-[0.5em] p-[0.5em]
           rounded-sm sm:rounded lg:rounded-md
           bg-lime-200
@@ -63,21 +69,21 @@ export default function UserProfileRoute() {
           {user.displayName}
         </h1>
         <div className="flex">
-          <div className="shrink-0 px-3 sm:px-3.5 lg:px-4">
+          <div className="shrink-0 px-[1em]">
             <div className="w-24 sm:w-32 lg:w-36" />
           </div>
           <ul className="grow">
-            <li className="leading-relaxed sm:leading-relaxed lg:leading-relaxed text-right">
-              <span className="font-semibold">Joined:</span> {joinedAt}
+            <li className="text-right">
+              <span className="font-semibold">Joined:</span> {joined}
             </li>
-            <li className="leading-relaxed sm:leading-relaxed lg:leading-relaxed text-right">
-              <span className="font-semibold">Active:</span> {activeAt}
+            <li className="text-right">
+              <span className="font-semibold">Active:</span> {active}
             </li>
           </ul>
         </div>
       </header>
       <div className="flex">
-        <div className="shrink-0 -mt-16 sm:-mt-[4.5rem] lg:-mt-20 px-3 sm:px-4 lg:px-5">
+        <div className="shrink-0 -mt-16 sm:-mt-[4.5rem] lg:-mt-20 px-[1em]">
           {user ? (
             <>
               <a href={user.imageUrl} target="_blank">
@@ -87,7 +93,7 @@ export default function UserProfileRoute() {
                   className="w-24 sm:w-32 lg:w-36 rounded sm:rounded-md lg:rounded-lg drop-shadow sm:drop-shadow-md lg:drop-shadow-lg"
                 />
               </a>
-              <div className="my-2 text-zinc-500 text-sm sm:text-base lg:text-lg border border-zinc-300">
+              <div className="my-2 text-zinc-500 text-sm sm:text-base lg:text-lg border border-zinc-400">
                 <button className="block w-full text-center">USER</button>
                 <button className="block w-full text-center">
                   INTERACTION
@@ -99,18 +105,18 @@ export default function UserProfileRoute() {
             <div className="w-24 sm:w-32 lg:w-36" />
           )}
         </div>
-        <div className="grow min-h-full flex justify-center items-center text-zinc-500 text-lg sm:text-xl lg:text-2xl border border-zinc-300">
+        <div className="grow min-h-full flex justify-center items-center text-zinc-500 text-lg sm:text-xl lg:text-2xl border border-zinc-400">
           USER BIO (scrollable)
         </div>
       </div>
       <div className="mt-4 flex justify-end text-right text-zinc-500 text-base sm:text-lg lg:text-xl">
-        <div className="border border-zinc-300 p-2">TAB-1</div>
-        <div className="border border-zinc-300 p-2">TAB-2</div>
-        <div className="border border-zinc-300 p-2">TAB-3</div>
+        <div className="border border-zinc-400 p-2">TAB-1</div>
+        <div className="border border-zinc-400 p-2">TAB-2</div>
+        <div className="border border-zinc-400 p-2">TAB-3</div>
       </div>
-      <div className="flex justify-center items-center text-zinc-500 text-xl sm:text-2xl lg:text-3xl border border-zinc-300 min-h-64">
+      <div className="flex justify-center items-center text-zinc-500 text-xl sm:text-2xl lg:text-3xl border border-zinc-400 min-h-64">
         USER STATS/ACTIVITY (tab-switched)
       </div>
-    </Container>
+    </MainContainer>
   )
 }

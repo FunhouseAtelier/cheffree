@@ -1,30 +1,37 @@
+import type { LoaderFunction } from '@remix-run/node'
+
 import logger from '@funhouse-atelier/logger'
-import { Container } from '~/components/containers'
+import { requireNotAuthenticated } from '~/services/auth.server'
+
+import { MainContainer } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { SignUp } from '@clerk/remix'
 
 const log = logger({ name: '@/app/routes/sign-up.$.tsx', level: 2 })
 
+export const loader: LoaderFunction = async (loaderFunctionArgs) => {
+  await requireNotAuthenticated({ loaderFunctionArgs })
+  return {}
+}
+
 export default function SignUpRoute() {
   return (
-    <Container tag="main" size="md">
-      <Heading className="my-2 text-center">Sign Up</Heading>
-      <Container tag="section">
-        <Text tag="p" className="my-1">
-          Signing up for a ChefFree account is totally free. No billing
-          information is required.
-        </Text>
-        <Text tag="p" className="my-1">
-          You can use one of the social identity providers (Discord, Facebook,
-          GitHub) or a valid email address. Funhouse Atelier will never share
-          your personal information with any third party without your explicit
-          permission, and your email address will be used only to send you
-          important information about your ChefFree account.
-        </Text>
-      </Container>
-      <Container tag="section" center="x">
+    <MainContainer>
+      <Heading className="text-center">Sign up</Heading>
+      <Text tag="p">
+        Signing up for a ChefFree account is totally free. No billing
+        information is required.
+      </Text>
+      <Text tag="p">
+        You can use one of the social identity providers (Discord, Facebook,
+        GitHub) or a valid email address. Funhouse Atelier will never share your
+        personal information with any third party without your explicit
+        permission, and your email address will be used only to send you
+        important information about your ChefFree account.
+      </Text>
+      <div className="my-[2em] flex justify-center">
         <SignUp />
-      </Container>
-    </Container>
+      </div>
+    </MainContainer>
   )
 }

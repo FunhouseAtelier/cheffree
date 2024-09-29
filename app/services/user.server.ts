@@ -1,280 +1,190 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node'
+/* Import the necessary type declarations for Remix utility function arguments. */
+import type { ActionFunctionArgs } from '@remix-run/node'
+
+import type {
+  ClerkId,
+  OnboardingForm,
+  OnboardingFormErrors,
+  AppSettingsForm,
+  AppSettingsFormErrors,
+  UserId58,
+} from '~/utilities/zod/user'
 
 import logger from '@funhouse-atelier/logger'
 import prisma from './prisma.server'
 import { getAuth } from '@clerk/remix/ssr.server'
-import { redirect } from '@remix-run/react'
+import { json, redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { appSettingsFormSchema } from '~/utilities/zod.schemas'
+import {
+  onboardingFormSchema,
+  appSettingsFormSchema,
+} from '~/utilities/zod/user'
 
-const log = logger({ name: '@/app/services/user.server.tsx', level: 2 })
+const log = logger({ name: '@/app/services/user.server.ts', level: 2 })
 
-interface OnboardMeResult {
-  success?: boolean
-  data?: {
-    id58: string
-  }
-  error?: {
-    form?: string
-    displayName?: string
+const clerkClient = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY,
+})
+
+/* Export a function to find a user based on a Clerk ID. */
+export const getUserByClerkId = async ({ clerkId }: { clerkId: ClerkId }) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId } })
+    return { success: { data: { user } } }
+  } catch (error) {
+    return { failure: { error } }
   }
 }
-export async function onboardMe({
+
+/* Export a `getAllUsers` function to return the basic data for all users  as a `users` arrray, or returns the caught error in case of failure. */
+export const getAllUsers = async () => {
+  log.debug('getAllUsers() called')
+  try {
+    const foundUsers = await prisma.user.findMany({
+      select: {
+        id: true,
+        displayName: true,
+        imageUrl: true,
+      },
+    })
+    const users = foundUsers.map((user) => ({
+      id58: base58.encode(user.id),
+      displayName: user.displayName,
+      imageUrl: user.imageUrl,
+    }))
+    return { success: { data: { users } } }
+  } catch (error) {
+    log.error('Unable to get users:\n', error)
+    return { failure: { error } }
+  }
+}
+
+export const onboardMe = async ({
   actionFunctionArgs,
   updates,
 }: {
   actionFunctionArgs: ActionFunctionArgs
-  updates: { displayName: string }
-}): Promise<OnboardMeResult> {
+  updates: { [key: string]: FormDataEntryValue }
+}) => {
+  log.debug('onboardMe() called')
+  const { userId: clerkId } = await getAuth(actionFunctionArgs)
+  if (!clerkId) throw redirect('/log-in')
+
+  const parseResult = onboardingFormSchema.safeParse(updates)
+  if (parseResult.error) {
+    const parseErrors = parseResult.error.format()
+    const errors: OnboardingFormErrors = {}
+    if (parseErrors._errors.length) {
+      errors.form = parseErrors._errors.join(' • ')
+    }
+    for (const inputName in parseErrors) {
+      if (inputName !== '_errors') {
+        const inputError =
+          parseErrors[inputName as keyof OnboardingForm] ?? null
+        if (inputError) {
+          errors[inputName as keyof OnboardingFormErrors] =
+            parseErrors[inputName as keyof OnboardingForm]?._errors.join(' • ')
+        }
+      }
+    }
+    return { failure: { errors } }
+  }
+
+  const clerkUser = await clerkClient.users.getUser(clerkId)
+  const { imageUrl } = clerkUser
+  const email = clerkUser.emailAddresses[0].emailAddress
+
+  try {
+    const upsertedUser = await prisma.user.upsert({
+      where: { clerkId },
+      update: { email, imageUrl },
+      create: {
+        clerkId,
+        email,
+        imageUrl,
+        ...(updates as OnboardingForm),
+      },
+      select: {
+        id: true,
+        displayName: true,
+        imageUrl: true,
+      },
+    })
+    const me = {
+      id58: base58.encode(upsertedUser.id),
+      displayName: upsertedUser.displayName,
+      imageUrl: upsertedUser.imageUrl,
+    }
+    return { success: { data: { me } } }
+  } catch (error) {
+    log.error('Unexpected error when upserting the user record:\n', error)
+    return {
+      failure: {
+        errors: { form: 'Unable to create your profile at this time.' },
+      },
+    }
+  }
+}
+
+export const updateMe = async ({
+  actionFunctionArgs,
+  updates,
+}: {
+  actionFunctionArgs: ActionFunctionArgs
+  updates: { [key: string]: FormDataEntryValue }
+}) => {
+  const { userId: clerkId } = await getAuth(actionFunctionArgs)
+  if (!clerkId) throw redirect('/log-in')
+
   const parseResult = appSettingsFormSchema.safeParse(updates)
   if (parseResult.error) {
     const parseErrors = parseResult.error.format()
-    const error: { [key: string]: string | undefined } = {}
+    const errors: AppSettingsFormErrors = {}
     if (parseErrors._errors.length) {
-      error.form = parseErrors._errors.join(' • ')
+      errors.form = parseErrors._errors.join(' • ')
     }
-    for (const inputName in updates) {
-      error[inputName] =
-        parseErrors[inputName as keyof typeof updates]?._errors.join(' • ')
-    }
-    return { error }
-  }
-
-  const { userId } = await getAuth(actionFunctionArgs)
-  if (!userId) throw redirect('/')
-
-  const clerkClient = createClerkClient({
-    secretKey: process.env.CLERK_SECRET_KEY,
-  })
-  const { emailAddresses, primaryEmailAddressId } =
-    await clerkClient.users.getUser(userId)
-
-  let email
-  for (const emailAddress of emailAddresses) {
-    if (emailAddress.id === primaryEmailAddressId) {
-      email = emailAddress.emailAddress
-    }
-  }
-  if (!email) throw redirect('/')
-
-  let id58
-  try {
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: { clerkId: userId, ...updates },
-      create: {
-        clerkId: userId,
-        email,
-        ...updates,
-      },
-    })
-    id58 = base58.encode(user.id)
-  } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      switch (error.code) {
-        default:
-          log.error(error)
+    for (const inputName in parseErrors) {
+      if (inputName !== '_errors') {
+        const inputError =
+          parseErrors[inputName as keyof AppSettingsForm] ?? null
+        if (inputError) {
+          errors[inputName as keyof AppSettingsFormErrors] =
+            parseErrors[inputName as keyof AppSettingsForm]?._errors.join(' • ')
+        }
       }
     }
-    log.error('Unexpected error when creating new user record:\n', error)
-    return {
-      error: {
-        form: 'Unable to create your profile at this time.',
-      },
-    }
+    return { failure: { errors } }
   }
 
   try {
-    await clerkClient.users.updateUser(userId, {
-      publicMetadata: {
-        isOnboarded: true,
-      },
+    const updatedUser = await prisma.user.update({
+      where: { clerkId },
+      data: { ...updates },
     })
-    return { success: true, data: { id58 } }
+    const me = {
+      id58: base58.encode(updatedUser.id),
+      displayName: updatedUser.displayName,
+      imageUrl: updatedUser.imageUrl,
+    }
+    return { success: { data: { me } } }
   } catch (error) {
-    log.error('Unable to update onboarding status in Clerk metadata:', error)
     return {
-      error: { form: 'Unable to update the Clerk metadata at this time.' },
+      failure: {
+        errors: { form: 'Unable to update user record at this time.' },
+      },
     }
   }
 }
 
-export async function getUserByClerkId({ clerkId }: { clerkId: string }) {
+/* Export a function to find a user based on a base-58 ID. */
+export const getUserById58 = async ({ userId58 }: { userId58: UserId58 }) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { clerkId },
+      where: { id: base58.decode(userId58) },
     })
-    if (!user) return { success: true, me: null }
-    const me = {
-      id58: base58.encode(user.id),
-      displayName: user.displayName,
-    }
-    return { success: true, me }
+    return { success: { data: { user } } }
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      switch (error.code) {
-        default:
-          log.error(error)
-      }
-    }
-    return {
-      error: {
-        form: 'Failed to get user profile.',
-      },
-    }
-  }
-}
-
-interface Me {
-  id58: string
-  displayName: string
-}
-interface GetMeResult {
-  success?: boolean
-  me?: Me | null
-  error?: {
-    form?: string
-  }
-}
-export async function getMe({
-  loaderFunctionArgs,
-}: {
-  loaderFunctionArgs: LoaderFunctionArgs
-}): Promise<GetMeResult> {
-  const { userId } = await getAuth(loaderFunctionArgs)
-  if (!userId) return { success: true, me: null }
-  return await getUserByClerkId({ clerkId: userId })
-}
-
-interface User {
-  id58: string
-  clerkId: string
-  displayName: string
-  imageUrl: string
-  createdAt: Date
-  lastSeenAt: Date
-}
-interface GetUserById58Result {
-  success?: boolean
-  user?: User | null
-  error?: {
-    form?: string
-  }
-}
-export async function getUserById58(
-  id58: string
-): Promise<GetUserById58Result> {
-  try {
-    const foundUser = await prisma.user.findUnique({
-      where: { id: base58.decode(id58) },
-    })
-    if (!foundUser) return { success: true, user: null }
-    const { clerkId, displayName, createdAt, lastSeenAt } = foundUser
-
-    const foundClerkUser = await createClerkClient({
-      secretKey: process.env.CLERK_SECRET_KEY,
-    }).users.getUser(clerkId)
-    if (!foundUser) return { error: { form: 'Failed to get session user.' } }
-    const { imageUrl } = foundClerkUser
-
-    const user = {
-      id58,
-      clerkId,
-      displayName,
-      imageUrl,
-      createdAt,
-      lastSeenAt,
-    }
-    return { success: true, user }
-  } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      switch (error.code) {
-        default:
-          log.error(error)
-      }
-    }
-    return {
-      error: {
-        form: 'Failed to get user profile.',
-      },
-    }
-  }
-}
-
-export async function getAllUsers() {
-  try {
-    const foundUsers = await prisma.user.findMany()
-
-    const users = foundUsers.map((user) => {
-      return {
-        id58: base58.encode(user.id),
-        displayName: user.displayName,
-      }
-    })
-    return { success: true, users }
-  } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      switch (error.code) {
-        default:
-          log.error(error)
-      }
-    }
-    log.error('Unexpected error when getting all user id58s:\n', error)
-    return {
-      error: {
-        form: 'Failed to get all user id58s.',
-      },
-    }
-  }
-}
-
-interface UpdateMeResult {
-  success?: boolean
-  error?: {
-    form?: string
-    displayName?: string
-  }
-}
-export async function updateMe({
-  actionFunctionArgs,
-  updates,
-}: {
-  actionFunctionArgs: ActionFunctionArgs
-  updates: { displayName?: string }
-}): Promise<UpdateMeResult> {
-  try {
-    const { userId: clerkId } = await getAuth(actionFunctionArgs)
-    if (!clerkId) throw redirect('/')
-
-    const parseResult = appSettingsFormSchema.safeParse(updates)
-    if (parseResult.error) {
-      const parseErrors = parseResult.error.format()
-      const error: { [key: string]: string | undefined } = {}
-      if (parseErrors._errors.length) {
-        error.form = parseErrors._errors.join(' • ')
-      }
-      for (const inputName in updates) {
-        error[inputName] =
-          parseErrors[inputName as keyof typeof updates]?._errors.join(' • ')
-      }
-      return { error }
-    }
-
-    await prisma.user.update({
-      where: { clerkId },
-      data: updates,
-    })
-    return { success: true }
-  } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      switch (error.code) {
-        default:
-          log.error(error)
-      }
-    }
-    log.error('Unexpected error when updating user record:\n', error)
-    return { error: { form: 'Unable to update user record at this time.' } }
+    return { failure: { error } }
   }
 }

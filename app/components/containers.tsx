@@ -16,47 +16,48 @@ const maxWidthClassByContainerSize: {
   fluid: 'max-w-full',
 }
 
-type ContainerTag =
-  | 'article'
-  | 'blockquote'
-  | 'dialog'
-  | 'div'
-  | 'figure'
-  | 'footer'
-  | 'form'
-  | 'header'
-  | 'main'
-  | 'menu'
-  | 'nav'
-  | 'section'
-  | 'table'
-export function Container({
+export const MainContainer = ({
   children,
-  tag = 'div',
-  size = 'fluid',
-  center,
+  size = 'md',
   className,
 }: {
   children: React.ReactNode
-  tag?: ContainerTag
   size?: ContainerSize
-  center?: 'x' | 'y' | 'xy'
   className?: string
-}) {
-  const maxWidthClass = maxWidthClassByContainerSize[size]
-  const flexboxClassList = center
-    ? ` flex${center.includes('x') ? ' justify-center' : ''}${
-        center.includes('y') ? ' items-center' : ''
-      }`
-    : ''
-  const Tag = tag
+}) => {
   return (
-    <Tag
-      className={`mx-auto py-1 sm:py-1.5 lg:py-2 px-2 sm:px-3 lg:px-4 break-words ${maxWidthClass}${flexboxClassList}${
-        className ? ` ${className}` : ''
-      }`}
+    <main
+      className={`
+        text-base sm:text-lg lg:text-xl
+        leading-relaxed sm:leading-relaxed lg:leading-relaxed
+        mx-auto p-[0.5em] break-words
+        ${maxWidthClassByContainerSize[size]}
+        ${className ?? ''}
+      `}
     >
       {children}
-    </Tag>
+    </main>
+  )
+}
+
+export const Container = ({
+  children,
+  size = 'fluid',
+  className,
+}: {
+  children: React.ReactNode
+  size?: ContainerSize
+  className?: string
+}) => {
+  return (
+    <div
+      className={`
+        mx-auto p-[0.5em] break-words
+        ${maxWidthClassByContainerSize[size]}
+        ${className ?? ''}
+      `}
+    >
+      {children}
+    </div>
   )
 }

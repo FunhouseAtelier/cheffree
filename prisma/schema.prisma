@@ -1,28 +1,39 @@
+// This file defines the Prisma database adapter settings and model schemas. (See: https://www.prisma.io/docs/orm/prisma-schema/overview)
+
+// Define the client generator, which is the default Prisma Client.
 generator client {
   provider = "prisma-client-js"
 }
 
+// Define the datasource, which is a MongoDB Atlas database, with the connection URL defined in the `DATABASE_URL` environment variable.
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
+// Define the User model schema. This schema will not be enforced in the database because MongoDB is a schema-less database system, but the `@id` field and all `@unique` fields will be indexed and all constraints will be enforced by the Prisma Client.
 model User {
+  // The `@map("_id")` and `@db.ObjectId` data type attributes are necessary for MongoDB compatibility.
   id              String   @id @default(auto()) @map("_id") @db.ObjectId
   clerkId         String   @unique
   email           String   @unique
   displayName     String
+  imageUrl        String
+  // Each User has a one-to-many relationship with recipes they have authored.
   authoredRecipes Recipe[]
   createdAt       DateTime @default(now())
+  // The `@updatedAt` attribute causes the Prisma Client to automatically update this field whenever the User record is updated in any way. In ChefFree it also used to track when the user was last seen as active.
   updatedAt       DateTime @updatedAt
-  lastSeenAt      DateTime @default(now())
 }
 
+// Define the Recipe model schema.
 model Recipe {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String?
-  published   Boolean  @default(false)
+  // For now the visibility of recipes are determined by an `isPublished` field. When the value is false the recipe can only be seen by the author. When the value is true the recipe can be seen by any user.
+  isPublished Boolean  @default(false)
+  // Each Recipe has a one-to-one relation with a User who authored the recipe.
   author      User     @relation(fields: [authorId], references: [id])
   authorId    String   @db.ObjectId
   createdAt   DateTime @default(now())

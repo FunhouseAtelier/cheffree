@@ -6,17 +6,24 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Refactored all exisiting code.
+- Refactor general Zod parsing logic, so it just takes the data and the schema as inputs then returns a ready-to-consume result of the established success/failure type.
+- Store recipes in a database.
 
 ## Future Plans
 
-- Store recipes in a database.
 - Show feeds of recipes.
 - Connect with other users.
 - Share recipes with other users.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.15
+
+- Improved initial rendering of SVG icons.
+- Implemented Zod for parsing form data and inferring types of selected data from database schema.
+- Replaced Remix example favicon with a Chef kiss emoji.
+- Did a major refactoring of all existing code and added many inline comments.
 
 ### 0.1.14
 
@@ -28,7 +35,7 @@ A web app for storing and sharing recipes.
 
 ### 0.1.12
 
-- Added controlled inputs and dual-side validation of form data with zod.
+- Added controlled inputs and dual-side validation of form data with Zod.
 
 ### 0.1.11
 

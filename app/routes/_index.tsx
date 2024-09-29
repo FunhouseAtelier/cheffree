@@ -1,51 +1,40 @@
-import type { LoaderFunctionArgs } from '@remix-run/node'
+import type { LoaderFunction } from '@remix-run/node'
+import type { BasicUserData } from '~/utilities/zod/user'
 
 import logger from '@funhouse-atelier/logger'
-import { requireOnboarded } from '~/services/auth.server'
-import { getAllUsers, getMe } from '~/services/user.server'
-import { json } from '@remix-run/node'
-import { useLoaderData } from '@remix-run/react'
-import { Container } from '~/components/containers'
-import { Heading, Text } from '~/components/typography'
-import { Link } from '@remix-run/react'
+import { getAllUsers } from '~/services/user.server'
+import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
+import { MainContainer } from '~/components/containers'
+import { Heading, TextLink } from '~/components/typography'
 
 const log = logger({ name: '@/app/routes/_index.tsx', level: 2 })
 
-export const loader = async (loaderFunctionArgs: LoaderFunctionArgs) => {
-  await requireOnboarded({ loaderFunctionArgs })
-  const getMeResult = await getMe({ loaderFunctionArgs })
-  const { me } = getMeResult
+export const loader: LoaderFunction = async () => {
   const getAllUsersResult = await getAllUsers()
-  const { users } = getAllUsersResult
-  return json({ me, users })
+  const users = getAllUsersResult.success?.data.users ?? []
+  return { users }
 }
 
 export default function IndexRoute() {
-  const { me, users } = useLoaderData<typeof loader>()
+  const { users } = useLoaderData<typeof loader>()
+  const { me } = useRouteLoaderData<{ me: BasicUserData }>('root') ?? {}
 
   return (
-    <Container tag="main" size="md">
-      <Heading className="mt-4 mb-6 text-center">Home Page</Heading>
-      <Heading tag="h2" className="my-4">
+    <MainContainer>
+      <Heading className="text-center">Home Page</Heading>
+      <Heading tag="h2">
         {me ? `Welcome, ${me.displayName}!` : 'Greetings, traveler!'}
       </Heading>
-      <Heading tag="h3" className="my-4">
-        User profile links:
-      </Heading>
-      <ul className="my-4">
-        {!!users &&
-          users.map((user) => (
-            <li key={user.id58} className="my-2">
-              <Link
-                to={`/user/${user.id58}`}
-                prefetch="render"
-                className="text-pink-800 hover:underline active:text-pink-500"
-              >
-                <Text size="lg">{user.displayName}</Text>
-              </Link>
-            </li>
-          ))}
+      <Heading tag="h3">Member List:</Heading>
+      <ul>
+        {users.map((user: BasicUserData) => (
+          <li key={user.id58} className="my-[0.25em]">
+            <TextLink to={`/user/${user.id58}`} size="lg">
+              {user.displayName}
+            </TextLink>
+          </li>
+        ))}
       </ul>
-    </Container>
+    </MainContainer>
   )
 }
