@@ -3,10 +3,10 @@ import { z } from 'zod'
 import '~/utilities/zod/error-map'
 
 /* Define the individual values within user data. */
-const userId58 = z.string().regex(/^[a-km-zA-HJ-NP-Z1-9]{17}$/)
-const clerkId = z.string().regex(/^user_[a-zA-Z0-9_]{27}$/)
-const displayName = z.string().min(1).max(32)
-const imageUrl = z.string().url()
+const userId58 = z.coerce.string().regex(/^[a-km-zA-HJ-NP-Z1-9]{17}$/)
+const clerkId = z.coerce.string().regex(/^user_[a-zA-Z0-9_]{27}$/)
+const displayName = z.coerce.string().min(1).max(32)
+const imageUrl = z.coerce.string().url()
 
 export type UserId58 = z.infer<typeof userId58>
 export type ClerkId = z.infer<typeof clerkId>
@@ -27,8 +27,8 @@ export type OnboardingForm = z.infer<typeof onboardingFormSchema>
 
 const onboardingFormErrors = z
   .object({
-    form: z.string(),
-    displayName: z.string(),
+    _global: z.coerce.string(),
+    displayName: z.coerce.string(),
   })
   .partial()
 
@@ -41,8 +41,8 @@ export type AppSettingsForm = z.infer<typeof appSettingsFormSchema>
 
 const appSettingsFormErrors = z
   .object({
-    form: z.string(),
-    displayName: z.string(),
+    _global: z.coerce.string(),
+    displayName: z.coerce.string(),
   })
   .partial()
 

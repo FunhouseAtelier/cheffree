@@ -6,17 +6,21 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Refactor general Zod parsing logic, so it just takes the data and the schema as inputs then returns a ready-to-consume result of the established success/failure type.
 - Store recipes in a database.
 
 ## Future Plans
 
+- Add optimistic/pending UI to navbar/form controls.
 - Show feeds of recipes.
 - Connect with other users.
 - Share recipes with other users.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.16
+
+- Created `zodParse` utility function to simplify parsing data and returning an app-standard `success` or `failure` result.
 
 ### 0.1.15
 

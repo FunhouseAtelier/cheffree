@@ -10,6 +10,7 @@ import { updateMe } from '~/services/user.server'
 import { useState, useEffect } from 'react'
 import { useRouteLoaderData, useActionData } from '@remix-run/react'
 import { appSettingsFormSchema } from '~/utilities/zod/user'
+import zodParse from '_sundry/examples/parser'
 import { MainContainer, Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
@@ -49,27 +50,14 @@ export default function AppSettingsRoute() {
     const { name, value } = event.target as HTMLInputElement
     const newFormValues = { ...formValues, [name]: value }
     setFormValues(newFormValues)
-    /* TODO: refactor Zod parsing into a utility function. */
-    const parseResult = appSettingsFormSchema.safeParse(newFormValues)
-    log.debug(parseResult)
-    if (parseResult.success) {
+    const zodParseResult = zodParse({
+      data: newFormValues,
+      schema: appSettingsFormSchema,
+    })
+    if (zodParseResult.success) {
       setFormErrors({})
     } else {
-      const parseErrors = parseResult.error.format()
-      const newFormErrors: AppSettingsFormErrors = {}
-      for (const inputName in parseErrors) {
-        if (inputName !== '_errors') {
-          const inputError =
-            parseErrors[inputName as keyof AppSettingsForm] ?? null
-          if (inputError) {
-            newFormErrors[inputName as keyof AppSettingsFormErrors] =
-              parseErrors[inputName as keyof AppSettingsForm]?._errors.join(
-                ' • '
-              )
-          }
-        }
-      }
-      setFormErrors(newFormErrors)
+      setFormErrors(zodParseResult.failure.errors)
     }
   }
 

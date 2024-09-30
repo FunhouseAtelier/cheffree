@@ -13,13 +13,14 @@ import type {
 import logger from '@funhouse-atelier/logger'
 import prisma from './prisma.server'
 import { getAuth } from '@clerk/remix/ssr.server'
-import { json, redirect } from '@remix-run/react'
+import { redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
 import {
   onboardingFormSchema,
   appSettingsFormSchema,
 } from '~/utilities/zod/user'
+import zodParse from '_sundry/examples/parser'
 
 const log = logger({ name: '@/app/services/user.server.ts', level: 2 })
 
@@ -71,24 +72,12 @@ export const onboardMe = async ({
   const { userId: clerkId } = await getAuth(actionFunctionArgs)
   if (!clerkId) throw redirect('/log-in')
 
-  const parseResult = onboardingFormSchema.safeParse(updates)
-  if (parseResult.error) {
-    const parseErrors = parseResult.error.format()
-    const errors: OnboardingFormErrors = {}
-    if (parseErrors._errors.length) {
-      errors.form = parseErrors._errors.join(' • ')
-    }
-    for (const inputName in parseErrors) {
-      if (inputName !== '_errors') {
-        const inputError =
-          parseErrors[inputName as keyof OnboardingForm] ?? null
-        if (inputError) {
-          errors[inputName as keyof OnboardingFormErrors] =
-            parseErrors[inputName as keyof OnboardingForm]?._errors.join(' • ')
-        }
-      }
-    }
-    return { failure: { errors } }
+  const zodParseResult = zodParse({
+    data: updates,
+    schema: onboardingFormSchema,
+  })
+  if (zodParseResult.failure) {
+    return { failure: zodParseResult.failure }
   }
 
   const clerkUser = await clerkClient.users.getUser(clerkId)
@@ -103,7 +92,7 @@ export const onboardMe = async ({
         clerkId,
         email,
         imageUrl,
-        ...(updates as OnboardingForm),
+        ...zodParseResult.success.data,
       },
       select: {
         id: true,
@@ -121,7 +110,7 @@ export const onboardMe = async ({
     log.error('Unexpected error when upserting the user record:\n', error)
     return {
       failure: {
-        errors: { form: 'Unable to create your profile at this time.' },
+        errors: { _global: 'Unable to create your profile at this time.' },
       },
     }
   }
@@ -137,30 +126,18 @@ export const updateMe = async ({
   const { userId: clerkId } = await getAuth(actionFunctionArgs)
   if (!clerkId) throw redirect('/log-in')
 
-  const parseResult = appSettingsFormSchema.safeParse(updates)
-  if (parseResult.error) {
-    const parseErrors = parseResult.error.format()
-    const errors: AppSettingsFormErrors = {}
-    if (parseErrors._errors.length) {
-      errors.form = parseErrors._errors.join(' • ')
-    }
-    for (const inputName in parseErrors) {
-      if (inputName !== '_errors') {
-        const inputError =
-          parseErrors[inputName as keyof AppSettingsForm] ?? null
-        if (inputError) {
-          errors[inputName as keyof AppSettingsFormErrors] =
-            parseErrors[inputName as keyof AppSettingsForm]?._errors.join(' • ')
-        }
-      }
-    }
-    return { failure: { errors } }
+  const zodParseResult = zodParse({
+    data: updates,
+    schema: appSettingsFormSchema,
+  })
+  if (zodParseResult.failure) {
+    return { failure: zodParseResult.failure }
   }
 
   try {
     const updatedUser = await prisma.user.update({
       where: { clerkId },
-      data: { ...updates },
+      data: { ...zodParseResult.success.data },
     })
     const me = {
       id58: base58.encode(updatedUser.id),
@@ -171,7 +148,7 @@ export const updateMe = async ({
   } catch (error) {
     return {
       failure: {
-        errors: { form: 'Unable to update user record at this time.' },
+        errors: { _global: 'Unable to update user record at this time.' },
       },
     }
   }

@@ -7,6 +7,7 @@ import { onboardMe } from '~/services/user.server'
 import { useState, useEffect } from 'react'
 import { redirectDocument, useActionData } from '@remix-run/react'
 import { onboardingFormSchema } from '~/utilities/zod/user'
+import zodParse from '~/utilities/zod/parser'
 import { MainContainer, Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
@@ -54,26 +55,14 @@ export default function OnboardingRoute() {
     const { name, value } = event.target as HTMLInputElement
     const newFormValues = { ...formValues, [name]: value }
     setFormValues(newFormValues)
-    /* TODO: refactor Zod parsing into a utility function. */
-    const parseResult = onboardingFormSchema.safeParse(newFormValues)
-    if (parseResult.success) {
+    const zodParseResult = zodParse({
+      data: newFormValues,
+      schema: onboardingFormSchema,
+    })
+    if (zodParseResult.success) {
       setFormErrors({})
     } else {
-      const parseErrors = parseResult.error.format()
-      const newFormErrors: OnboardingFormErrors = {}
-      for (const inputName in parseErrors) {
-        if (inputName !== '_errors') {
-          const inputError =
-            parseErrors[inputName as keyof OnboardingForm] ?? null
-          if (inputError) {
-            newFormErrors[inputName as keyof OnboardingFormErrors] =
-              parseErrors[inputName as keyof OnboardingForm]?._errors.join(
-                ' • '
-              )
-          }
-        }
-      }
-      setFormErrors(newFormErrors)
+      setFormErrors(zodParseResult.failure.errors)
     }
   }
 
@@ -99,7 +88,7 @@ export default function OnboardingRoute() {
               error={formErrors.displayName}
             />
             <FormSubmitButton>Create Profile</FormSubmitButton>
-            <FormError>{formErrors.form}</FormError>
+            <FormError>{formErrors._global}</FormError>
           </Form>
         </Container>
       )}

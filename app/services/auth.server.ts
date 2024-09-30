@@ -21,7 +21,7 @@ const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,
 })
 
-/* Export a `requireOnboarded` function to check if the current user needs to complete the onboading process, and if so redirects to the onboarding page. If not, it returns the basic current user data as `me`. */
+/* Export a `requireOnboarded` function to check if the current user needs to complete the onboarding process, and if so redirects to the onboarding page. If not, it returns the basic current user data as `me`. */
 export const requireOnboarded = async ({
   loaderFunctionArgs,
 }: {

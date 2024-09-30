@@ -1,4 +1,3 @@
-import { MouseEventHandler } from 'react'
 import { FormCancelIconButton, FormSubmitIconButton } from './buttons'
 
 export const TextFieldSet = ({
@@ -57,7 +56,7 @@ export const TextFieldSet = ({
         className="
           text-sm sm:text-base lg:text-lg
           leading-normal sm:leading-normal lg:leading-normal
-          block h-[1.625em]
+          block min-h-[1.625em]
           text-center
           font-semibold
           text-red-700
@@ -150,7 +149,7 @@ export const SingletonTextFieldSet = ({
         className="
           text-sm sm:text-base lg:text-lg
           leading-normal sm:leading-normal lg:leading-normal
-          block h-[1.625em]
+          block min-h-[1.625em]
           text-center
           font-semibold
           text-red-700
@@ -164,7 +163,7 @@ export const SingletonTextFieldSet = ({
 
 export const FormError = ({ children }: { children: React.ReactNode }) => {
   return (
-    <strong className="h-[1.625em] block font-semibold text-center text-red-700">
+    <strong className="min-h-[1.625em] block font-semibold text-center text-red-700">
       {children}
     </strong>
   )
