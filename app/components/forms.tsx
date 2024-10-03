@@ -1,4 +1,9 @@
-import { FormCancelIconButton, FormSubmitIconButton } from './buttons'
+import {
+  CheckedButton,
+  FormCancelIconButton,
+  FormSubmitIconButton,
+  UncheckedButton,
+} from './buttons'
 
 export const TextFieldSet = ({
   fieldName,
@@ -21,17 +26,17 @@ export const TextFieldSet = ({
 }) => {
   return (
     <fieldset>
-      <label
-        htmlFor={`${fieldName}Input`}
+      <div
         className="
           text-sm sm:text-base lg:text-lg
           leading-normal sm:leading-normal lg:leading-normal
-          block
+          flex gap-x-[1em]
           font-semibold
         "
       >
-        {label}
-      </label>
+        <label htmlFor={`${fieldName}Input`}>{label}</label>
+        <strong className="font-semibold text-red-700">{error}</strong>
+      </div>
       <input
         id={`${fieldName}Input`}
         type="text"
@@ -52,18 +57,6 @@ export const TextFieldSet = ({
           block
         "
       />
-      <strong
-        className="
-          text-sm sm:text-base lg:text-lg
-          leading-normal sm:leading-normal lg:leading-normal
-          block min-h-[1.625em]
-          text-center
-          font-semibold
-          text-red-700
-        "
-      >
-        {error}
-      </strong>
     </fieldset>
   )
 }
@@ -95,17 +88,17 @@ export const SingletonTextFieldSet = ({
 }) => {
   return (
     <fieldset>
-      <label
-        htmlFor={`${fieldName}Input`}
+      <div
         className="
           text-sm sm:text-base lg:text-lg
           leading-normal sm:leading-normal lg:leading-normal
-          block
+          flex gap-x-[1em]
           font-semibold
         "
       >
-        {label}
-      </label>
+        <label htmlFor={`${fieldName}Input`}>{label}</label>
+        <strong className="font-semibold text-red-700">{error}</strong>
+      </div>
       <div className="flex my-[0.25em] gap-x-[0.5em]">
         {activeFieldName === fieldName ? (
           <>
@@ -127,7 +120,7 @@ export const SingletonTextFieldSet = ({
                 drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
               "
             />
-            <FormSubmitIconButton error={error} />
+            <FormSubmitIconButton disabled={!!error} />
             <FormCancelIconButton onClick={onCancel} />
           </>
         ) : (
@@ -145,18 +138,6 @@ export const SingletonTextFieldSet = ({
           </>
         )}
       </div>
-      <strong
-        className="
-          text-sm sm:text-base lg:text-lg
-          leading-normal sm:leading-normal lg:leading-normal
-          block min-h-[1.625em]
-          text-center
-          font-semibold
-          text-red-700
-        "
-      >
-        {error}
-      </strong>
     </fieldset>
   )
 }
@@ -166,5 +147,104 @@ export const FormError = ({ children }: { children: React.ReactNode }) => {
     <strong className="min-h-[1.625em] block font-semibold text-center text-red-700">
       {children}
     </strong>
+  )
+}
+
+export const TextAreaFieldSet = ({
+  fieldName,
+  label,
+  placeholder = '',
+  rows = 6,
+  required = false,
+  autoFocus = false,
+  value,
+  onChange,
+  error,
+}: {
+  fieldName: string
+  label: string
+  placeholder?: string
+  rows?: number
+  required?: boolean
+  autoFocus?: boolean
+  value: string
+  onChange: (event: React.FormEvent) => void
+  error?: string
+}) => {
+  return (
+    <fieldset>
+      <div
+        className="
+          text-sm sm:text-base lg:text-lg
+          leading-normal sm:leading-normal lg:leading-normal
+          flex gap-x-[1em]
+          font-semibold
+        "
+      >
+        <label htmlFor={`${fieldName}Input`}>{label}</label>
+        <strong className="font-semibold text-red-700">{error}</strong>
+      </div>
+      <textarea
+        id={`${fieldName}Input`}
+        name={fieldName}
+        placeholder={placeholder}
+        rows={rows}
+        required={required}
+        autoFocus={autoFocus}
+        value={value}
+        onChange={onChange}
+        className="
+          my-[0.25em]
+          w-full
+          rounded-[0.25em]
+          px-[0.5em] py-[0.25em]
+          text-zinc-200
+          bg-amber-950
+          drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+          block
+        "
+      />
+    </fieldset>
+  )
+}
+
+export const CheckboxFieldSet = ({
+  fieldName,
+  label,
+  value,
+  onToggle,
+  error,
+}: {
+  fieldName: string
+  label: string
+  value: boolean
+  onToggle: () => void
+  error?: string
+}) => {
+  return (
+    <fieldset>
+      <input
+        id={`${fieldName}Input`}
+        type="hidden"
+        name={fieldName}
+        value={value ? 'checked' : ''}
+      />
+      <div
+        className="
+          text-base sm:text-lg lg:text-xl
+          leading-normal sm:leading-normal lg:leading-normal
+          flex items-center gap-x-[0.5em]
+          font-semibold
+        "
+      >
+        {value ? (
+          <CheckedButton onToggle={onToggle} />
+        ) : (
+          <UncheckedButton onToggle={onToggle} />
+        )}
+        <label htmlFor={`${fieldName}Input`}>{label}</label>
+        <strong className="font-semibold text-red-700">{error}</strong>
+      </div>
+    </fieldset>
   )
 }

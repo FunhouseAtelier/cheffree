@@ -61,3 +61,26 @@ export const Container = ({
     </div>
   )
 }
+
+export const FlexContainer = ({
+  children,
+  size = 'fluid',
+  className,
+}: {
+  children: React.ReactNode
+  size?: ContainerSize
+  className?: string
+}) => {
+  return (
+    <div
+      className={`
+        flex
+        break-words
+        ${maxWidthClassByContainerSize[size]}
+        ${className ?? ''}
+      `}
+    >
+      {children}
+    </div>
+  )
+}

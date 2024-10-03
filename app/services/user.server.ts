@@ -1,14 +1,7 @@
 /* Import the necessary type declarations for Remix utility function arguments. */
-import type { ActionFunctionArgs } from '@remix-run/node'
-
-import type {
-  ClerkId,
-  OnboardingForm,
-  OnboardingFormErrors,
-  AppSettingsForm,
-  AppSettingsFormErrors,
-  UserId58,
-} from '~/utilities/zod/user'
+import type { LoaderFunctionArgs, ActionFunctionArgs } from '@remix-run/node'
+import type { Id58 } from '~/utilities/zod/common'
+import type { ClerkId } from '~/utilities/zod/user'
 
 import logger from '@funhouse-atelier/logger'
 import prisma from './prisma.server'
@@ -16,11 +9,8 @@ import { getAuth } from '@clerk/remix/ssr.server'
 import { redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
-import {
-  onboardingFormSchema,
-  appSettingsFormSchema,
-} from '~/utilities/zod/user'
-import zodParse from '_sundry/examples/parser'
+import { onboardingForm, appSettingsForm } from '~/utilities/zod/user'
+import zodParse from '~/utilities/zod/parser'
 
 const log = logger({ name: '@/app/services/user.server.ts', level: 2 })
 
@@ -48,6 +38,7 @@ export const getAllUsers = async () => {
         displayName: true,
         imageUrl: true,
       },
+      orderBy: [{ updatedAt: 'desc' }],
     })
     const users = foundUsers.map((user) => ({
       id58: base58.encode(user.id),
@@ -62,19 +53,19 @@ export const getAllUsers = async () => {
 }
 
 export const onboardMe = async ({
-  actionFunctionArgs,
+  routeHandlerArgs,
   updates,
 }: {
-  actionFunctionArgs: ActionFunctionArgs
+  routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
   updates: { [key: string]: FormDataEntryValue }
 }) => {
   log.debug('onboardMe() called')
-  const { userId: clerkId } = await getAuth(actionFunctionArgs)
+  const { userId: clerkId } = await getAuth(routeHandlerArgs)
   if (!clerkId) throw redirect('/log-in')
 
   const zodParseResult = zodParse({
     data: updates,
-    schema: onboardingFormSchema,
+    schema: onboardingForm,
   })
   if (zodParseResult.failure) {
     return { failure: zodParseResult.failure }
@@ -100,35 +91,39 @@ export const onboardMe = async ({
         imageUrl: true,
       },
     })
+    const id58 = base58.encode(upsertedUser.id)
+    await clerkClient.users.updateUser(clerkId, {
+      publicMetadata: { id58 },
+    })
     const me = {
-      id58: base58.encode(upsertedUser.id),
+      id58,
       displayName: upsertedUser.displayName,
       imageUrl: upsertedUser.imageUrl,
     }
     return { success: { data: { me } } }
   } catch (error) {
-    log.error('Unexpected error when upserting the user record:\n', error)
+    log.error('Unexpected error when onboarding the user:\n', error)
     return {
       failure: {
-        errors: { _global: 'Unable to create your profile at this time.' },
+        errors: { _global: 'Unable to onboard you at this time.' },
       },
     }
   }
 }
 
 export const updateMe = async ({
-  actionFunctionArgs,
+  routeHandlerArgs,
   updates,
 }: {
-  actionFunctionArgs: ActionFunctionArgs
+  routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
   updates: { [key: string]: FormDataEntryValue }
 }) => {
-  const { userId: clerkId } = await getAuth(actionFunctionArgs)
+  const { userId: clerkId } = await getAuth(routeHandlerArgs)
   if (!clerkId) throw redirect('/log-in')
 
   const zodParseResult = zodParse({
     data: updates,
-    schema: appSettingsFormSchema,
+    schema: appSettingsForm,
   })
   if (zodParseResult.failure) {
     return { failure: zodParseResult.failure }
@@ -155,10 +150,10 @@ export const updateMe = async ({
 }
 
 /* Export a function to find a user based on a base-58 ID. */
-export const getUserById58 = async ({ userId58 }: { userId58: UserId58 }) => {
+export const getUserById58 = async ({ id58 }: { id58: Id58 }) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: base58.decode(userId58) },
+      where: { id: base58.decode(id58) },
     })
     return { success: { data: { user } } }
   } catch (error) {

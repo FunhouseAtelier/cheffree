@@ -9,8 +9,8 @@ import logger from '@funhouse-atelier/logger'
 import { updateMe } from '~/services/user.server'
 import { useState, useEffect } from 'react'
 import { useRouteLoaderData, useActionData } from '@remix-run/react'
-import { appSettingsFormSchema } from '~/utilities/zod/user'
-import zodParse from '_sundry/examples/parser'
+import { appSettingsForm } from '~/utilities/zod/user'
+import zodParse from '~/utilities/zod/parser'
 import { MainContainer, Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
@@ -18,10 +18,10 @@ import { SingletonTextFieldSet } from '~/components/forms'
 
 const log = logger({ name: '@app/routes/settings.tsx', level: 2 })
 
-export const action: ActionFunction = async (actionFunctionArgs) => {
-  const formData = await actionFunctionArgs.request.formData()
+export const action: ActionFunction = async (routeHandlerArgs) => {
+  const formData = await routeHandlerArgs.request.formData()
   const updates = Object.fromEntries(formData)
-  const updateMeResult = await updateMe({ actionFunctionArgs, updates })
+  const updateMeResult = await updateMe({ routeHandlerArgs, updates })
   return { actionErrors: updateMeResult.failure?.errors }
 }
 
@@ -52,7 +52,7 @@ export default function AppSettingsRoute() {
     setFormValues(newFormValues)
     const zodParseResult = zodParse({
       data: newFormValues,
-      schema: appSettingsFormSchema,
+      schema: appSettingsForm,
     })
     if (zodParseResult.success) {
       setFormErrors({})

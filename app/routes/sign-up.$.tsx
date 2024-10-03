@@ -9,8 +9,8 @@ import { SignUp } from '@clerk/remix'
 
 const log = logger({ name: '@/app/routes/sign-up.$.tsx', level: 2 })
 
-export const loader: LoaderFunction = async (loaderFunctionArgs) => {
-  await requireNotAuthenticated({ loaderFunctionArgs })
+export const loader: LoaderFunction = async (routeHandlerArgs) => {
+  await requireNotAuthenticated({ routeHandlerArgs })
   return {}
 }
 

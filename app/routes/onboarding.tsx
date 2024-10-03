@@ -6,7 +6,7 @@ import { requireAuthenticated } from '~/services/auth.server'
 import { onboardMe } from '~/services/user.server'
 import { useState, useEffect } from 'react'
 import { redirectDocument, useActionData } from '@remix-run/react'
-import { onboardingFormSchema } from '~/utilities/zod/user'
+import { onboardingForm } from '~/utilities/zod/user'
 import zodParse from '~/utilities/zod/parser'
 import { MainContainer, Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
@@ -17,15 +17,15 @@ import { FormError, TextFieldSet } from '~/components/forms'
 
 const log = logger({ name: '@/app/routes/onboarding.tsx', level: 2 })
 
-export const loader: LoaderFunction = async (loaderFunctionArgs) => {
-  await requireAuthenticated({ loaderFunctionArgs, requireNotOnboarded: true })
+export const loader: LoaderFunction = async (routeHandlerArgs) => {
+  await requireAuthenticated({ routeHandlerArgs, requireNotOnboarded: true })
   return {}
 }
 
-export const action: ActionFunction = async (actionFunctionArgs) => {
-  const formData = await actionFunctionArgs.request.formData()
+export const action: ActionFunction = async (routeHandlerArgs) => {
+  const formData = await routeHandlerArgs.request.formData()
   const updates = Object.fromEntries(formData)
-  const onboardMeResult = await onboardMe({ actionFunctionArgs, updates })
+  const onboardMeResult = await onboardMe({ routeHandlerArgs, updates })
   if (onboardMeResult.success) {
     throw redirectDocument(`/user/${onboardMeResult.success.data.me.id58}`)
   }
@@ -57,7 +57,7 @@ export default function OnboardingRoute() {
     setFormValues(newFormValues)
     const zodParseResult = zodParse({
       data: newFormValues,
-      schema: onboardingFormSchema,
+      schema: onboardingForm,
     })
     if (zodParseResult.success) {
       setFormErrors({})
@@ -87,7 +87,9 @@ export default function OnboardingRoute() {
               onChange={handleChange}
               error={formErrors.displayName}
             />
-            <FormSubmitButton>Create Profile</FormSubmitButton>
+            <FormSubmitButton disabled={!!Object.keys(formErrors).length}>
+              Create Profile
+            </FormSubmitButton>
             <FormError>{formErrors._global}</FormError>
           </Form>
         </Container>

@@ -1,8 +1,14 @@
 import logger from '@funhouse-atelier/logger'
 import { useLocation } from '@remix-run/react'
 import { NavLink } from '@remix-run/react'
-import { SignInButton, SignUpButton, UserButton } from '@clerk/remix'
-import { CheckIcon, XmarkIcon } from '~/components/icons'
+import {
+  SignInButton,
+  SignUpButton,
+  UserButton as ClerkUserButton,
+} from '@clerk/remix'
+import { CheckIcon, XmarkIcon, EditDocumentIcon } from '~/components/icons'
+import { BasicUserData } from '~/utilities/zod/user'
+import { Link } from '@remix-run/react'
 
 const log = logger({ name: '@/app/components/buttons.ts', level: 2 })
 
@@ -60,9 +66,9 @@ export const NavButton = ({
 
 export const AccountSettingsButton = () => {
   return (
-    /* Wrap the Clerk `<UserButton>` component in a div of the same fixed size to prevent layout shift when `<UserButton>` first renders. */
+    /* Wrap the `<ClerkUserButton>` component in a div of the same fixed size to prevent layout shift when `<ClerkUserButton>` first renders. */
     <div className="size-8 sm:size-9 lg:size-10">
-      <UserButton
+      <ClerkUserButton
         appearance={{
           elements: {
             avatarBox: 'size-8 sm:size-9 lg:size-10',
@@ -154,25 +160,95 @@ export const LogInNavButton = ({
 /* TODO: add pending UI when form is submitting to show the submission is being performed and to prevent multiple simultaneous submissions. */
 export const FormSubmitButton = ({
   children,
+  disabled,
   className,
 }: {
   children: React.ReactNode
+  disabled?: boolean
   className?: string
 }) => {
   return (
     <button
       type="submit"
+      disabled={disabled}
       className={`
         text-lg sm:text-xl lg:text-2xl
         leading-normal sm:leading-normal lg:leading-normal
         my-[0.75em]
-        h-[2.5em]
+        h-[2.5em] w-full
         border-[0.125em] border-emerald-500
         rounded-[1.25em]
         drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
         flex items-center justify-center
-        text-zinc-200
-        bg-emerald-800/80 hover:bg-emerald-800 active:bg-emerald-500
+        text-zinc-200 bg-emerald-800/80
+        hover:bg-emerald-800 active:bg-emerald-500 disabled:bg-emerald-800/50
+        transition-colors duration-300 ease-out active:transition-none
+        ${className ?? ''}
+      `}
+    >
+      {children}
+    </button>
+  )
+}
+
+export const FormCancelButton = ({
+  children,
+  disabled,
+  to,
+  className,
+}: {
+  children: React.ReactNode
+  disabled?: boolean
+  to: string
+  className?: string
+}) => {
+  return (
+    <Link
+      to={to}
+      className={`
+        text-lg sm:text-xl lg:text-2xl
+        leading-normal sm:leading-normal lg:leading-normal
+        my-[0.75em]
+        h-[2.5em] w-full
+        border-[0.125em] border-zinc-500
+        rounded-[1.25em]
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+        flex items-center justify-center
+        text-zinc-200 bg-zinc-800/80
+        hover:bg-zinc-800 active:bg-zinc-500 disabled:bg-zinc-800/50
+        transition-colors duration-300 ease-out active:transition-none
+        ${className ?? ''}
+      `}
+    >
+      {children}
+    </Link>
+  )
+}
+
+export const FormDeleteButton = ({
+  children,
+  disabled,
+  className,
+}: {
+  children: React.ReactNode
+  disabled?: boolean
+  className?: string
+}) => {
+  return (
+    <button
+      type="submit"
+      disabled={disabled}
+      className={`
+        text-lg sm:text-xl lg:text-2xl
+        leading-normal sm:leading-normal lg:leading-normal
+        my-[0.75em]
+        h-[2.5em] w-full
+        border-[0.125em] border-red-500
+        rounded-[1.25em]
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+        flex items-center justify-center
+        text-zinc-200 bg-red-800/80
+        hover:bg-red-800 active:bg-red-500 disabled:bg-red-800/50
         transition-colors duration-300 ease-out active:transition-none
         ${className ?? ''}
       `}
@@ -184,16 +260,16 @@ export const FormSubmitButton = ({
 
 /* TODO: add pending UI when form is submitting to show the submission is being performed and to prevent multiple simultaneous submissions. */
 export const FormSubmitIconButton = ({
-  error,
+  disabled,
   className,
 }: {
-  error?: string
+  disabled?: boolean
   className?: string
 }) => {
   return (
     <button
       type="submit"
-      disabled={!!error}
+      disabled={disabled}
       className={`
         text-lg sm:text-xl lg:text-2xl
         leading-normal sm:leading-normal lg:leading-normal
@@ -241,5 +317,107 @@ export const FormCancelIconButton = ({
     >
       <XmarkIcon />
     </button>
+  )
+}
+
+export const UserButton = ({ id58, displayName, imageUrl }: BasicUserData) => {
+  return (
+    <Link
+      to={`/user/${id58}`}
+      prefetch="viewport"
+      className="text-lg sm:text-xl lg:text-2xl leading-relaxed sm:leading-relaxed lg:leading-relaxed inline-flex items-center bg-lime-200 rounded-[0.25em]"
+    >
+      <img
+        src={imageUrl}
+        alt="user image"
+        className="h-[1.625em] w-auto rounded-l-[0.25em]"
+      />
+      <span className="font-semibold px-[0.5em]">{displayName}</span>
+    </Link>
+  )
+}
+
+export const EditDocumentIconButton = ({
+  to,
+  className,
+}: {
+  to: string
+  className?: string
+}) => {
+  return (
+    <Link
+      to={to}
+      className={`
+        text-lg sm:text-xl lg:text-2xl
+        leading-normal sm:leading-normal lg:leading-normal
+        size-[2em]
+        border-[0.125em] border-amber-500
+        rounded-[0.25em]
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+        inline-flex items-center justify-center
+        text-zinc-200 bg-amber-800/80
+        hover:bg-amber-800 active:bg-amber-500 disabled:bg-amber-800/50
+        transition-colors duration-300 ease-out active:transition-none
+        ${className ?? ''}
+      `}
+    >
+      <EditDocumentIcon />
+    </Link>
+  )
+}
+
+export const CheckedButton = ({
+  onToggle,
+  className,
+}: {
+  onToggle: () => void
+  className?: string
+}) => {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="
+        text-lg sm:text-xl lg:text-2xl
+        leading-normal sm:leading-normal lg:leading-normal
+        size-[1.5em]
+        border-[0.125em] border-cyan-500
+        rounded-[0.25em]
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+        inline-flex items-center justify-center
+        text-zinc-200 bg-cyan-800/80
+        hover:bg-cyan-800 active:bg-cyan-500 disabled:bg-cyan-800/50
+        transition-colors duration-300 ease-out active:transition-none
+      "
+    >
+      <CheckIcon />
+    </button>
+  )
+}
+
+export const UncheckedButton = ({
+  onToggle,
+  className,
+}: {
+  onToggle: () => void
+  className?: string
+}) => {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="
+        text-lg sm:text-xl lg:text-2xl
+        leading-normal sm:leading-normal lg:leading-normal
+        size-[1.5em]
+        border-[0.125em] border-zinc-500
+        rounded-[0.25em]
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+        inline-flex items-center justify-center
+        text-zinc-200 bg-zinc-800/80
+        hover:bg-zinc-800 active:bg-zinc-500 disabled:bg-zinc-800/50
+        transition-colors duration-300 ease-out active:transition-none
+      "
+    />
   )
 }

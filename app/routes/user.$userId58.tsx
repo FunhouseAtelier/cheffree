@@ -11,15 +11,15 @@ import { DateTime } from 'luxon'
 
 const log = logger({ name: '@/app/routes/user.$userId58.tsx', level: 2 })
 
-export const loader: LoaderFunction = async (loaderFunctionArgs) => {
-  const { userId58 } = loaderFunctionArgs.params
-  if (!userId58) {
+export const loader: LoaderFunction = async (routeHandlerArgs) => {
+  const { userId58: id58 } = routeHandlerArgs.params
+  if (!id58) {
     throw json(null, {
       status: 400,
       statusText: 'Missing userId58 param.',
     })
   }
-  const getUserById58Result = await getUserById58({ userId58 })
+  const getUserById58Result = await getUserById58({ id58 })
   if (getUserById58Result.failure) {
     throw json(null, {
       status: 500,

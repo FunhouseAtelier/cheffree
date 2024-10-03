@@ -29,7 +29,7 @@ model User {
 // Define the Recipe model schema.
 model Recipe {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
+  title       String?
   description String?
   // For now the visibility of recipes are determined by an `isPublished` field. When the value is false the recipe can only be seen by the author. When the value is true the recipe can be seen by any user.
   isPublished Boolean  @default(false)

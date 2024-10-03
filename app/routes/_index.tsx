@@ -25,6 +25,14 @@ export default function IndexRoute() {
       <Heading tag="h2">
         {me ? `Welcome, ${me.displayName}!` : 'Greetings, traveler!'}
       </Heading>
+      <Heading tag="h3">Features:</Heading>
+      <ul>
+        <li className="my-[0.25em]">
+          <TextLink to="/recipe/feed" size="lg">
+            Recipe Feed
+          </TextLink>
+        </li>
+      </ul>
       <Heading tag="h3">Member List:</Heading>
       <ul>
         {users.map((user: BasicUserData) => (

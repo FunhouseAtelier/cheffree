@@ -19,6 +19,8 @@ import { ClerkApp } from '@clerk/remix'
 import '~/tailwind.css'
 /* Import the styles for the Font Awesome SVG icons to avoid the delay in SVG icons being displayed after server-side navigation. */
 import '@fortawesome/fontawesome-svg-core/styles.css'
+/* Import the Zod custom error mapping logic to enable custom error reporting when parsing data with Zod, in a brief, human-readable format that can be easily used by forms to display error messages. (See: https://zod.dev/ERROR_HANDLING?id=customizing-errors-with-zoderrormap) */
+import '~/utilities/zod/error-map'
 
 /* Instantiate the Funhouse Altelier custom logger for this file. This is done in every file that has executable code, with the `name` being the file path relative to the project root folder and the standard suppression level being `2`, which will suppress TRACE and DEBUG messages, but allow INFO, WARN and ERROR messages. For debugging purposes the suppression level is temporarily changed to `0`. (See: https://github.com/FunhouseAtelier/logger#readme) */
 const log = logger({ name: '@/app/root.tsx', level: 2 })
@@ -48,15 +50,15 @@ export const links: LinksFunction = () => [
   },
 ]
 /* Export a loader function that is wrapped in the Clerk root auth loader, to make session data available in any route. (See: https://remix.run/docs/en/main/route/loader, https://clerk.com/docs/quickstarts/remix#configure-root-auth-loader) */
-export const loader: LoaderFunction = (loaderFunctionArgs) => {
-  return rootAuthLoader(loaderFunctionArgs, async (loaderFunctionArgs) => {
+export const loader: LoaderFunction = (routeHandlerArgs) => {
+  return rootAuthLoader(routeHandlerArgs, async (routeHandlerArgs) => {
     /* Determine the relative pathname of the route that matched the request. */
-    const { pathname } = new URL(loaderFunctionArgs.request.url)
+    const { pathname } = new URL(routeHandlerArgs.request.url)
     /* If it's the onboarding route, just return a null value for `me`. The onboarding route has it's own particular requirements included in its `loader` function. */
     if (pathname === '/onboarding') return { me: null }
     /* For any other route, require that if the user is authenticated with Clerk they must also have a user record in the ChefFree database. If that requirement is not met, redirect them to the onboarding route so that a user record can be created for them. If they did not need to be redirected and the `requireOnboarded` function finished with no errors, it will return `me` data that is `null` if the user is not authenticated or an object with basic user data. This is exposed to the client, accessible in the return value of the Remix `useRouteLoaderData('root')` hook used in any route. */
     const requireOnboardedResult = await requireOnboarded({
-      loaderFunctionArgs,
+      routeHandlerArgs,
     })
     return { me: requireOnboardedResult.success.data.me }
   })

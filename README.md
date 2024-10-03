@@ -6,7 +6,7 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Store recipes in a database.
+- Add ingredients and process lists to recipes.
 
 ## Future Plans
 
@@ -17,6 +17,11 @@ A web app for storing and sharing recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.17
+
+- Added full CRUD flows for recipes, with titles, optional descriptions, and author data.
+- Added a recipe feed page.
 
 ### 0.1.16
 
