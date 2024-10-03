@@ -1,6 +1,5 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from '@remix-run/node'
 import type { Id58 } from '~/utilities/zod/common'
-import type { EditRecipeForm } from '~/utilities/zod/recipe'
 
 import logger from '@funhouse-atelier/logger'
 import prisma from './prisma.server'
@@ -106,11 +105,15 @@ export const getRecipes = async ({
   const meId = sessionClaims
     ? base58.decode(sessionClaims.metadata.id58).toLowerCase()
     : null
+
+  const where = meId
+    ? {
+        OR: [{ isPublished: true }, { authorId: meId }],
+      }
+    : { isPublished: true }
   try {
     const foundRecipes = await prisma.recipe.findMany({
-      where: {
-        OR: [{ isPublished: true }, { authorId: meId }],
-      },
+      where,
       select: {
         id: true,
         title: true,

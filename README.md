@@ -18,6 +18,10 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
+### 0.1.18
+
+- Fixed problem with trying to get recipes for feed page when user is not authenticated.
+
 ### 0.1.17
 
 - Added full CRUD flows for recipes, with titles, optional descriptions, and author data.
