@@ -93,10 +93,13 @@ export const updateRecipe = async ({
     isPublished: formData.get('isPublished'),
     title: formData.get('title'),
     description: formData.get('description'),
-    yieldAmt: {
-      qty: formData.get('yieldAmtQty'),
-      unit: formData.get('yieldAmtUnit'),
-    },
+    yieldAmt:
+      formData.get('yieldAmtQty') && formData.get('yieldAmtUnit')
+        ? {
+            qty: formData.get('yieldAmtQty'),
+            unit: formData.get('yieldAmtUnit'),
+          }
+        : undefined,
     ingredients,
     steps,
   }

@@ -9,16 +9,21 @@ A web app for storing and sharing recipes.
 - Adjust Edit Recipe form for mobile viewport sizes.
 - Adjust Zod parsing error logic to properly handle arrays of form data.
 - Improve input and display of quantities to allow for more conventional formats than strictly decimal values.
+- Implement standard unit abbreviations.
+- Allow for scaling the recipe size by converting the ingredient quantites as the desired yield is adjusted.
+- Allow for conversion between imperial and metric units.
 
 ## Future Plans
 
-- Add optimistic/pending UI to navbar/form controls.
-- Show feeds of recipes.
 - Connect with other users.
 - Share recipes with other users.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.20
+
+- Fixed issue with recipe display when `yieldAmt` does not exist in recipe record.
 
 ### 0.1.19
 

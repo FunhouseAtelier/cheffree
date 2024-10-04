@@ -39,7 +39,10 @@ export default function ViewRecipeRoute() {
       </Heading>
       <Text tag="p">{recipe.description}</Text>
       <Heading tag="h2">
-        Yield: {recipe.yieldAmt.qty} {recipe.yieldAmt.unit}
+        Yield:{' '}
+        {recipe.yieldAmt
+          ? `${recipe.yieldAmt.qty} ${recipe.yieldAmt.unit}`
+          : ''}
       </Heading>
       <Heading tag="h2">Ingredients:</Heading>
       <ul>
