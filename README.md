@@ -6,7 +6,9 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Add ingredients and process lists to recipes.
+- Adjust Edit Recipe form for mobile viewport sizes.
+- Adjust Zod parsing error logic to properly handle arrays of form data.
+- Improve input and display of quantities to allow for more conventional formats than strictly decimal values.
 
 ## Future Plans
 
@@ -17,6 +19,10 @@ A web app for storing and sharing recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.19
+
+- Added ingredients and process lists to recipes.
 
 ### 0.1.18
 

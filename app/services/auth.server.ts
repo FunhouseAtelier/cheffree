@@ -162,6 +162,9 @@ export const requireAuthorizedToEditRecipe = async ({
             imageUrl: true,
           },
         },
+        yieldAmt: true,
+        ingredients: true,
+        steps: true,
       },
     })
   } catch (error) {
@@ -190,6 +193,9 @@ export const requireAuthorizedToEditRecipe = async ({
       displayName: foundRecipe.author.displayName,
       imageUrl: foundRecipe.author.imageUrl,
     },
+    yieldAmt: foundRecipe.yieldAmt,
+    ingredients: foundRecipe.ingredients,
+    steps: foundRecipe.steps,
   }
   return { success: { data: { recipe } } }
 }
@@ -222,6 +228,9 @@ export const requireAuthorizedToViewRecipe = async ({
             imageUrl: true,
           },
         },
+        yieldAmt: true,
+        ingredients: true,
+        steps: true,
       },
     })
   } catch (error) {
@@ -255,6 +264,9 @@ export const requireAuthorizedToViewRecipe = async ({
       displayName: foundRecipe.author.displayName,
       imageUrl: foundRecipe.author.imageUrl,
     },
+    yieldAmt: foundRecipe.yieldAmt,
+    ingredients: foundRecipe.ingredients,
+    steps: foundRecipe.steps,
   }
   return { success: { data: { recipe } } }
 }

@@ -8,6 +8,7 @@ import {
   faXmark,
   faCheck,
   faFilePen,
+  faPlus,
 } from '@fortawesome/free-solid-svg-icons'
 
 const log = logger({ name: '@app/components/icons.tsx', level: 2 })
@@ -23,3 +24,4 @@ export const GearIcon = makeSvgIconComponent(faGear)
 export const XmarkIcon = makeSvgIconComponent(faXmark)
 export const CheckIcon = makeSvgIconComponent(faCheck)
 export const EditDocumentIcon = makeSvgIconComponent(faFilePen)
+export const AddIcon = makeSvgIconComponent(faPlus)

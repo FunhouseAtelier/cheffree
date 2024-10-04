@@ -1,6 +1,6 @@
 import logger from '@funhouse-atelier/logger'
 
-const log = logger({ name: '@app/utilities/zod/parser.ts', level: 0 })
+const log = logger({ name: '@app/utilities/zod/parser.ts', level: 2 })
 
 const appendToErrors = ({
   errors,

@@ -58,6 +58,7 @@ export const getRecipeById58 = async ({ id58 }: { id58: Id58 }) => {
   }
 }
 
+/* TODO: improve error handling when parsing */
 export const updateRecipe = async ({
   routeHandlerArgs,
 }: {
@@ -66,17 +67,49 @@ export const updateRecipe = async ({
   await requireAuthorizedToEditRecipe({ routeHandlerArgs })
   const { recipeId58 } = routeHandlerArgs.params
   const formData = await routeHandlerArgs.request.formData()
-  const updates = Object.fromEntries(formData)
+  const ingredients = []
+  const steps = []
+  const allFields = Object.fromEntries(formData)
+  for (const fieldName in allFields) {
+    if (fieldName.startsWith('ingredient')) {
+      const ingredientIndex = +fieldName.split('-')[1] - 1
+      if (!ingredients[ingredientIndex]) {
+        const qty = +allFields[`ingredient-${ingredientIndex + 1}-Qty`]
+        const unit = allFields[`ingredient-${ingredientIndex + 1}-Unit`]
+        const name = allFields[`ingredient-${ingredientIndex + 1}-Name`]
+        if (qty && unit && name) {
+          ingredients[ingredientIndex] = { qty, unit, name }
+        }
+      }
+    } else if (fieldName.startsWith('step')) {
+      const stepIndex = +fieldName.split('-')[1] - 1
+      if (allFields[`step-${stepIndex + 1}-Text`]) {
+        steps[stepIndex] = allFields[`step-${stepIndex + 1}-Text`]
+      }
+    }
+  }
+
+  const updates = {
+    isPublished: formData.get('isPublished'),
+    title: formData.get('title'),
+    description: formData.get('description'),
+    yieldAmt: {
+      qty: formData.get('yieldAmtQty'),
+      unit: formData.get('yieldAmtUnit'),
+    },
+    ingredients,
+    steps,
+  }
   log.debug('updates:\n', updates)
   const zodParseResult = zodParse({
     data: updates,
     schema: editRecipeForm,
   })
+  log.debug('zodParseResult:\n', zodParseResult)
   if (zodParseResult.failure) {
     return { failure: zodParseResult.failure }
   }
   try {
-    log.debug('zodParseResult.success.data:\n', zodParseResult.success.data)
     const updatedRecipe = await prisma.recipe.update({
       where: { id: base58.decode(recipeId58) },
       data: { ...zodParseResult.success.data },
