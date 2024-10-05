@@ -37,14 +37,14 @@ export default function ViewRecipeRoute() {
           <EditDocumentIconButton to={`/recipe/${recipe.id58}/edit`} />
         )}
       </Heading>
-      <Text tag="p">{recipe.description}</Text>
-      <Heading tag="h2">
+      <Text Tag="p">{recipe.description}</Text>
+      <Heading Tag="h2">
         Yield:{' '}
         {recipe.yieldAmt
           ? `${recipe.yieldAmt.qty} ${recipe.yieldAmt.unit}`
           : ''}
       </Heading>
-      <Heading tag="h2">Ingredients:</Heading>
+      <Heading Tag="h2">Ingredients:</Heading>
       <ul>
         {recipe.ingredients.map(
           (
@@ -57,10 +57,13 @@ export default function ViewRecipeRoute() {
           )
         )}
       </ul>
-      <Heading tag="h2">Process:</Heading>
+      <Heading Tag="h2">Process:</Heading>
       <ol className="list-decimal ml-[2.5em] mb-[4em]">
         {recipe.steps.map((step: string, index: number) => (
-          <li key={index} className="my-[0.5em]">
+          <li
+            key={index}
+            className="my-[0.5em]"
+          >
             {step}
           </li>
         ))}

@@ -63,10 +63,7 @@ export const onboardMe = async ({
   const { userId: clerkId } = await getAuth(routeHandlerArgs)
   if (!clerkId) throw redirect('/log-in')
 
-  const zodParseResult = zodParse({
-    data: updates,
-    schema: onboardingForm,
-  })
+  const zodParseResult = zodParse(updates, onboardingForm)
   if (zodParseResult.failure) {
     return { failure: zodParseResult.failure }
   }
@@ -121,10 +118,7 @@ export const updateMe = async ({
   const { userId: clerkId } = await getAuth(routeHandlerArgs)
   if (!clerkId) throw redirect('/log-in')
 
-  const zodParseResult = zodParse({
-    data: updates,
-    schema: appSettingsForm,
-  })
+  const zodParseResult = zodParse(updates, appSettingsForm)
   if (zodParseResult.failure) {
     return { failure: zodParseResult.failure }
   }

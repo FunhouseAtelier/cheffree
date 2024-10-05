@@ -18,7 +18,7 @@ export default function LogInRoute() {
   return (
     <MainContainer>
       <Heading className="text-center">Log in</Heading>
-      <Text tag="p">
+      <Text Tag="p">
         Log in to your account, using one of the social identity providers
         (Discord, Facebook, GitHub) or an email address associated with your
         account.

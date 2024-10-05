@@ -8,13 +8,13 @@ export default function AboutRoute() {
   return (
     <MainContainer>
       <Heading className="text-center">About ChefFree</Heading>
-      <Heading tag="h2">Introduction</Heading>
-      <Text tag="p">
+      <Heading Tag="h2">Introduction</Heading>
+      <Text Tag="p">
         ChefFree is a project by Funhouse Atelier to build a free web app where
         users can store and share recipes. That's "free" as in free of charge,
         and also as in freedom of information.
       </Text>
-      <Text tag="p">
+      <Text Tag="p">
         If you have any feedback or questions about the app, please contact us
         at{' '}
         <TextExternalLink href="mailto:funhouse_atelier@protonmail.com">

@@ -28,7 +28,10 @@ export default function EditRecipeRoute() {
   return (
     <MainContainer size="lg">
       <Heading className="text-center">Recipe Feed</Heading>
-      <Form method="post" action="/recipe/new">
+      <Form
+        method="post"
+        action="/recipe/new"
+      >
         <FormSubmitButton className="max-w-[18em]">
           Create a new recipe
         </FormSubmitButton>
@@ -51,10 +54,13 @@ export default function EditRecipeRoute() {
                 {recipe.author.displayName}
               </span>
             </div>
-            <Heading tag="h2" size="xl">
+            <Heading
+              Tag="h2"
+              size="xl"
+            >
               {recipe.title}
             </Heading>
-            <Text tag="p">{recipe.description}</Text>
+            <Text Tag="p">{recipe.description}</Text>
           </Link>
         ))}
     </MainContainer>

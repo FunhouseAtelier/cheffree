@@ -13,7 +13,7 @@ import { Heading, Text } from '~/components/typography'
 import { Form } from '@remix-run/react'
 import { FormSubmitButton } from '~/components/buttons'
 import { useUser } from '@clerk/remix'
-import { FormError, TextFieldSet } from '~/components/forms'
+import { FormError, TextField } from '~/components/forms'
 
 const log = logger({ name: '@/app/routes/onboarding.tsx', level: 2 })
 
@@ -55,10 +55,7 @@ export default function OnboardingRoute() {
     const { name, value } = event.target as HTMLInputElement
     const newFormValues = { ...formValues, [name]: value }
     setFormValues(newFormValues)
-    const zodParseResult = zodParse({
-      data: newFormValues,
-      schema: onboardingForm,
-    })
+    const zodParseResult = zodParse(newFormValues, onboardingForm)
     if (zodParseResult.success) {
       setFormErrors({})
     } else {
@@ -69,22 +66,25 @@ export default function OnboardingRoute() {
   return (
     <MainContainer>
       <Heading className="text-center">Onboarding</Heading>
-      <Text tag="p">
+      <Text Tag="p">
         To complete the setup of your ChefFree account, please review your
         profile information and make any changes you want before it is
         published.
       </Text>
       {isLoaded && (
         <Container size="sm">
-          <Form method="post" className="flex flex-col gap-y-[0.125em]">
-            <TextFieldSet
+          <Form
+            method="post"
+            className="flex flex-col gap-y-[0.125em]"
+          >
+            <TextField
               fieldName="displayName"
               label="Display Name"
               placeholder="What do you want to be called?"
               required
               autoFocus
               value={formValues.displayName}
-              onChange={handleChange}
+              handleChange={handleChange}
               error={formErrors.displayName}
             />
             <FormSubmitButton disabled={!!Object.keys(formErrors).length}>

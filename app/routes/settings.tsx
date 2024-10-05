@@ -50,10 +50,7 @@ export default function AppSettingsRoute() {
     const { name, value } = event.target as HTMLInputElement
     const newFormValues = { ...formValues, [name]: value }
     setFormValues(newFormValues)
-    const zodParseResult = zodParse({
-      data: newFormValues,
-      schema: appSettingsForm,
-    })
+    const zodParseResult = zodParse(newFormValues, appSettingsForm)
     if (zodParseResult.success) {
       setFormErrors({})
     } else {
@@ -74,7 +71,7 @@ export default function AppSettingsRoute() {
   return (
     <MainContainer>
       <Heading className="text-center">App Settings</Heading>
-      <Text tag="p">Click on a field to edit the value.</Text>
+      <Text Tag="p">Click on a field to edit the value.</Text>
       <Container size="sm">
         <Form
           method="post"

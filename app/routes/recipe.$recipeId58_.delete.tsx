@@ -43,7 +43,7 @@ export default function EditRecipeRoute() {
   return (
     <MainContainer size="lg">
       <Heading className="text-center">Delete Recipe</Heading>
-      <Text tag="p">
+      <Text Tag="p">
         Are you sure you want to delete this recipe? Deleting a recipe is
         permanent and cannot be undone.
       </Text>
@@ -72,10 +72,13 @@ export default function EditRecipeRoute() {
             {recipe.author.displayName}
           </span>
         </div>
-        <Heading tag="h2" size="xl">
+        <Heading
+          Tag="h2"
+          size="xl"
+        >
           {recipe.title}
         </Heading>
-        <Text tag="p">{recipe.description}</Text>
+        <Text Tag="p">{recipe.description}</Text>
       </Link>
     </MainContainer>
   )

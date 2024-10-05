@@ -22,22 +22,31 @@ export default function IndexRoute() {
   return (
     <MainContainer>
       <Heading className="text-center">Home Page</Heading>
-      <Heading tag="h2">
+      <Heading Tag="h2">
         {me ? `Welcome, ${me.displayName}!` : 'Greetings, traveler!'}
       </Heading>
-      <Heading tag="h3">Features:</Heading>
+      <Heading Tag="h3">Features:</Heading>
       <ul>
         <li className="my-[0.25em]">
-          <TextLink to="/recipe/feed" size="lg">
+          <TextLink
+            to="/recipe/feed"
+            size="lg"
+          >
             Recipe Feed
           </TextLink>
         </li>
       </ul>
-      <Heading tag="h3">Member List:</Heading>
+      <Heading Tag="h3">Member List:</Heading>
       <ul>
         {users.map((user: BasicUserData) => (
-          <li key={user.id58} className="my-[0.25em]">
-            <TextLink to={`/user/${user.id58}`} size="lg">
+          <li
+            key={user.id58}
+            className="my-[0.25em]"
+          >
+            <TextLink
+              to={`/user/${user.id58}`}
+              size="lg"
+            >
               {user.displayName}
             </TextLink>
           </li>

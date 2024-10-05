@@ -18,11 +18,11 @@ export default function SignUpRoute() {
   return (
     <MainContainer>
       <Heading className="text-center">Sign up</Heading>
-      <Text tag="p">
+      <Text Tag="p">
         Signing up for a ChefFree account is totally free. No billing
         information is required.
       </Text>
-      <Text tag="p">
+      <Text Tag="p">
         You can use one of the social identity providers (Discord, Facebook,
         GitHub) or a valid email address. Funhouse Atelier will never share your
         personal information with any third party without your explicit

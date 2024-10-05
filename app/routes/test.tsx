@@ -17,7 +17,7 @@ const data = {
 const log = logger({ name: '@/app/routes/test.tsx', level: 0 })
 
 export const loader = async () => {
-  const zodParseResult = zodParse({ data, schema: testSchema })
+  const zodParseResult = zodParse(data, testSchema)
   log.debug('zodParseResult:\n', zodParseResult)
   log.debug(
     'zodParseResult.failure.errors.nested:\n',
