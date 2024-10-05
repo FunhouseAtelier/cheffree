@@ -6,12 +6,16 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Adjust Edit Recipe form for mobile viewport sizes.
-- Adjust Zod parsing error logic to properly handle arrays of form data.
+- Allow ingredients and steps to change in order via drag and drop or other controls.
 - Improve input and display of quantities to allow for more conventional formats than strictly decimal values.
 - Implement standard unit abbreviations.
+
+- Add Cloudinary image uploads of recipes.
+
 - Allow for scaling the recipe size by converting the ingredient quantites as the desired yield is adjusted.
 - Allow for conversion between imperial and metric units.
+
+- Adjust zodParse to properly handle arrays of form data.
 
 ## Future Plans
 
@@ -20,6 +24,15 @@ A web app for storing and sharing recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.21
+
+- Allow any ingredients or steps to be removed, now that there is an add button.
+- Skip tab-indexing the "remove line" or "add line" buttons on the edit recipe page.
+- Implement submitting a form with JSON data so that `formValues` can be easily transmitted and parsed in services.
+- Improve Edit Recipe form display and adapt for mobile viewport sizes.
+- Quietly filter out any blank steps or yields/ingredients with no data points when updating a recipe.
+- Implement UUID for ad hoc arrays of form data.
 
 ### 0.1.20
 

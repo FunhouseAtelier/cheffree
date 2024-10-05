@@ -58,7 +58,11 @@ export const NavButton = ({
   }
   return (
     /* Prefetch the resource when the button is visible in the viewport. */
-    <NavLink to={to} prefetch="viewport" className={makeClassList}>
+    <NavLink
+      to={to}
+      prefetch="viewport"
+      className={makeClassList}
+    >
       {children}
     </NavLink>
   )
@@ -363,61 +367,5 @@ export const EditDocumentIconButton = ({
     >
       <EditDocumentIcon />
     </Link>
-  )
-}
-
-export const CheckedButton = ({
-  onToggle,
-  className,
-}: {
-  onToggle: () => void
-  className?: string
-}) => {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="
-        text-lg sm:text-xl lg:text-2xl
-        leading-normal sm:leading-normal lg:leading-normal
-        size-[1.5em]
-        border-[0.125em] border-cyan-500
-        rounded-[0.25em]
-        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        inline-flex items-center justify-center
-        text-zinc-200 bg-cyan-800/80
-        hover:bg-cyan-800 active:bg-cyan-500 disabled:bg-cyan-800/50
-        transition-colors duration-300 ease-out active:transition-none
-      "
-    >
-      <CheckIcon />
-    </button>
-  )
-}
-
-export const UncheckedButton = ({
-  onToggle,
-  className,
-}: {
-  onToggle: () => void
-  className?: string
-}) => {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="
-        text-lg sm:text-xl lg:text-2xl
-        leading-normal sm:leading-normal lg:leading-normal
-        size-[1.5em]
-        border-[0.125em] border-zinc-500
-        rounded-[0.25em]
-        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        inline-flex items-center justify-center
-        text-zinc-200 bg-zinc-800/80
-        hover:bg-zinc-800 active:bg-zinc-500 disabled:bg-zinc-800/50
-        transition-colors duration-300 ease-out active:transition-none
-      "
-    />
   )
 }

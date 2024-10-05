@@ -27,14 +27,14 @@ model User {
 }
 
 type YieldAmt {
-  qty  Float
-  unit String
+  qty  String?
+  unit String?
 }
 
 type Ingredient {
-  qty  Float
-  unit String
-  name String
+  qty  String?
+  unit String?
+  name String?
 }
 
 // Define the Recipe model schema.

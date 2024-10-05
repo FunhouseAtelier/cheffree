@@ -7,7 +7,11 @@ import { getAuth } from '@clerk/remix/ssr.server'
 import { redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
-import { editRecipeForm, BasicRecipeData } from '~/utilities/zod/recipe'
+import {
+  recipeUpdates,
+  BasicRecipeData,
+  EditRecipeFormData,
+} from '~/utilities/zod/recipe'
 import zodParse from '~/utilities/zod/parser'
 import { requireAuthorizedToEditRecipe } from './auth.server'
 
@@ -66,67 +70,37 @@ export const updateRecipe = async ({
 }) => {
   await requireAuthorizedToEditRecipe({ routeHandlerArgs })
   const { recipeId58 } = routeHandlerArgs.params
-  const formData = await routeHandlerArgs.request.formData()
-  const ingredients = []
-  const steps = []
-  const allFields = Object.fromEntries(formData)
-  for (const fieldName in allFields) {
-    if (fieldName.startsWith('ingredient')) {
-      const ingredientIndex = +fieldName.split('-')[1] - 1
-      if (!ingredients[ingredientIndex]) {
-        const qty = +allFields[`ingredient-${ingredientIndex + 1}-Qty`]
-        const unit = allFields[`ingredient-${ingredientIndex + 1}-Unit`]
-        const name = allFields[`ingredient-${ingredientIndex + 1}-Name`]
-        if (qty && unit && name) {
-          ingredients[ingredientIndex] = { qty, unit, name }
-        }
-      }
-    } else if (fieldName.startsWith('step')) {
-      const stepIndex = +fieldName.split('-')[1] - 1
-      if (allFields[`step-${stepIndex + 1}-Text`]) {
-        steps[stepIndex] = allFields[`step-${stepIndex + 1}-Text`]
-      }
-    }
-  }
-
+  const formData = (await routeHandlerArgs.request.json()) as EditRecipeFormData
+  log.debug('formData:\n', formData)
+  const { isPublished, title, description, yieldAmt, ingredients, steps } =
+    formData
   const updates = {
-    isPublished: formData.get('isPublished'),
-    title: formData.get('title'),
-    description: formData.get('description'),
-    yieldAmt:
-      formData.get('yieldAmtQty') && formData.get('yieldAmtUnit')
-        ? {
-            qty: formData.get('yieldAmtQty'),
-            unit: formData.get('yieldAmtUnit'),
-          }
-        : undefined,
-    ingredients,
-    steps,
+    isPublished,
+    title,
+    description,
+    yieldAmt: yieldAmt.qty || yieldAmt.unit ? yieldAmt : null,
+    ingredients: ingredients
+      .filter((i) => !!(i.data.qty || i.data.unit || i.data.name))
+      .map((i) => i.data),
+    steps: steps.filter((s) => !!s.data).map((s) => s.data),
   }
   log.debug('updates:\n', updates)
-  const zodParseResult = zodParse({
-    data: updates,
-    schema: editRecipeForm,
-  })
+  const zodParseResult = zodParse(updates, recipeUpdates)
   log.debug('zodParseResult:\n', zodParseResult)
   if (zodParseResult.failure) {
     return { failure: zodParseResult.failure }
   }
   try {
-    const updatedRecipe = await prisma.recipe.update({
+    await prisma.recipe.update({
       where: { id: base58.decode(recipeId58) },
       data: { ...zodParseResult.success.data },
     })
-    const recipe = {
-      id58: recipeId58,
-      title: updatedRecipe.title,
-      description: updatedRecipe.description,
-    }
-    return { success: { data: { recipe } } }
+    return { success: true }
   } catch (error) {
+    log.error('Unexpected error when updating the recipe record:\n', error)
     return {
       failure: {
-        errors: { _global: 'Unable to update recipe record at this time.' },
+        errors: { _global: 'Unable to update the recipe record at this time.' },
       },
     }
   }
@@ -174,7 +148,6 @@ export const getRecipes = async ({
         imageUrl: recipe.author.imageUrl,
       },
     }))
-    log.debug('recipes:\n', recipes)
     return { success: { data: { recipes } } }
   } catch (error) {
     log.error('Unable to get recipe feed:\n', error)

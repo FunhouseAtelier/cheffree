@@ -1,34 +1,38 @@
 import type { ActionFunction, LoaderFunction } from '@remix-run/node'
 import type {
-  EditRecipeForm,
+  EditRecipeFormData,
   EditRecipeFormErrors,
 } from '~/utilities/zod/recipe'
 
 import logger from '@funhouse-atelier/logger'
-import { redirect } from '@remix-run/node'
 import { requireAuthorizedToEditRecipe } from '~/services/auth.server'
+import { updateRecipe } from '~/services/recipe.server'
+import { redirect } from '@remix-run/node'
+import { useLoaderData, useActionData } from '@remix-run/react'
 import { useState, useEffect } from 'react'
 import zodParse from '~/utilities/zod/parser'
-import { editRecipeForm } from '~/utilities/zod/recipe'
-import { updateRecipe } from '~/services/recipe.server'
+import { editRecipeFormData } from '~/utilities/zod/recipe'
+import { v4 as uuidv4 } from 'uuid'
+import { useSubmit } from '@remix-run/react'
+
 import { MainContainer } from '~/components/containers'
-import { Heading } from '~/components/typography'
-import { Form, useLoaderData, useActionData } from '@remix-run/react'
+import { Heading, Text } from '~/components/typography'
+import { Form } from '@remix-run/react'
 import {
-  FormError,
-  TextFieldSet,
-  TextAreaFieldSet,
-  CheckboxFieldSet,
-  YieldAmtFieldSet,
-  IngredientFieldSet,
+  CheckboxField,
+  TextField,
+  TextAreaField,
+  YieldAmtField,
+  IngredientField,
   ProcessFieldSet,
+  FormError,
 } from '~/components/forms'
+import { AddIcon } from '~/components/icons'
 import {
   FormSubmitButton,
   FormCancelButton,
   FormDeleteButton,
 } from '~/components/buttons'
-import { AddIcon } from '~/components/icons'
 
 const log = logger({
   name: '@/app/routes/recipe.$recipeId58_.edit.tsx',
@@ -42,24 +46,33 @@ export const loader: LoaderFunction = async (routeHandlerArgs) => {
 }
 
 export const action: ActionFunction = async (routeHandlerArgs) => {
-  const { success, failure } = await updateRecipe({ routeHandlerArgs })
-  if (success) throw redirect(`/recipe/${success.data.recipe.id58}`)
+  const { failure } = await updateRecipe({ routeHandlerArgs })
+  if (!failure) throw redirect(`/recipe/${routeHandlerArgs.params.recipeId58}`)
   return { actionErrors: failure.errors }
 }
 
 export default function EditRecipeRoute() {
   const { recipe } = useLoaderData<typeof loader>()
   const { actionErrors } = useActionData<typeof action>() ?? {}
+  const submit = useSubmit()
 
-  const [formValues, setFormValues] = useState<EditRecipeForm>({
+  const [formData, setFormData] = useState<EditRecipeFormData>({
     title: recipe.title ?? '',
     description: recipe.description ?? '',
     isPublished: recipe.isPublished,
-    yieldAmt: recipe.yieldAmt ?? { qty: 0, unit: '' },
+    yieldAmt: recipe.yieldAmt ?? { qty: '', unit: '' },
     ingredients: recipe.ingredients.length
-      ? recipe.ingredients
-      : [{ qty: 0, unit: '', name: '' }],
-    steps: recipe.steps.length ? recipe.steps : [''],
+      ? recipe.ingredients.map((data: { [key: string]: string }) => ({
+          id: uuidv4(),
+          data,
+        }))
+      : [{ id: uuidv4(), data: { qty: '', unit: '', name: '' } }],
+    steps: recipe.steps.length
+      ? recipe.steps.map((data: { [key: string]: string }) => ({
+          id: uuidv4(),
+          data,
+        }))
+      : [{ id: uuidv4(), data: '' }],
   })
   const [formErrors, setFormErrors] = useState<EditRecipeFormErrors>({})
 
@@ -67,195 +80,161 @@ export default function EditRecipeRoute() {
     if (actionErrors) setFormErrors(actionErrors)
   }, [actionErrors])
 
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    submit(formData, { method: 'post', encType: 'application/json' })
+  }
+
+  const updateFormData = (newFormData: EditRecipeFormData) => {
+    setFormData(newFormData)
+    const { success, failure } = zodParse(newFormData, editRecipeFormData)
+    if (success) setFormErrors({})
+    else setFormErrors(failure.errors)
+  }
+
+  const handleToggle = (fieldName: 'isPublished') => {
+    const newFormData = { ...formData, [fieldName]: !formData[fieldName] }
+    updateFormData(newFormData)
+  }
+
   const handleChange = (event: React.FormEvent) => {
     const { name, value } = event.target as HTMLInputElement
-    let newFormValues
+    let newFormData
     if (name.startsWith('yieldAmt')) {
-      newFormValues = {
-        ...formValues,
+      newFormData = {
+        ...formData,
         yieldAmt: {
-          qty: name === 'yieldAmtQty' ? +value : formValues.yieldAmt.qty,
-          unit: name === 'yieldAmtUnit' ? value : formValues.yieldAmt.unit,
+          qty: name === 'yieldAmtQty' ? value : formData.yieldAmt.qty,
+          unit: name === 'yieldAmtUnit' ? value : formData.yieldAmt.unit,
         },
       }
     } else if (name.startsWith('ingredient')) {
-      const ingredients = [...formValues.ingredients]
-      const ingredientIndex = +name.split('-')[1] - 1
-      ingredients[ingredientIndex] = {
-        qty: name.endsWith('Qty')
-          ? +value
-          : formValues.ingredients[ingredientIndex].qty,
-        unit: name.endsWith('Unit')
-          ? value
-          : formValues.ingredients[ingredientIndex].unit,
-        name: name.endsWith('Name')
-          ? value
-          : formValues.ingredients[ingredientIndex].name,
+      const ingredients = [...formData.ingredients]
+      const ingredientIndex = +name.split('_')[1] - 1
+      const ingredientData = ingredients[ingredientIndex].data
+      ingredients[ingredientIndex].data = {
+        qty: name.endsWith('Qty') ? value : ingredientData.qty,
+        unit: name.endsWith('Unit') ? value : ingredientData.unit,
+        name: name.endsWith('Name') ? value : ingredientData.name,
       }
-      const lastIngredient = ingredients[ingredients.length - 1]
-      if (lastIngredient.qty && lastIngredient.unit && lastIngredient.name) {
-        ingredients.push({ qty: 0, unit: '', name: '' })
+      const lastIngredientData = ingredients[ingredients.length - 1].data
+      if (
+        lastIngredientData.qty &&
+        lastIngredientData.unit &&
+        lastIngredientData.name
+      ) {
+        ingredients.push({
+          id: uuidv4(),
+          data: { qty: '', unit: '', name: '' },
+        })
       }
-      newFormValues = { ...formValues, ingredients }
+      newFormData = { ...formData, ingredients }
     } else if (name.startsWith('step')) {
-      const steps = [...formValues.steps]
-      const stepIndex = +name.split('-')[1] - 1
-      steps[stepIndex] = value
+      const steps = [...formData.steps]
+      const stepIndex = +name.split('_')[1] - 1
+      steps[stepIndex].data = value
       const lastStep = steps[steps.length - 1]
-      if (lastStep) {
-        steps.push('')
-      }
-      newFormValues = { ...formValues, steps }
+      if (lastStep.data) steps.push({ id: uuidv4(), data: '' })
+      newFormData = { ...formData, steps }
     } else {
-      newFormValues = { ...formValues, [name]: value }
+      newFormData = { ...formData, [name]: value }
     }
-    log.debug('newFormValues:\n', newFormValues)
-    setFormValues(newFormValues)
-    const zodParseResult = zodParse({
-      data: newFormValues,
-      schema: editRecipeForm,
-    })
-    if (zodParseResult.success) {
-      setFormErrors({})
-    } else {
-      setFormErrors(zodParseResult.failure.errors)
-    }
+    updateFormData(newFormData)
   }
 
-  const handleToggle = (fieldName: keyof EditRecipeForm) => {
-    const newFormValues = { ...formValues, [fieldName]: !formValues[fieldName] }
-    setFormValues(newFormValues)
-    const zodParseResult = zodParse({
-      data: newFormValues,
-      schema: editRecipeForm,
-    })
-    if (zodParseResult.success) {
-      setFormErrors({})
-    } else {
-      setFormErrors(zodParseResult.failure.errors)
-    }
-  }
-
-  const handleCancelIngredient = (ingredientIndex: number) => {
-    const ingredients = formValues.ingredients.filter(
-      (value, index) => index !== ingredientIndex
+  const handleCancel = (
+    fieldGroupName: 'ingredients' | 'steps',
+    canceledIndex: number
+  ) => {
+    const newFieldGroupData = formData[fieldGroupName].filter(
+      (value, index) => index !== canceledIndex
     )
-    const newFormValues = { ...formValues, ingredients }
-    setFormValues(newFormValues)
-    const zodParseResult = zodParse({
-      data: newFormValues,
-      schema: editRecipeForm,
-    })
-    if (zodParseResult.success) {
-      setFormErrors({})
-    } else {
-      setFormErrors(zodParseResult.failure.errors)
-    }
+    const newFormData = { ...formData, [fieldGroupName]: newFieldGroupData }
+    updateFormData(newFormData)
   }
 
-  const handleCancelStep = (stepIndex: number) => {
-    const steps = formValues.steps.filter((value, index) => index !== stepIndex)
-    const newFormValues = { ...formValues, steps }
-    setFormValues(newFormValues)
-    const zodParseResult = zodParse({
-      data: newFormValues,
-      schema: editRecipeForm,
-    })
-    if (zodParseResult.success) {
-      setFormErrors({})
-    } else {
-      setFormErrors(zodParseResult.failure.errors)
-    }
-  }
-
-  const handleAddIngredient = () => {
-    const newFormValues = {
-      ...formValues,
-      ingredients: [...formValues.ingredients, { qty: 0, unit: '', name: '' }],
-    }
-    setFormValues(newFormValues)
-    const zodParseResult = zodParse({
-      data: newFormValues,
-      schema: editRecipeForm,
-    })
-    if (zodParseResult.success) {
-      setFormErrors({})
-    } else {
-      setFormErrors(zodParseResult.failure.errors)
-    }
-  }
-
-  const handleAddStep = () => {
-    const newFormValues = {
-      ...formValues,
-      steps: [...formValues.steps, ''],
-    }
-    setFormValues(newFormValues)
-    const zodParseResult = zodParse({
-      data: newFormValues,
-      schema: editRecipeForm,
-    })
-    if (zodParseResult.success) {
-      setFormErrors({})
-    } else {
-      setFormErrors(zodParseResult.failure.errors)
-    }
+  const handleAdd = (fieldGroupName: 'ingredients' | 'steps') => {
+    const newElement =
+      fieldGroupName === 'ingredients'
+        ? { id: uuidv4(), data: { qty: '', unit: '', name: '' } }
+        : fieldGroupName === 'steps'
+        ? { id: uuidv4(), data: '' }
+        : null
+    const newFieldGroupData = [...formData[fieldGroupName], newElement]
+    const newFormData = { ...formData, [fieldGroupName]: newFieldGroupData }
+    updateFormData(newFormData)
   }
 
   return (
     <MainContainer size="lg">
       <Heading className="text-center">Edit Recipe</Heading>
-      <Form method="post" className="flex flex-col gap-y-[0.5em]">
-        <CheckboxFieldSet
-          fieldName="isPublished"
-          label="Published"
-          value={formValues.isPublished}
-          onToggle={() => handleToggle('isPublished')}
-        />
-        <Heading tag="h2" size="lg">
+      <Form
+        onSubmit={handleSubmit}
+        className="my-[0.5em] flex flex-col gap-y-[0.5em]"
+      >
+        <Heading
+          Tag="h2"
+          size="xl"
+          className="text-center"
+        >
           Summary
         </Heading>
-        <TextFieldSet
+        <CheckboxField
+          fieldName="isPublished"
+          label="Published"
+          value={formData.isPublished}
+          handleToggle={handleToggle}
+          error={formErrors.isPublished}
+        />
+        <TextField
           fieldName="title"
           label="Title"
           placeholder="What is the recipe called?"
           required
-          autoFocus
-          value={formValues.title}
-          onChange={handleChange}
+          autoFocus={!formData.title}
+          value={formData.title}
+          handleChange={handleChange}
           error={formErrors.title}
         />
-        <TextAreaFieldSet
+        <TextAreaField
           fieldName="description"
           label="Description"
           placeholder="(optional) Write a brief description of the recipe. No life stories, please."
           rows={3}
-          value={formValues.description}
-          onChange={handleChange}
+          value={formData.description}
+          handleChange={handleChange}
           error={formErrors.description}
         />
-        <YieldAmtFieldSet
-          value={formValues.yieldAmt}
-          onChange={handleChange}
+        <YieldAmtField
+          value={formData.yieldAmt}
+          handleChange={handleChange}
           error={formErrors.yieldAmt}
         />
-        <Heading tag="h2" size="lg">
+        <Heading
+          Tag="h2"
+          size="xl"
+          className="text-center"
+        >
           Ingredients
         </Heading>
-        {formValues.ingredients.map((ingredient, index) => (
-          <IngredientFieldSet
-            key={`ingredient-${index + 1}`}
-            lineNumber={index + 1}
-            value={ingredient}
-            onChange={handleChange}
-            onCancel={() => handleCancelIngredient(index)}
-            error={formErrors.ingredients ? formErrors.ingredients[index] : ''}
-          />
-        ))}
+        {formData.ingredients.map((ingredient, index) => {
+          log.debug('ingredient:\n', ingredient)
+          return (
+            <IngredientField
+              key={ingredient.id}
+              lineNumber={index + 1}
+              value={ingredient.data}
+              handleChange={handleChange}
+              handleCancel={handleCancel}
+            />
+          )
+        })}
         <button
           type="button"
-          onClick={handleAddIngredient}
+          onClick={() => handleAdd('ingredients')}
+          tabIndex={-1}
           className={`
+            ml-auto my-[0.25em]
             size-[2.125em]
             border-[0.125em] border-emerald-500
             rounded-[0.25em]
@@ -266,30 +245,32 @@ export default function EditRecipeRoute() {
             transition-colors duration-300 ease-out active:transition-none
           `}
         >
-          <span
-            className=" text-lg sm:text-xl lg:text-2xl
-            leading-normal sm:leading-normal lg:leading-normal"
-          >
+          <Text size="lg">
             <AddIcon />
-          </span>
+          </Text>
         </button>
-        <Heading tag="h2" size="lg">
+        <Heading
+          Tag="h2"
+          size="xl"
+          className="text-center"
+        >
           Process
         </Heading>
-        {formValues.steps.map((step, index) => (
+        {formData.steps.map((step, index) => (
           <ProcessFieldSet
-            key={`step-${index + 1}`}
+            key={step.id}
             lineNumber={index + 1}
-            value={step}
-            onChange={handleChange}
-            onCancel={() => handleCancelStep(index)}
-            error={formErrors.steps ? formErrors.steps[index] : ''}
+            value={step.data}
+            handleChange={handleChange}
+            handleCancel={handleCancel}
           />
         ))}
         <button
           type="button"
-          onClick={handleAddStep}
+          onClick={() => handleAdd('steps')}
+          tabIndex={-1}
           className={`
+            ml-auto my-[0.25em]
             size-[2.125em]
             border-[0.125em] border-emerald-500
             rounded-[0.25em]
@@ -300,12 +281,9 @@ export default function EditRecipeRoute() {
             transition-colors duration-300 ease-out active:transition-none
           `}
         >
-          <span
-            className=" text-lg sm:text-xl lg:text-2xl
-            leading-normal sm:leading-normal lg:leading-normal"
-          >
+          <Text size="lg">
             <AddIcon />
-          </span>
+          </Text>
         </button>
         <div className="flex gap-x-[1em]">
           <FormCancelButton to={`/recipe/${recipe.id58}`}>

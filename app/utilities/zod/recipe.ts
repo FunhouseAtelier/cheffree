@@ -5,26 +5,25 @@ import { displayName, imageUrl } from './user'
 
 const log = logger({ name: '@/app/utilities/zod/recipe.ts', level: 2 })
 
-const title = z.coerce.string().min(1).max(64)
-const description = z.coerce.string().max(1024)
-const isPublished = z.coerce.boolean()
+const isPublished = z.boolean()
+const title = z.string().min(1).max(64)
+const description = z.string().max(1024)
+
 const author = z.object({
   id58,
   displayName,
   imageUrl,
 })
 const yieldAmt = z.object({
-  qty: z.coerce.number(),
-  unit: z.coerce.string(),
+  qty: z.string(),
+  unit: z.string(),
 })
-const ingredients = z.array(
-  z.object({
-    qty: z.coerce.number(),
-    unit: z.coerce.string(),
-    name: z.coerce.string(),
-  })
-)
-const steps = z.array(z.coerce.string().max(1024))
+const ingredient = z.object({
+  qty: z.string(),
+  unit: z.string(),
+  name: z.string(),
+})
+const step = z.string().max(1024)
 
 /* Define the schema for basic recipe data. */
 const basicRecipeData = z.object({
@@ -33,31 +32,51 @@ const basicRecipeData = z.object({
   description,
   author,
 })
-
 export type BasicRecipeData = z.infer<typeof basicRecipeData>
 
 /* Define the schema for the edit recipe form and its possible errors. */
-export const editRecipeForm = z.object({
+export const editRecipeFormData = z.object({
+  isPublished,
   title,
   description,
-  isPublished,
   yieldAmt,
-  ingredients,
-  steps,
+  ingredients: z.array(
+    z.object({
+      id: z.string().uuid(),
+      data: ingredient,
+    })
+  ),
+  steps: z.array(
+    z.object({
+      id: z.string().uuid(),
+      data: step,
+    })
+  ),
 })
-
-export type EditRecipeForm = z.infer<typeof editRecipeForm>
+export type EditRecipeFormData = z.infer<typeof editRecipeFormData>
 
 const editRecipeFormErrors = z
   .object({
-    _global: z.coerce.string(),
-    title: z.coerce.string(),
-    description: z.coerce.string(),
-    isPublished: z.coerce.string(),
-    yieldAmt: z.coerce.string(),
-    ingredients: z.array(z.coerce.string()),
-    steps: z.array(z.coerce.string()),
+    _global: z.string(),
+    title: z.string(),
+    description: z.string(),
+    isPublished: z.string(),
+    yieldAmt: z.object({
+      qty: z.string(),
+      unit: z.string(),
+    }),
+    /* adjust these to match revise zodParse logic for arrays of form data */
+    ingredients: z.array(z.string()),
+    steps: z.array(z.string()),
   })
   .partial()
-
 export type EditRecipeFormErrors = z.infer<typeof editRecipeFormErrors>
+
+export const recipeUpdates = z.object({
+  isPublished,
+  title,
+  description,
+  yieldAmt,
+  ingredients: z.array(ingredient),
+  steps: z.array(step),
+})

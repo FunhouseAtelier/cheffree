@@ -4,9 +4,11 @@ import { Link } from '@remix-run/react'
 const log = logger({ name: '@/app/components/typography.tsx', level: 2 })
 
 type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-type TextBaseSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
-const baseSizeByHeadingTag: {
-  [key in HeadingTag]: TextBaseSize
+type BaselineSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
+type LeadingOption = 'none' | 'tight' | 'snug' | 'normal' | 'relaxed' | 'loose'
+
+const baselineSizeByHeadingTag: {
+  [key in HeadingTag]: BaselineSize
 } = {
   h1: '3xl',
   h2: '2xl',
@@ -16,90 +18,119 @@ const baseSizeByHeadingTag: {
   h6: 'sm',
 }
 
-const classListByBaseSize: {
-  [key in TextBaseSize]: string
+const responsiveTextClassesByBaselineSize: {
+  [key in BaselineSize]: string
 } = {
-  xs: 'text-xs sm:text-sm lg:text-base',
-  sm: 'text-sm sm:text-base lg:text-lg',
-  md: 'text-base sm:text-lg lg:text-xl',
-  lg: 'text-lg sm:text-xl lg:text-2xl',
-  xl: 'text-xl sm:text-2xl lg:text-3xl',
+  'xs': 'text-xs sm:text-sm lg:text-base',
+  'sm': 'text-sm sm:text-base lg:text-lg',
+  'md': 'text-base sm:text-lg lg:text-xl',
+  'lg': 'text-lg sm:text-xl lg:text-2xl',
+  'xl': 'text-xl sm:text-2xl lg:text-3xl',
   '2xl': 'text-2xl sm:text-3xl lg:text-4xl',
   '3xl': 'text-3xl sm:text-4xl lg:text-5xl',
 }
 
-export const Heading = ({
-  children,
-  tag = 'h1',
-  size = baseSizeByHeadingTag[tag],
-  className,
-}: {
-  children: React.ReactNode
-  tag?: HeadingTag
-  size?: TextBaseSize
-  className?: string
-}) => {
-  const Tag = tag
-  return (
-    <Tag
-      className={`
-    ${classListByBaseSize[size]}
-    leading-relaxed sm:leading-relaxed lg:leading-relaxed
-    font-semibold mt-[0.25em] mb-[0.5em]
-    ${className ?? ''}
-  `}
-    >
-      {children}
-    </Tag>
-  )
+const responsiveLeadingClassesByLeadingOption: {
+  [key in LeadingOption]: string
+} = {
+  none: 'leading-none sm:leading-none lg:leading-none',
+  tight: 'leading-tight sm:leading-tight lg:leading-tight',
+  snug: 'leading-snug sm:leading-snug lg:leading-snug',
+  normal: 'leading-normal sm:leading-normal lg:leading-normal',
+  relaxed: 'leading-relaxed sm:leading-relaxed lg:leading-relaxed',
+  loose: 'leading-loose sm:leading-loose lg:leading-loose',
 }
 
-type TextTag =
-  | 'blockquote'
-  | 'cite'
-  | 'code'
-  | 'dd'
-  | 'dfn'
-  | 'div'
-  | 'dt'
-  | 'em'
-  | 'figcaption'
-  | 'kbd'
-  | 'mark'
-  | 'p'
-  | 'pre'
-  | 'q'
-  | 'samp'
-  | 'small'
-  | 'span'
-  | 'strong'
-  | 'time'
-  | 'var'
-export const Text = ({
+export const Heading = ({
   children,
-  tag = 'span',
-  size = 'md',
+  Tag = 'h1',
+  size = baselineSizeByHeadingTag[Tag],
+  leading = 'normal',
   className,
 }: {
   children: React.ReactNode
-  tag?: TextTag
-  size?: TextBaseSize
+  Tag?: HeadingTag
+  size?: BaselineSize
+  leading?: LeadingOption
   className?: string
-}) => {
-  const Tag = tag
-  return (
-    <Tag
-      className={`
-        ${classListByBaseSize[size]}
-        leading-relaxed sm:leading-relaxed lg:leading-relaxed
-        ${tag === 'p' ? 'my-[0.75em]' : ''}
-        ${className ?? ''}
-      `}
-    >
-      {children}
-    </Tag>
-  )
-}
+}) => (
+  <Tag
+    className={`
+      ${responsiveTextClassesByBaselineSize[size]}
+      ${responsiveLeadingClassesByLeadingOption[leading]}
+      font-semibold
+      ${className ?? ''}
+    `}
+  >
+    {children}
+  </Tag>
+)
+
+type TextTag = 'label' | 'span' | 'p'
+
+export const Text = ({
+  children,
+  Tag = 'span',
+  size = 'md',
+  leading = 'normal',
+  htmlFor,
+  className,
+}: {
+  children: React.ReactNode
+  Tag?: TextTag
+  size?: BaselineSize
+  leading?: LeadingOption
+  htmlFor?: string
+  className?: string
+}) => (
+  <Tag
+    htmlFor={htmlFor}
+    className={`
+      ${responsiveTextClassesByBaselineSize[size]}
+      ${responsiveLeadingClassesByLeadingOption[leading]}
+      ${Tag === 'p' ? 'my-[0.75em]' : ''}
+      ${className ?? ''}
+    `}
+  >
+    {children}
+  </Tag>
+)
+
+export const FieldError = ({
+  children,
+  size = 'sm',
+}: {
+  children: React.ReactNode
+  size?: BaselineSize
+}) => (
+  <Text
+    size={size}
+    className="font-semibold text-red-700"
+  >
+    {children}
+  </Text>
+)
+
+export const FieldLabel = ({
+  children,
+  htmlFor,
+  size = 'sm',
+}: {
+  children: React.ReactNode
+  htmlFor: string
+  size?: BaselineSize
+}) => (
+  <Text
+    Tag="label"
+    htmlFor={htmlFor}
+    size={size}
+    className="font-bold"
+  >
+    {children}
+  </Text>
+)
+
+/*  */
 
 export const TextLink = ({
   children,
@@ -111,7 +142,7 @@ export const TextLink = ({
   children: React.ReactNode
   to: string
   prefetch?: 'none' | 'intent' | 'render' | 'viewport'
-  size?: TextBaseSize
+  size?: BaselineSize
   className?: string
 }) => {
   return (
@@ -119,7 +150,7 @@ export const TextLink = ({
       to={to}
       prefetch={prefetch}
       className={`
-        ${classListByBaseSize[size]}
+        ${responsiveTextClassesByBaselineSize[size]}
         leading-relaxed sm:leading-relaxed lg:leading-relaxed
         text-pink-900
         hover:underline active:text-pink-500
@@ -139,14 +170,14 @@ export const TextExternalLink = ({
 }: {
   children: React.ReactNode
   href: string
-  size?: TextBaseSize
+  size?: BaselineSize
   className?: string
 }) => {
   return (
     <a
       href={href}
       className={`
-        ${classListByBaseSize[size]}
+        ${responsiveTextClassesByBaselineSize[size]}
         leading-relaxed sm:leading-relaxed lg:leading-relaxed
         text-pink-900
         hover:underline active:text-pink-500
