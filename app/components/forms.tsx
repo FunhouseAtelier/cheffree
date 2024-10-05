@@ -168,14 +168,14 @@ export const TextAreaField = ({
           mt-[0.25em] w-full
           px-[0.5em] py-[0.25em]
           border-[0.125em] rounded-[0.25em]
-          block bg-yellow-950 
+          block bg-yellow-950
           focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
           drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
           transition-colors duration-300 ease-out
           ${
             error
               ? 'border-red-400 text-red-200 ring-2 ring-red-600'
-              : ' text-zinc-200'
+              : 'border-yellow-700 text-zinc-200'
           }
         `}
       />
@@ -230,14 +230,9 @@ export const YieldAmtField = ({
             rounded-l-[0.25em]
             px-[0.5em] py-[0.25em]
             border-y-[0.125em] border-l-[0.125em] border-r-[0.0625em]
-            bg-yellow-950
+            bg-yellow-950 border-yellow-700 text-zinc-200
             focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
             transition-colors duration-300 ease-out
-            ${
-              error?.qty
-                ? 'border-red-400 text-red-200 ring-2 ring-red-600'
-                : 'border-yellow-700 text-zinc-200'
-            }
           `}
         />
         <select
@@ -250,14 +245,9 @@ export const YieldAmtField = ({
             rounded-r-[0.25em]
             px-[0.5em] py-[0.25em]
             border-y-[0.125em] border-r-[0.125em] border-l-[0.0625em]
-            bg-yellow-950
+            bg-yellow-950 border-yellow-700 text-zinc-200'
             focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
             transition-colors duration-300 ease-out
-            ${
-              error?.unit
-                ? 'border-red-400 text-red-200 ring-2 ring-red-600'
-                : 'border-yellow-700 text-zinc-200'
-            }
           `}
         >
           <option value="">(unit)</option>
