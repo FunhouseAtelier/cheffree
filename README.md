@@ -28,6 +28,11 @@ A web app for storing and sharing recipes.
 
 ## Revision History
 
+### 0.1.24
+
+- Fixed incorrect text color on yield unit select input.
+- Added typography demo and verbose commenting to `@/app/routes/about.tsx`.
+
 ### 0.1.23
 
 - fixed border color on edit recipe description field

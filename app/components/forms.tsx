@@ -245,7 +245,7 @@ export const YieldAmtField = ({
             rounded-r-[0.25em]
             px-[0.5em] py-[0.25em]
             border-y-[0.125em] border-r-[0.125em] border-l-[0.0625em]
-            bg-yellow-950 border-yellow-700 text-zinc-200'
+            bg-yellow-950 border-yellow-700 text-zinc-200
             focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
             transition-colors duration-300 ease-out
           `}
