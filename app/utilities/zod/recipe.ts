@@ -1,6 +1,6 @@
 import logger from '@funhouse-atelier/logger'
 import { z } from 'zod'
-import { id58 } from './common'
+import { id58, uuid } from './common'
 import { displayName, imageUrl } from './user'
 
 const log = logger({ name: '@/app/utilities/zod/recipe.ts', level: 2 })
@@ -25,7 +25,6 @@ const ingredient = z.object({
 })
 const step = z.string().max(1024)
 
-/* Define the schema for basic recipe data. */
 const basicRecipeData = z.object({
   id58,
   title,
@@ -34,24 +33,31 @@ const basicRecipeData = z.object({
 })
 export type BasicRecipeData = z.infer<typeof basicRecipeData>
 
-/* Define the schema for the edit recipe form and its possible errors. */
+const ingredients = z.array(
+  z.object({
+    id: uuid,
+    data: ingredient,
+  })
+)
+
+export type Ingredients = z.infer<typeof ingredients>
+
+const steps = z.array(
+  z.object({
+    id: uuid,
+    data: step,
+  })
+)
+
+export type Steps = z.infer<typeof steps>
+
 export const editRecipeFormData = z.object({
   isPublished,
   title,
   description,
   yieldAmt,
-  ingredients: z.array(
-    z.object({
-      id: z.string().uuid(),
-      data: ingredient,
-    })
-  ),
-  steps: z.array(
-    z.object({
-      id: z.string().uuid(),
-      data: step,
-    })
-  ),
+  ingredients,
+  steps,
 })
 export type EditRecipeFormData = z.infer<typeof editRecipeFormData>
 

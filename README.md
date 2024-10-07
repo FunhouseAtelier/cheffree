@@ -6,10 +6,11 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
+- Allow ingredients and steps to change in order via drag and drop.
+
 - Refactor zod logic, form logic, and components.
 - Revise cosmetics on all pages and components.
 
-- Allow ingredients and steps to change in order via drag and drop or other controls.
 - Improve input and display of quantities to allow for more conventional formats than strictly decimal values.
 - Implement standard unit abbreviations.
 
@@ -27,6 +28,10 @@ A web app for storing and sharing recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.25
+
+- Allow ingredients and steps to change in order via drag and drop.
 
 ### 0.1.24
 

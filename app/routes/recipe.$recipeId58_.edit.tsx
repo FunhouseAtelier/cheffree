@@ -23,16 +23,19 @@ import {
   TextField,
   TextAreaField,
   YieldAmtField,
-  IngredientField,
-  ProcessFieldSet,
   FormError,
+  IngredientList,
+  ProcessList,
 } from '~/components/forms'
 import { AddIcon } from '~/components/icons'
 import {
+  AddLineButton,
   FormSubmitButton,
   FormCancelButton,
   FormDeleteButton,
 } from '~/components/buttons'
+import { DragDropContext, OnDragEndResponder } from '@hello-pangea/dnd'
+import { ClientOnly } from 'remix-utils/client-only'
 
 const log = logger({
   name: '@/app/routes/recipe.$recipeId58_.edit.tsx',
@@ -165,6 +168,28 @@ export default function EditRecipeRoute() {
     updateFormData(newFormData)
   }
 
+  const handleIngredientDrop: OnDragEndResponder = (result) => {
+    const { destination, source } = result
+    if (!destination) return
+    if (destination.index === source.index) return
+    const ingredients = [...formData.ingredients]
+    const movedIngredient = ingredients[source.index]
+    ingredients.splice(source.index, 1)
+    ingredients.splice(destination.index, 0, movedIngredient)
+    setFormData({ ...formData, ingredients })
+  }
+
+  const handleStepDrop: OnDragEndResponder = (result) => {
+    const { destination, source } = result
+    if (!destination) return
+    if (destination.index === source.index) return
+    const steps = [...formData.steps]
+    const movedIngredient = steps[source.index]
+    steps.splice(source.index, 1)
+    steps.splice(destination.index, 0, movedIngredient)
+    setFormData({ ...formData, steps })
+  }
+
   return (
     <MainContainer size="lg">
       <Heading className="text-center">Edit Recipe</Heading>
@@ -208,7 +233,6 @@ export default function EditRecipeRoute() {
         <YieldAmtField
           value={formData.yieldAmt}
           handleChange={handleChange}
-          error={formErrors.yieldAmt}
         />
         <Heading
           Tag="h2"
@@ -217,38 +241,18 @@ export default function EditRecipeRoute() {
         >
           Ingredients
         </Heading>
-        {formData.ingredients.map((ingredient, index) => {
-          log.debug('ingredient:\n', ingredient)
-          return (
-            <IngredientField
-              key={ingredient.id}
-              lineNumber={index + 1}
-              value={ingredient.data}
-              handleChange={handleChange}
-              handleCancel={handleCancel}
-            />
-          )
-        })}
-        <button
-          type="button"
-          onClick={() => handleAdd('ingredients')}
-          tabIndex={-1}
-          className={`
-            ml-auto my-[0.25em]
-            size-[2.125em]
-            border-[0.125em] border-emerald-500
-            rounded-[0.25em]
-            drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-            flex items-center justify-center
-            text-zinc-200 bg-emerald-800/80
-            hover:bg-emerald-800 active:bg-emerald-500 disabled:bg-emerald-800/50
-            transition-colors duration-300 ease-out active:transition-none
-          `}
-        >
-          <Text size="lg">
-            <AddIcon />
-          </Text>
-        </button>
+        <ClientOnly fallback={<div />}>
+          {() => (
+            <DragDropContext onDragEnd={handleIngredientDrop}>
+              <IngredientList
+                ingredients={formData.ingredients}
+                handleChange={handleChange}
+                handleCancel={handleCancel}
+              />
+            </DragDropContext>
+          )}
+        </ClientOnly>
+        <AddLineButton handleAdd={() => handleAdd('ingredients')} />
         <Heading
           Tag="h2"
           size="xl"
@@ -256,35 +260,18 @@ export default function EditRecipeRoute() {
         >
           Process
         </Heading>
-        {formData.steps.map((step, index) => (
-          <ProcessFieldSet
-            key={step.id}
-            lineNumber={index + 1}
-            value={step.data}
-            handleChange={handleChange}
-            handleCancel={handleCancel}
-          />
-        ))}
-        <button
-          type="button"
-          onClick={() => handleAdd('steps')}
-          tabIndex={-1}
-          className={`
-            ml-auto my-[0.25em]
-            size-[2.125em]
-            border-[0.125em] border-emerald-500
-            rounded-[0.25em]
-            drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-            flex items-center justify-center
-            text-zinc-200 bg-emerald-800/80
-            hover:bg-emerald-800 active:bg-emerald-500 disabled:bg-emerald-800/50
-            transition-colors duration-300 ease-out active:transition-none
-          `}
-        >
-          <Text size="lg">
-            <AddIcon />
-          </Text>
-        </button>
+        <ClientOnly fallback={<div />}>
+          {() => (
+            <DragDropContext onDragEnd={handleStepDrop}>
+              <ProcessList
+                steps={formData.steps}
+                handleChange={handleChange}
+                handleCancel={handleCancel}
+              />
+            </DragDropContext>
+          )}
+        </ClientOnly>
+        <AddLineButton handleAdd={() => handleAdd('steps')} />
         <div className="flex gap-x-[1em]">
           <FormCancelButton to={`/recipe/${recipe.id58}`}>
             Cancel

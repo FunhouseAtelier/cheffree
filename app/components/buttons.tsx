@@ -9,6 +9,8 @@ import {
 import { CheckIcon, XmarkIcon, EditDocumentIcon } from '~/components/icons'
 import { BasicUserData } from '~/utilities/zod/user'
 import { Link } from '@remix-run/react'
+import { Text } from './typography'
+import { AddIcon } from '~/components/icons'
 
 const log = logger({ name: '@/app/components/buttons.ts', level: 2 })
 
@@ -367,5 +369,34 @@ export const EditDocumentIconButton = ({
     >
       <EditDocumentIcon />
     </Link>
+  )
+}
+
+export const AddLineButton = ({
+  handleAdd,
+}: {
+  handleAdd: (event: React.MouseEvent) => void
+}) => {
+  return (
+    <button
+      type="button"
+      onClick={handleAdd}
+      tabIndex={-1}
+      className={`
+        inline-flex items-center justify-center
+        size-[2.25rem] sm:size-[2.625rem] lg:size-[3rem]
+        ml-auto
+        border-2 sm:border-[3px] lg:border-4
+        rounded-[0.5em]
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+        transition-colors duration-300 ease-out
+        text-zinc-200 bg-emerald-800/80 border-emerald-500
+        hover:bg-emerald-800
+      `}
+    >
+      <Text size="lg">
+        <AddIcon />
+      </Text>
+    </button>
   )
 }

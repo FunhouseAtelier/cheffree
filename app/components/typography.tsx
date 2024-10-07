@@ -27,7 +27,7 @@ const responsiveTextClassesByBaselineSize: {
   'lg': 'text-lg sm:text-xl lg:text-2xl',
   'xl': 'text-xl sm:text-2xl lg:text-3xl',
   '2xl': 'text-2xl sm:text-3xl lg:text-4xl',
-  '3xl': 'text-3xl sm:text-4xl lg:text-5xl',
+  '3xl': 'text-3xl sm:text-4xl lg:text-[2.75rem]',
 }
 
 const responsiveLeadingClassesByLeadingOption: {
@@ -105,6 +105,7 @@ export const FieldError = ({
 }) => (
   <Text
     size={size}
+    leading="relaxed"
     className="font-semibold text-red-700"
   >
     {children}
@@ -124,6 +125,7 @@ export const FieldLabel = ({
     Tag="label"
     htmlFor={htmlFor}
     size={size}
+    leading="relaxed"
     className="font-bold"
   >
     {children}

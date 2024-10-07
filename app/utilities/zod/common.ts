@@ -4,5 +4,7 @@ import { z } from 'zod'
 const log = logger({ name: '@/app/utilities/zod/common.ts', level: 2 })
 
 export const id58 = z.string().regex(/^[a-km-zA-HJ-NP-Z1-9]{17}$/)
-
 export type Id58 = z.infer<typeof id58>
+
+export const uuid = z.string().uuid()
+export type UUID = z.infer<typeof uuid>

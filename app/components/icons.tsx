@@ -9,13 +9,18 @@ import {
   faCheck,
   faFilePen,
   faPlus,
+  faUpDown,
+  faTrashCan,
 } from '@fortawesome/free-solid-svg-icons'
 
 const log = logger({ name: '@app/components/icons.tsx', level: 2 })
 
 const makeSvgIconComponent = (iconProp: IconProp) => {
   return ({ size = '1x' }: { size?: SizeProp }) => (
-    <FontAwesomeIcon icon={iconProp} size={size} />
+    <FontAwesomeIcon
+      icon={iconProp}
+      size={size}
+    />
   )
 }
 
@@ -25,3 +30,5 @@ export const XmarkIcon = makeSvgIconComponent(faXmark)
 export const CheckIcon = makeSvgIconComponent(faCheck)
 export const EditDocumentIcon = makeSvgIconComponent(faFilePen)
 export const AddIcon = makeSvgIconComponent(faPlus)
+export const UpDownIcon = makeSvgIconComponent(faUpDown)
+export const TrashIcon = makeSvgIconComponent(faTrashCan)
