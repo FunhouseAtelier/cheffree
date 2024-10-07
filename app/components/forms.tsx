@@ -303,7 +303,7 @@ export const IngredientField = ({
 }: {
   id: UUID
   lineNumber: number
-  value: { qty: string; unit: string; name: string }
+  value: { qty: string; unit: string; item: string }
   handleChange: (event: React.FormEvent) => void
   handleCancel: (
     fieldGroupName: 'ingredients' | 'steps',
@@ -412,7 +412,7 @@ export const IngredientField = ({
               id={`ingredient_${lineNumber}_NameInput`}
               type="text"
               name={`ingredient_${lineNumber}_Name`}
-              value={value.name}
+              value={value.item}
               onChange={handleChange}
               className={`
                 inline-flex items-center
@@ -471,10 +471,10 @@ export const IngredientList = ({
       >
         {ingredients.map((ingredient, index) => (
           <IngredientField
-            key={ingredient.id}
-            id={ingredient.id}
+            key={ingredient.key}
+            id={ingredient.key}
             lineNumber={index + 1}
-            value={ingredient.data}
+            value={ingredient}
             handleChange={handleChange}
             handleCancel={handleCancel}
           />
@@ -584,10 +584,10 @@ export const ProcessList = ({
       >
         {steps.map((step, index) => (
           <ProcessField
-            key={step.id}
-            id={step.id}
+            key={step.key}
+            id={step.key}
             lineNumber={index + 1}
-            value={step.data}
+            value={step.text}
             handleChange={handleChange}
             handleCancel={handleCancel}
           />

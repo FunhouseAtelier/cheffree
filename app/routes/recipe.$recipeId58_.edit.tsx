@@ -65,17 +65,9 @@ export default function EditRecipeRoute() {
     isPublished: recipe.isPublished,
     yieldAmt: recipe.yieldAmt ?? { qty: '', unit: '' },
     ingredients: recipe.ingredients.length
-      ? recipe.ingredients.map((data: { [key: string]: string }) => ({
-          id: uuidv4(),
-          data,
-        }))
+      ? recipe.ingredients
       : [{ id: uuidv4(), data: { qty: '', unit: '', name: '' } }],
-    steps: recipe.steps.length
-      ? recipe.steps.map((data: { [key: string]: string }) => ({
-          id: uuidv4(),
-          data,
-        }))
-      : [{ id: uuidv4(), data: '' }],
+    steps: recipe.steps.length ? recipe.steps : [{ id: uuidv4(), data: '' }],
   })
   const [formErrors, setFormErrors] = useState<EditRecipeFormErrors>({})
 
@@ -114,34 +106,39 @@ export default function EditRecipeRoute() {
     } else if (name.startsWith('ingredient')) {
       const ingredients = [...formData.ingredients]
       const ingredientIndex = +name.split('_')[1] - 1
-      const ingredientData = ingredients[ingredientIndex].data
-      ingredients[ingredientIndex].data = {
+      const ingredientData = ingredients[ingredientIndex]
+      ingredients[ingredientIndex] = {
+        key: ingredientData.key,
         qty: name.endsWith('Qty') ? value : ingredientData.qty,
         unit: name.endsWith('Unit') ? value : ingredientData.unit,
-        name: name.endsWith('Name') ? value : ingredientData.name,
+        item: name.endsWith('Name') ? value : ingredientData.item,
       }
-      const lastIngredientData = ingredients[ingredients.length - 1].data
+      const lastIngredientData = ingredients[ingredients.length - 1]
       if (
         lastIngredientData.qty &&
         lastIngredientData.unit &&
-        lastIngredientData.name
+        lastIngredientData.item
       ) {
         ingredients.push({
-          id: uuidv4(),
-          data: { qty: '', unit: '', name: '' },
+          key: uuidv4(),
+          qty: '',
+          unit: '',
+          item: '',
         })
       }
       newFormData = { ...formData, ingredients }
     } else if (name.startsWith('step')) {
       const steps = [...formData.steps]
       const stepIndex = +name.split('_')[1] - 1
-      steps[stepIndex].data = value
-      const lastStep = steps[steps.length - 1]
-      if (lastStep.data) steps.push({ id: uuidv4(), data: '' })
+      const stepData = steps[stepIndex]
+      steps[stepIndex] = { key: stepData.key, text: value }
+      const lastStepData = steps[steps.length - 1]
+      if (lastStepData.text) steps.push({ key: uuidv4(), text: '' })
       newFormData = { ...formData, steps }
     } else {
       newFormData = { ...formData, [name]: value }
     }
+    log.debug('newFormData:\n', newFormData)
     updateFormData(newFormData)
   }
 
@@ -159,15 +156,16 @@ export default function EditRecipeRoute() {
   const handleAdd = (fieldGroupName: 'ingredients' | 'steps') => {
     const newElement =
       fieldGroupName === 'ingredients'
-        ? { id: uuidv4(), data: { qty: '', unit: '', name: '' } }
+        ? { key: uuidv4(), data: { qty: '', unit: '', name: '' } }
         : fieldGroupName === 'steps'
-        ? { id: uuidv4(), data: '' }
+        ? { key: uuidv4(), data: '' }
         : null
     const newFieldGroupData = [...formData[fieldGroupName], newElement]
     const newFormData = { ...formData, [fieldGroupName]: newFieldGroupData }
     updateFormData(newFormData)
   }
 
+  /* TODO: Use dnd type property to refactor these drop handlers into one. */
   const handleIngredientDrop: OnDragEndResponder = (result) => {
     const { destination, source } = result
     if (!destination) return
@@ -190,6 +188,9 @@ export default function EditRecipeRoute() {
     setFormData({ ...formData, steps })
   }
 
+  log.debug('ingredients:\n', formData.ingredients)
+  log.debug('steps:\n', formData.steps)
+
   return (
     <MainContainer size="lg">
       <Heading className="text-center">Edit Recipe</Heading>
@@ -209,7 +210,6 @@ export default function EditRecipeRoute() {
           label="Published"
           value={formData.isPublished}
           handleToggle={handleToggle}
-          error={formErrors.isPublished}
         />
         <TextField
           fieldName="title"

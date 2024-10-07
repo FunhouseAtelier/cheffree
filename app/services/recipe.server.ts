@@ -8,14 +8,14 @@ import { redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
 import {
-  recipeUpdates,
   BasicRecipeData,
+  editRecipeFormData,
   EditRecipeFormData,
 } from '~/utilities/zod/recipe'
 import zodParse from '~/utilities/zod/parser'
 import { requireAuthorizedToEditRecipe } from './auth.server'
 
-const log = logger({ name: '@/app/services/recipe.server.ts', level: 2 })
+const log = logger({ name: '@/app/services/recipe.server.ts', level: 0 })
 
 const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,
@@ -79,13 +79,11 @@ export const updateRecipe = async ({
     title,
     description,
     yieldAmt: yieldAmt.qty || yieldAmt.unit ? yieldAmt : null,
-    ingredients: ingredients
-      .filter((i) => !!(i.data.qty || i.data.unit || i.data.name))
-      .map((i) => i.data),
-    steps: steps.filter((s) => !!s.data).map((s) => s.data),
+    ingredients: ingredients.filter((i) => !!(i.qty || i.unit || i.item)),
+    steps: steps.filter((s) => !!s.text),
   }
   log.debug('updates:\n', updates)
-  const zodParseResult = zodParse(updates, recipeUpdates)
+  const zodParseResult = zodParse(updates, editRecipeFormData)
   log.debug('zodParseResult:\n', zodParseResult)
   if (zodParseResult.failure) {
     return { failure: zodParseResult.failure }

@@ -32,9 +32,15 @@ type YieldAmt {
 }
 
 type Ingredient {
+  key  String  @default(uuid())
   qty  String?
   unit String?
-  name String?
+  item String?
+}
+
+type Step {
+  key  String @default(uuid())
+  text String
 }
 
 // Define the Recipe model schema.
@@ -51,5 +57,5 @@ model Recipe {
   authorId    String       @db.ObjectId
   yieldAmt    YieldAmt?
   ingredients Ingredient[]
-  steps       String[]
+  steps       Step[]
 }

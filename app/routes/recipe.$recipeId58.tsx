@@ -1,4 +1,5 @@
 import type { LoaderFunction } from '@remix-run/node'
+import type { Ingredient, Step } from '~/utilities/zod/recipe'
 
 import logger from '@funhouse-atelier/logger'
 import { requireAuthorizedToViewRecipe } from '~/services/auth.server'
@@ -46,25 +47,20 @@ export default function ViewRecipeRoute() {
       </Heading>
       <Heading Tag="h2">Ingredients:</Heading>
       <ul>
-        {recipe.ingredients.map(
-          (
-            ingredient: { qty: number; unit: string; name: string },
-            index: number
-          ) => (
-            <li key={index}>
-              {ingredient.qty} {ingredient.unit} {ingredient.name}
-            </li>
-          )
-        )}
+        {recipe.ingredients.map((ingredient: Ingredient) => (
+          <li key={ingredient.key}>
+            {ingredient.qty} {ingredient.unit} {ingredient.item}
+          </li>
+        ))}
       </ul>
       <Heading Tag="h2">Process:</Heading>
       <ol className="list-decimal ml-[2.5em] mb-[4em]">
-        {recipe.steps.map((step: string, index: number) => (
+        {recipe.steps.map((step: Step) => (
           <li
-            key={index}
+            key={step.key}
             className="my-[0.5em]"
           >
-            {step}
+            {step.text}
           </li>
         ))}
       </ol>

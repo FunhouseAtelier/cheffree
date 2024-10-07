@@ -14,16 +14,6 @@ const author = z.object({
   displayName,
   imageUrl,
 })
-const yieldAmt = z.object({
-  qty: z.string(),
-  unit: z.string(),
-})
-const ingredient = z.object({
-  qty: z.string(),
-  unit: z.string(),
-  name: z.string(),
-})
-const step = z.string().max(1024)
 
 const basicRecipeData = z.object({
   id58,
@@ -33,22 +23,28 @@ const basicRecipeData = z.object({
 })
 export type BasicRecipeData = z.infer<typeof basicRecipeData>
 
-const ingredients = z.array(
-  z.object({
-    id: uuid,
-    data: ingredient,
-  })
-)
+const yieldAmt = z.object({
+  qty: z.string(),
+  unit: z.string(),
+})
+const ingredient = z.object({
+  key: uuid,
+  qty: z.string(),
+  unit: z.string(),
+  item: z.string(),
+})
+export type Ingredient = z.infer<typeof ingredient>
 
+const step = z.object({
+  key: uuid,
+  text: z.string().max(1024),
+})
+export type Step = z.infer<typeof step>
+
+const ingredients = z.array(ingredient)
 export type Ingredients = z.infer<typeof ingredients>
 
-const steps = z.array(
-  z.object({
-    id: uuid,
-    data: step,
-  })
-)
-
+const steps = z.array(step)
 export type Steps = z.infer<typeof steps>
 
 export const editRecipeFormData = z.object({
@@ -66,23 +62,6 @@ const editRecipeFormErrors = z
     _global: z.string(),
     title: z.string(),
     description: z.string(),
-    isPublished: z.string(),
-    yieldAmt: z.object({
-      qty: z.string(),
-      unit: z.string(),
-    }),
-    /* adjust these to match revise zodParse logic for arrays of form data */
-    ingredients: z.array(z.string()),
-    steps: z.array(z.string()),
   })
   .partial()
 export type EditRecipeFormErrors = z.infer<typeof editRecipeFormErrors>
-
-export const recipeUpdates = z.object({
-  isPublished,
-  title,
-  description,
-  yieldAmt,
-  ingredients: z.array(ingredient),
-  steps: z.array(step),
-})

@@ -31,7 +31,8 @@
     "typecheck": "tsc",
     "psff": "npx prisma studio --browser firefox",
     "pdbp": "npx prisma db push",
-    "pg": "npx prisma generate"
+    "pg": "npx prisma generate",
+    "migrate-db": "node ./scripts/migrate-db.js"
   },
   "dependencies": {
     "@clerk/remix": "^4.2.29",

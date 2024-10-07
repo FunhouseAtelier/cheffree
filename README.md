@@ -6,28 +6,36 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Allow ingredients and steps to change in order via drag and drop.
-
 - Refactor zod logic, form logic, and components.
+- Apply new technique to collapsed ingredient line item.
+- Put cancel/add buttons back in the tabstop flow, and add style when active.
 - Revise cosmetics on all pages and components.
 
-- Improve input and display of quantities to allow for more conventional formats than strictly decimal values.
-- Implement standard unit abbreviations.
+_good enough for v0.2.0?_
 
 - Add Cloudinary image uploads of recipes.
+- Add infinite scrolling to recipe feed page.
+
+- Improve input and display of quantities to allow for more conventional formats than strictly decimal values.
+- make unit read singular/plural, depending on qty.
+- Implement standard unit abbreviations.
 
 - Allow for scaling the recipe size by converting the ingredient quantites as the desired yield is adjusted.
 - Allow for conversion between imperial and metric units.
-
-- Adjust zodParse to properly handle arrays of form data.
 
 ## Future Plans
 
 - Connect with other users.
 - Share recipes with other users.
+- Download/print recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.26
+
+- Alter database structure to have keys for ingredients and steps.
+- Adjust code for new database schemas and using keys for lists.
 
 ### 0.1.25
 
