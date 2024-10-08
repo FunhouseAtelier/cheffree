@@ -78,7 +78,7 @@ export const updateRecipe = async ({
     isPublished,
     title,
     description,
-    yieldAmt: yieldAmt.qty || yieldAmt.unit ? yieldAmt : null,
+    yieldAmt: yieldAmt.qty || yieldAmt.unit ? yieldAmt : { qty: '', unit: '' },
     ingredients: ingredients.filter((i) => !!(i.qty || i.unit || i.item)),
     steps: steps.filter((s) => !!s.text),
   }

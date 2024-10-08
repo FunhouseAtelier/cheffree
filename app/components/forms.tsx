@@ -303,7 +303,7 @@ export const IngredientField = ({
 }: {
   id: UUID
   lineNumber: number
-  value: { qty: string; unit: string; item: string }
+  value: { qty?: string; unit?: string; item?: string }
   handleChange: (event: React.FormEvent) => void
   handleCancel: (
     fieldGroupName: 'ingredients' | 'steps',
@@ -494,7 +494,7 @@ export const ProcessField = ({
 }: {
   id: UUID
   lineNumber: number
-  value: string
+  value: string | undefined
   handleChange: (event: React.FormEvent) => void
   handleCancel: (
     fieldGroupName: 'ingredients' | 'steps',
