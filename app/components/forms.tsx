@@ -27,6 +27,7 @@ import {
 } from '@hello-pangea/dnd'
 import { AddIcon } from '~/components/icons'
 import { UUID } from '~/utilities/zod/common'
+import './forms.css'
 
 const log = logger({ name: '@/app/components/forms.tsx', level: 2 })
 
@@ -328,121 +329,106 @@ export const IngredientField = ({
         <fieldset
           {...provided.draggableProps}
           ref={provided.innerRef}
-          className="py-[0.125em] max-w-[344px] sm:max-w-full sm:flex drop-shadow sm:drop-shadow-md lg:drop-shadow-lg"
+          className="
+            ingredientFieldset
+            py-[0.25em]
+            rounded-[0.5em]
+            drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+          "
         >
-          <div className="flex items-center">
-            <span
-              {...provided.dragHandleProps}
-              className="
-                inline-flex justify-center items-center
-                h-[2.25rem] sm:h-[2.625rem] lg:h-[3rem]
-                w-[1.25em]
-                rounded-tl-[0.5em] sm:rounded-bl-[0.5em]
-                bg-yellow-700
-              "
-            >
-              <UpDownIcon />
-            </span>
-            <input
-              id={`ingredient_${lineNumber}_QtyInput`}
-              type="text"
-              name={`ingredient_${lineNumber}_Qty`}
-              value={value.qty}
-              onChange={handleChange}
-              className={`
-                inline-flex items-center
-                h-[2.25rem] sm:h-[2.625rem] lg:h-[3rem]
-                w-[6em]
-                px-[0.5em]
-                border-2 sm:border-[3px] lg:border-4
-                transition-colors duration-300 ease-out
-                text-zinc-200
-                bg-yellow-950 border-yellow-700 
-                focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
-              `}
-            />
-            <select
-              id={`ingredient_${lineNumber}_UnitInput`}
-              name={`ingredient_${lineNumber}_Unit`}
-              value={value.unit}
-              onChange={handleChange}
-              className={`
-                inline-flex items-center
-                h-[2.25rem] sm:h-[2.625rem] lg:h-[3rem]
-                w-[12em]
-                px-[0.5em]
-                border-2 sm:border-[3px] lg:border-4
-                transition-colors duration-300 ease-out
-                text-zinc-200
-                bg-yellow-950 border-yellow-700 
-                focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
-              `}
-            >
-              <option value="">(unit)</option>
-              {options.map((option) => (
-                <option
-                  key={option.label}
-                  value={option.value}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
+          <div className="collapsingFields">
+            <div className="inputGroup-1">
+              <a
+                {...provided.dragHandleProps}
+                className="
+                  inline-flex justify-center items-center
+                  w-[2em]
+                  border-2 sm:border-[3px] lg:border-4
+                  rounded-tl-[0.5em] sm:rounded-bl-[0.5em]
+                  transition-colors duration-300 ease-out
+                  bg-yellow-700 border-yellow-700
+                  focus:bg-yellow-600 focus:border-yellow-400 focus:outline-none
+                "
+              >
+                <UpDownIcon />
+              </a>
+              <input
+                id={`ingredient_${lineNumber}_QtyInput`}
+                type="text"
+                name={`ingredient_${lineNumber}_Qty`}
+                value={value.qty}
+                onChange={handleChange}
+                className={`
+                  qtyInput
+                  px-[0.5em] py-[0.125em]
+                  border-2 sm:border-[3px] lg:border-4
+                  transition-colors duration-300 ease-out
+                  text-zinc-200
+                  bg-yellow-950 border-yellow-700
+                  focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
+
+                `}
+              />
+              <select
+                id={`ingredient_${lineNumber}_UnitInput`}
+                name={`ingredient_${lineNumber}_Unit`}
+                value={value.unit}
+                onChange={handleChange}
+                className={`
+                  unitInput
+                  px-[0.5em] py-[0.125em]
+                  border-2 sm:border-[3px] lg:border-4
+                  transition-colors duration-300 ease-out
+                  text-zinc-200
+                  bg-yellow-950 border-yellow-700
+                  focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
+                `}
+              >
+                <option value="">(unit)</option>
+                {options.map((option) => (
+                  <option
+                    key={option.label}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="inputGroup-2">
+              <input
+                id={`ingredient_${lineNumber}_ItemInput`}
+                type="text"
+                name={`ingredient_${lineNumber}_Item`}
+                value={value.item}
+                onChange={handleChange}
+                className={`
+                  itemInput
+                  px-[0.5em] py-[0.125em]
+                  border-2 sm:border-[3px] lg:border-4
+                  rounded-b-[0.5em] sm:rounded-b-none
+                  transition-colors duration-300 ease-out
+                  text-zinc-200 bg-yellow-950 border-yellow-700
+                  focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
+                `}
+              />
+            </div>
             <button
               type="button"
               onClick={() => handleCancel('ingredients', +lineNumber - 1)}
-              tabIndex={-1}
               className={`
-                inline-flex sm:hidden items-center justify-center
-                size-[2.25rem]
+                deleteButton
+                inline-flex items-center justify-center
+                w-[2em]
                 border-2 sm:border-[3px] lg:border-4
-                rounded-tr-[0.5em]
-                transition-colors duration-300 ease-out         
-                text-zinc-200 bg-red-800/80 border-red-500
-                hover:bg-red-800
+                rounded-tr-[0.5em] sm:rounded-br-[0.5em]
+                transition-colors duration-300 ease-out
+                text-zinc-200 bg-red-800 border-red-500
+                hover:bg-red-700
+                focus:bg-red-700 focus:border-yellow-400 focus:outline-none
               `}
             >
-              <Text size="lg">
-                <TrashIcon />
-              </Text>
-            </button>
-          </div>
-          <div className="w-full sm:flex">
-            <input
-              id={`ingredient_${lineNumber}_NameInput`}
-              type="text"
-              name={`ingredient_${lineNumber}_Name`}
-              value={value.item}
-              onChange={handleChange}
-              className={`
-                inline-flex items-center
-                h-[2.25rem] sm:h-[2.625rem] lg:h-[3rem]
-                w-full sm:grow
-                px-[0.5em]
-                border-2 sm:border-[3px] lg:border-4
-                rounded-b-[0.5em] sm:rounded-b-none
-                transition-colors duration-300 ease-out
-                text-zinc-200 bg-yellow-950 border-yellow-700 
-                focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
-              `}
-            />
-            <button
-              type="button"
-              onClick={() => handleCancel('ingredients', +lineNumber - 1)}
-              tabIndex={-1}
-              className={`
-                hidden sm:inline-flex items-center justify-center
-                shrink-0 sm:size-[2.625rem] lg:size-[3rem]
-                border-2 sm:border-[3px] lg:border-4
-                rounded-r-[0.5em]
-                transition-colors duration-300 ease-out
-                text-zinc-200 bg-red-800/80 border-red-500
-                hover:bg-red-800
-              `}
-            >
-              <Text size="lg">
-                <TrashIcon />
-              </Text>
+              <TrashIcon />
             </button>
           </div>
         </fieldset>
@@ -686,5 +672,41 @@ export const FormError = ({ children }: { children: React.ReactNode }) => {
     <strong className="min-h-[1.625em] block font-semibold text-center text-red-700">
       {children}
     </strong>
+  )
+}
+
+export const TestIngredientField = () => {
+  return (
+    <fieldset
+      className="
+        ingredientFieldset
+        my-[0.125em]
+        rounded-[0.5em]
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+      "
+    >
+      <div className="collapsingFields">
+        <div className="inputGroup-1">
+          <input
+            type="text"
+            name="qty"
+            placeholder="qty"
+          />
+          <input
+            type="text"
+            name="unit"
+            placeholder="unit"
+          />
+        </div>
+        <div className="inputGroup-2">
+          <input
+            type="text"
+            name="item"
+            placeholder="item"
+          />
+        </div>
+        <button type="button">&times;</button>
+      </div>
+    </fieldset>
   )
 }

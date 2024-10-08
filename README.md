@@ -6,7 +6,6 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Apply new technique to collapsed ingredient line item.
 - Get away from using opacity to show hover effects on buttons.
 - Change background color of droppable area when dragging over.
 - Put trash/add buttons back in the tabstop flow, and add styles when active.
@@ -31,13 +30,14 @@ _good enough for v0.2.0?_
 - Connect with other users.
 - Share recipes with other users.
 - Download/print recipes.
+- Implement sub-recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
 
 ### 0.1.28
 
--
+- Apply new technique to collapsed ingredient line item.
 
 ### 0.1.27
 

@@ -1,0 +1,49 @@
+.ingredientFieldset {
+  container: group / inline-size;
+}
+
+.collapsingFields {
+  @container group (width < 640px) {
+    display: grid;
+    grid-template-columns: 1fr fit-content(15rem);
+    grid-template-areas:
+      'group1 button'
+      'group2 group2';
+  }
+
+  @container group (width >= 640px) {
+    display: flex;
+    [class^='inputGroup'] {
+      display: contents;
+      flex: 1;
+    }
+  }
+
+  [class^='inputGroup'] {
+    display: flex;
+    min-inline-size: 0;
+  }
+
+  .inputGroup-1 {
+    grid-area: group1;
+  }
+  .inputGroup-2 {
+    grid-area: group2;
+  }
+  input {
+    min-inline-size: 0;
+  }
+  .deleteButton {
+    grid-area: button;
+  }
+
+  .qtyInput {
+    flex: 1;
+  }
+  .unitInput {
+    flex: 2;
+  }
+  .itemInput {
+    flex: 5;
+  }
+}
