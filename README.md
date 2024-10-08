@@ -6,10 +6,13 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Refactor zod logic, form logic, and components.
 - Apply new technique to collapsed ingredient line item.
-- Put cancel/add buttons back in the tabstop flow, and add style when active.
-- Revise cosmetics on all pages and components.
+- Get away from using opacity to show hover effects on buttons.
+- Change background color of droppable area when dragging over.
+- Put trash/add buttons back in the tabstop flow, and add styles when active.
+- Add select fields to DB queries to optimize transactions/traffic.
+- Refactor and revise cosmetics of all components.
+- Revise cosmetics on all pages.
 
 _good enough for v0.2.0?_
 
@@ -31,6 +34,10 @@ _good enough for v0.2.0?_
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
 ## Revision History
+
+### 0.1.27
+
+- Fixed bugs on edit recipe form data validation and new key assignment.
 
 ### 0.1.26
 

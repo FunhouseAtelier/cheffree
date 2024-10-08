@@ -66,8 +66,8 @@ export default function EditRecipeRoute() {
     yieldAmt: recipe.yieldAmt ?? { qty: '', unit: '' },
     ingredients: recipe.ingredients.length
       ? recipe.ingredients
-      : [{ id: uuidv4(), data: { qty: '', unit: '', name: '' } }],
-    steps: recipe.steps.length ? recipe.steps : [{ id: uuidv4(), data: '' }],
+      : [{ key: uuidv4(), data: { qty: '', unit: '', name: '' } }],
+    steps: recipe.steps.length ? recipe.steps : [{ key: uuidv4(), data: '' }],
   })
   const [formErrors, setFormErrors] = useState<EditRecipeFormErrors>({})
 
@@ -83,6 +83,8 @@ export default function EditRecipeRoute() {
   const updateFormData = (newFormData: EditRecipeFormData) => {
     setFormData(newFormData)
     const { success, failure } = zodParse(newFormData, editRecipeFormData)
+    log.debug('zodParse.success:\n', success)
+    log.debug('zodParse.failure:\n', failure)
     if (success) setFormErrors({})
     else setFormErrors(failure.errors)
   }

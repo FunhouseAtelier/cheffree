@@ -23,21 +23,24 @@ const basicRecipeData = z.object({
 })
 export type BasicRecipeData = z.infer<typeof basicRecipeData>
 
-const yieldAmt = z.object({
-  qty: z.string(),
-  unit: z.string(),
-})
+const yieldAmt = z
+  .object({
+    qty: z.string(),
+    unit: z.string(),
+  })
+  .partial()
+
 const ingredient = z.object({
   key: uuid,
-  qty: z.string(),
-  unit: z.string(),
-  item: z.string(),
+  qty: z.string().optional(),
+  unit: z.string().optional(),
+  item: z.string().optional(),
 })
 export type Ingredient = z.infer<typeof ingredient>
 
 const step = z.object({
   key: uuid,
-  text: z.string().max(1024),
+  text: z.string().max(1024).optional(),
 })
 export type Step = z.infer<typeof step>
 
@@ -51,7 +54,7 @@ export const editRecipeFormData = z.object({
   isPublished,
   title,
   description,
-  yieldAmt,
+  yieldAmt: yieldAmt.optional(),
   ingredients,
   steps,
 })
