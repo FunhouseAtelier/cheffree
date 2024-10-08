@@ -32,15 +32,15 @@ const yieldAmt = z
 
 const ingredient = z.object({
   key: uuid,
-  qty: z.string().optional(),
-  unit: z.string().optional(),
-  item: z.string().optional(),
+  qty: z.string(),
+  unit: z.string(),
+  item: z.string(),
 })
 export type Ingredient = z.infer<typeof ingredient>
 
 const step = z.object({
   key: uuid,
-  text: z.string().max(1024).optional(),
+  text: z.string().max(1024),
 })
 export type Step = z.infer<typeof step>
 
@@ -54,7 +54,7 @@ export const editRecipeFormData = z.object({
   isPublished,
   title,
   description,
-  yieldAmt: yieldAmt.optional(),
+  yieldAmt,
   ingredients,
   steps,
 })

@@ -222,7 +222,7 @@ export const YieldAmtField = ({
   value,
   handleChange,
 }: {
-  value: { qty: string; unit: string }
+  value: { qty?: string; unit?: string }
   handleChange: (event: React.FormEvent) => void
 }) => {
   const options = [

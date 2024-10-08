@@ -35,6 +35,10 @@ _good enough for v0.2.0?_
 
 ## Revision History
 
+### 0.1.28
+
+-
+
 ### 0.1.27
 
 - Fixed bugs on edit recipe form data validation and new key assignment.
