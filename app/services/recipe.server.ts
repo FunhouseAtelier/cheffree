@@ -5,13 +5,8 @@ import logger from '@funhouse-atelier/logger'
 import prisma from './prisma.server'
 import { getAuth } from '@clerk/remix/ssr.server'
 import { redirect } from '@remix-run/react'
-import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
-import {
-  RecipeBasicData,
-  editRecipeFormData,
-  EditRecipeFormData,
-} from '~/utilities/zod/recipe'
+import { editRecipeFormData, EditRecipeFormData } from '~/utilities/zod/recipe'
 import zodParse from '~/utilities/zod/parser'
 import {
   requireAuthenticated,
@@ -20,10 +15,7 @@ import {
 import { replaceIdWithId58 } from '~/utilities/data'
 
 const log = logger({ name: '@/app/services/recipe.server.ts', level: 2 })
-
-const clerkClient = createClerkClient({
-  secretKey: process.env.CLERK_SECRET_KEY,
-})
+log.debug('logger instantiated')
 
 const selectByScope = {
   basic: {

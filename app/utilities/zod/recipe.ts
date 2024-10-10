@@ -10,6 +10,7 @@ import {
 import { displayName, imageUrl } from './user'
 
 const log = logger({ name: '@/app/utilities/zod/recipe.ts', level: 2 })
+log.debug('logger instantiated')
 
 const title = z.string().min(1).max(64)
 export type Title = z.infer<typeof title>

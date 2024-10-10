@@ -5,6 +5,7 @@ import { createRecipe } from '~/services/recipe.server'
 import { json, redirect } from '@remix-run/node'
 
 const log = logger({ name: '@/app/routes/recipe.new.ts', level: 2 })
+log.debug('logger instantiated')
 
 export const action: ActionFunction = async (routeHandlerArgs) => {
   const { success, failure } = await createRecipe({ routeHandlerArgs })

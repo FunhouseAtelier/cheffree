@@ -1,13 +1,8 @@
 import type { Ingredients, Steps } from '~/utilities/zod/recipe'
 
 import logger from '@funhouse-atelier/logger'
-import {
-  AddLineButton,
-  SingletonCancelButton,
-  SingletonSubmitButton,
-} from './buttons'
+import { SingletonFormCancelButton, SingletonFormSubmitButton } from './buttons'
 import { CheckIcon, UpDownIcon, TrashIcon } from '~/components/icons'
-import { Text } from './typography'
 import {
   imperialWeightUnitOptions,
   imperialVolumeUnitOptions,
@@ -19,18 +14,13 @@ import {
   ingredientUnitOptions,
 } from '~/libraries/units'
 import { FieldError, FieldLabel } from './typography'
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  OnDragEndResponder,
-} from '@hello-pangea/dnd'
-import { AddIcon } from '~/components/icons'
+import { Draggable, Droppable } from '@hello-pangea/dnd'
 import { UUID } from '~/utilities/zod/common'
 import { Container } from './containers'
 import './forms.css'
 
 const log = logger({ name: '@/app/components/forms.tsx', level: 2 })
+log.debug('logger instantiated')
 
 export const Checkbox = ({ checked }: { checked: boolean }) => (
   <button
@@ -75,7 +65,7 @@ export const CheckboxField = ({
   fieldName: string
   label: string
   value: boolean
-  handleToggle: (a: any) => void
+  handleToggle: (s: string) => void
   disabled?: boolean
   error?: string
 }) => (
@@ -83,6 +73,7 @@ export const CheckboxField = ({
     disabled={disabled}
     className="flex items-center gap-x-[1em]"
   >
+    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
     <span
       onClick={() => handleToggle(fieldName)}
       className={`inline-flex items-center gap-x-[0.5em] ${
@@ -111,7 +102,6 @@ export const TextField = ({
   label,
   placeholder = '',
   required = false,
-  autoFocus = false,
   value,
   handleChange,
   error,
@@ -120,7 +110,6 @@ export const TextField = ({
   label: string
   placeholder?: string
   required?: boolean
-  autoFocus?: boolean
   value: string
   handleChange: (event: React.FormEvent) => void
   error?: string
@@ -136,7 +125,6 @@ export const TextField = ({
       name={fieldName}
       placeholder={placeholder}
       required={required}
-      autoFocus={autoFocus}
       value={value}
       onChange={handleChange}
       className={`
@@ -168,7 +156,6 @@ export const TextAreaField = ({
   placeholder = '',
   rows = 3,
   required = false,
-  autoFocus = false,
   value,
   handleChange,
   error,
@@ -178,7 +165,6 @@ export const TextAreaField = ({
   placeholder?: string
   rows?: number
   required?: boolean
-  autoFocus?: boolean
   value: string
   handleChange: (event: React.FormEvent) => void
   error?: string
@@ -195,7 +181,6 @@ export const TextAreaField = ({
         placeholder={placeholder}
         rows={rows}
         required={required}
-        autoFocus={autoFocus}
         value={value}
         onChange={handleChange}
         className={`
@@ -628,25 +613,23 @@ export const SingletonTextField = ({
   label,
   placeholder = '',
   required = false,
-  autoFocus = false,
   value,
   handleChange,
   error,
   activeFieldName,
-  onCancel,
+  handleCancel,
   setActiveFieldName,
 }: {
   fieldName: string
   label: string
   placeholder?: string
   required?: boolean
-  autoFocus?: boolean
   value: string
   handleChange: (event: React.FormEvent) => void
   error?: string
   activeFieldName: string | null
-  onCancel: (event: React.MouseEvent) => void
-  setActiveFieldName: Function
+  handleCancel: (event: React.MouseEvent) => void
+  setActiveFieldName: (s: string) => void
 }) => {
   return (
     <fieldset className="flex flex-col gap-y-[0.25em]">
@@ -666,7 +649,6 @@ export const SingletonTextField = ({
               name={fieldName}
               placeholder={placeholder}
               required={required}
-              autoFocus
               value={value}
               onChange={handleChange}
               className={`
@@ -688,8 +670,8 @@ export const SingletonTextField = ({
                 }
               `}
             />
-            <SingletonSubmitButton disabled={!!error} />
-            <SingletonCancelButton onClick={onCancel} />
+            <SingletonFormSubmitButton disabled={!!error} />
+            <SingletonFormCancelButton handleCancel={handleCancel} />
           </>
         ) : (
           <>
@@ -722,7 +704,7 @@ export const SingletonTextField = ({
 
 export const FormError = ({ children }: { children: React.ReactNode }) => {
   return (
-    <strong className="min-h-[1.625em] block font-semibold text-center text-red-700">
+    <strong className="min-h-[1.5em] block font-semibold text-center text-red-700">
       {children}
     </strong>
   )

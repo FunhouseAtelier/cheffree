@@ -14,14 +14,18 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 const log = logger({ name: '@app/components/icons.tsx', level: 2 })
+log.debug('logger instantiated')
 
 const makeSvgIconComponent = (iconProp: IconProp) => {
-  return ({ size = '1x' }: { size?: SizeProp }) => (
-    <FontAwesomeIcon
-      icon={iconProp}
-      size={size}
-    />
-  )
+  function Icon({ size = '1x' }: { size?: SizeProp }) {
+    return (
+      <FontAwesomeIcon
+        icon={iconProp}
+        size={size}
+      />
+    )
+  }
+  return Icon
 }
 
 export const KitchenSetIcon = makeSvgIconComponent(faKitchenSet)

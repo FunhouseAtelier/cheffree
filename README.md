@@ -6,8 +6,6 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Refactored all components.
-
 _good enough for v0.2.0?_
 
 - Add infinite scrolling to recipe feed page.
@@ -33,6 +31,11 @@ _good enough for v0.2.0?_
 - Handle case when user has deleted their Clerk Account and wants their ChefFree data to be purged. (Email link to do it.)
 
 ## Revision History
+
+### 0.1.30
+
+- Refactored all components.
+- Addressed all eslint issues.
 
 ### 0.1.29
 

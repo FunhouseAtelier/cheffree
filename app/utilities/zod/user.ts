@@ -10,6 +10,7 @@ import {
 } from './common'
 
 const log = logger({ name: '@/app/utilities/zod/user.ts', level: 2 })
+log.debug('logger instantiated')
 
 const clerkId = z.string().regex(/^user_[a-zA-Z0-9_]{27}$/)
 export type ClerkId = z.infer<typeof clerkId>

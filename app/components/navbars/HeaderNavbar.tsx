@@ -13,6 +13,7 @@ const log = logger({
   name: '@/app/components/navbars/HeaderNavbar.ts',
   level: 2,
 })
+log.debug('logger instantiated')
 
 export default function HeaderNavbar() {
   return (

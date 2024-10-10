@@ -24,6 +24,7 @@ import '~/utilities/zod/error-map'
 
 /* Instantiate the Funhouse Altelier custom logger for this file. This is done in every file that has executable code, with the `name` being the file path relative to the project root folder and the standard suppression level being `2`, which will suppress TRACE and DEBUG messages, but allow INFO, WARN and ERROR messages. For debugging purposes the suppression level is temporarily changed to `0`. (See: https://github.com/FunhouseAtelier/logger#readme) */
 const log = logger({ name: '@/app/root.tsx', level: 2 })
+log.debug('logger instantiated')
 /* Export the default metadata to be used on every route unless that route exports its own `meta` function. Note that the default metadata will not be merged with the data exported by a child route, it will be entirely overwritten. (See: https://remix.run/docs/en/main/route/meta) */
 export const meta: MetaFunction = () => {
   return [

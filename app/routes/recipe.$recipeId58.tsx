@@ -4,8 +4,7 @@ import type { Ingredient, Step } from '~/utilities/zod/recipe'
 import logger from '@funhouse-atelier/logger'
 import { requireAuthorizedToViewRecipe } from '~/services/auth.server'
 import { MainContainer } from '~/components/containers'
-import { Heading } from '~/components/typography'
-import { Text } from '~/components/typography'
+import { Heading, Text } from '~/components/typography'
 import { useLoaderData } from '@remix-run/react'
 import { useUser } from '@clerk/remix'
 import { UserBanner } from '~/components/banners'
@@ -15,6 +14,7 @@ const log = logger({
   name: '@/app/routes/recipe.$recipeId58.tsx',
   level: 2,
 })
+log.debug('logger instantiated')
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
   const { success } = await requireAuthorizedToViewRecipe(routeHandlerArgs)

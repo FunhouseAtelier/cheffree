@@ -8,6 +8,7 @@ import { Heading, Text } from '~/components/typography'
 import { SignIn } from '@clerk/remix'
 
 const log = logger({ name: '@/app/routes/log-in.$.tsx', level: 2 })
+log.debug('logger instantiated')
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
   await requireNotAuthenticated(routeHandlerArgs)

@@ -1,7 +1,7 @@
 import logger from '@funhouse-atelier/logger'
-import { ZodSchema, ZodTypeDef } from 'zod'
 
 const log = logger({ name: '@app/utilities/zod/parser.ts', level: 2 })
+log.debug('logger instantiated')
 
 const appendToErrors = ({
   errors,
@@ -39,7 +39,9 @@ const appendToErrors = ({
 
 export default function zodParse(
   /* NOTE: For some reason using `ZodSchema` here causes a TypeScript warning when trying to access `schema._cached`. */
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   data: any,
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   schema: any
 ) {
   const parseResult = schema.safeParse(data)

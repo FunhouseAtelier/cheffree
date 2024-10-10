@@ -7,6 +7,7 @@ import { Heading, Text } from './typography'
 import { Container } from './containers'
 
 const log = logger({ name: '@/app/components/banners.tsx', level: 2 })
+log.debug('logger instantiated')
 
 export const RecipeBanner = ({ recipe }: { recipe: RecipeBasicData }) => (
   <Link
@@ -38,7 +39,7 @@ export const RecipeBanner = ({ recipe }: { recipe: RecipeBasicData }) => (
       >
         <img
           src={recipe.author.imageUrl}
-          alt="user image"
+          alt="user avatar"
           className="h-[1.5em] w-auto rounded-[0.25em]"
         />
         <span className="font-semibold">{recipe.author.displayName}</span>
@@ -80,7 +81,7 @@ export const UserBanner = ({ id58, displayName, imageUrl }: UserBasicData) => {
       >
         <img
           src={imageUrl}
-          alt="user image"
+          alt="user avatar"
           className="h-[1.5em] w-auto rounded-l-[0.25em]"
         />
         {displayName}

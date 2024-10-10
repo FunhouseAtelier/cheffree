@@ -8,16 +8,14 @@ import logger from '@funhouse-atelier/logger'
 import { requireAuthorizedToEditRecipe } from '~/services/auth.server'
 import { updateRecipe } from '~/services/recipe.server'
 import { redirect } from '@remix-run/node'
-import { useLoaderData, useActionData } from '@remix-run/react'
+import { useLoaderData, useActionData, useSubmit, Form } from '@remix-run/react'
 import { useState, useEffect } from 'react'
 import zodParse from '~/utilities/zod/parser'
 import { editRecipeFormData } from '~/utilities/zod/recipe'
 import { v4 as uuidv4 } from 'uuid'
-import { useSubmit } from '@remix-run/react'
 
 import { MainContainer } from '~/components/containers'
-import { Heading, Text } from '~/components/typography'
-import { Form } from '@remix-run/react'
+import { Heading } from '~/components/typography'
 import {
   CheckboxField,
   TextField,
@@ -27,7 +25,6 @@ import {
   IngredientList,
   ProcessList,
 } from '~/components/forms'
-import { AddIcon } from '~/components/icons'
 import {
   AddLineButton,
   FormSubmitButton,
@@ -41,6 +38,7 @@ const log = logger({
   name: '@/app/routes/recipe.$recipeId58_.edit.tsx',
   level: 2,
 })
+log.debug('logger instantiated')
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
   const { success } = await requireAuthorizedToEditRecipe(routeHandlerArgs)
@@ -89,8 +87,11 @@ export default function EditRecipeRoute() {
     else setFormErrors(failure.errors)
   }
 
-  const handleToggle = (fieldName: 'isPublished') => {
-    const newFormData = { ...formData, [fieldName]: !formData[fieldName] }
+  const handleToggle = (fieldName: string) => {
+    const newFormData = {
+      ...formData,
+      [fieldName]: !formData[fieldName as keyof EditRecipeFormData],
+    }
     updateFormData(newFormData)
   }
 
@@ -218,7 +219,6 @@ export default function EditRecipeRoute() {
           label="Title"
           placeholder="What is the recipe called?"
           required
-          autoFocus={!formData.title}
           value={formData.title}
           handleChange={handleChange}
           error={formErrors.title}

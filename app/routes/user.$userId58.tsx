@@ -9,6 +9,7 @@ import { MainContainer } from '~/components/containers'
 import { DateTime } from 'luxon'
 
 const log = logger({ name: '@/app/routes/user.$userId58.tsx', level: 2 })
+log.debug('logger instantiated')
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
   const { userId58: id58 } = routeHandlerArgs.params
@@ -69,6 +70,7 @@ export default function UserProfileRoute() {
               <a
                 href={user.imageUrl}
                 target="_blank"
+                rel="noreferrer"
               >
                 <img
                   src={user.imageUrl}

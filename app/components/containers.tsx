@@ -1,6 +1,7 @@
 import logger from '@funhouse-atelier/logger'
 
 const log = logger({ name: '@/app/components/containers.tsx', level: 2 })
+log.debug('logger instantiated')
 
 type ContainerTag = 'div' | 'header' | 'main' | 'span'
 type BaselineTextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'

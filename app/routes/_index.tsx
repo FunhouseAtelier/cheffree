@@ -11,6 +11,7 @@ import { RecipeBanner } from '~/components/banners'
 import { FormError } from '~/components/forms'
 
 const log = logger({ name: '@/app/routes/_index.tsx', level: 2 })
+log.debug('logger instantiated')
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
   const { success, failure } = await getAllRecipes('basic', {

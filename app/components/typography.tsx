@@ -2,6 +2,7 @@ import logger from '@funhouse-atelier/logger'
 import { Link } from '@remix-run/react'
 
 const log = logger({ name: '@/app/components/typography.tsx', level: 2 })
+log.debug('logger instantiated')
 
 type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 type BaselineSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
@@ -130,8 +131,6 @@ export const FieldLabel = ({
     {children}
   </Text>
 )
-
-/*  */
 
 export const TextLink = ({
   children,

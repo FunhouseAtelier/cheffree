@@ -8,17 +8,17 @@ import logger from '@funhouse-atelier/logger'
 import { requireAuthenticated } from '~/services/auth.server'
 import { createUser } from '~/services/user.server'
 import { useState, useEffect } from 'react'
-import { redirectDocument, useActionData } from '@remix-run/react'
+import { redirectDocument, useActionData, Form } from '@remix-run/react'
 import { onboardingFormData } from '~/utilities/zod/user'
 import zodParse from '~/utilities/zod/parser'
 import { MainContainer, Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
-import { Form } from '@remix-run/react'
 import { FormSubmitButton } from '~/components/buttons'
 import { useUser } from '@clerk/remix'
 import { FormError, TextField } from '~/components/forms'
 
 const log = logger({ name: '@/app/routes/onboarding.tsx', level: 2 })
+log.debug('logger instantiated')
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
   await requireAuthenticated({ routeHandlerArgs, requireNotOnboarded: true })
@@ -44,9 +44,9 @@ export default function OnboardingRoute() {
 
   useEffect(() => {
     if (isLoaded) {
-      setFormValues({ ...formValues, displayName: clerkMe?.fullName ?? '' })
+      setFormValues((f) => ({ ...f, displayName: clerkMe?.fullName ?? '' }))
     }
-  }, [isLoaded])
+  }, [isLoaded, clerkMe?.fullName])
 
   useEffect(() => {
     if (actionErrors) setFormErrors(actionErrors)
@@ -89,7 +89,6 @@ export default function OnboardingRoute() {
               label="Display Name"
               placeholder="What do you want to be called?"
               required
-              autoFocus
               value={formValues.displayName}
               handleChange={handleChange}
               error={formErrors.displayName}

@@ -8,8 +8,7 @@ import { useState, useEffect } from 'react'
 import { deleteRecipe } from '~/services/recipe.server'
 import { MainContainer } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
-import { Link } from '@remix-run/react'
-import { Form, useLoaderData, useActionData } from '@remix-run/react'
+import { Link, Form, useLoaderData, useActionData } from '@remix-run/react'
 import { FormError } from '~/components/forms'
 import { FormCancelButton, FormDeleteButton } from '~/components/buttons'
 
@@ -17,6 +16,7 @@ const log = logger({
   name: '@/app/routes/recipe.$recipeId58_.delete.tsx',
   level: 2,
 })
+log.debug('logger instantiated')
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
   const { success } = await requireAuthorizedToEditRecipe(routeHandlerArgs)
@@ -65,7 +65,7 @@ export default function EditRecipeRoute() {
         <div className="text-lg sm:text-xl lg:text-2xl leading-relaxed sm:leading-relaxed lg:leading-relaxed flex items-center">
           <img
             src={recipe.author.imageUrl}
-            alt="user image"
+            alt="user avatar"
             className="h-[1.625em] w-auto rounded-[0.25em]"
           />
           <span className="font-semibold px-[0.5em]">

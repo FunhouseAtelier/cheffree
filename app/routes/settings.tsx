@@ -8,15 +8,15 @@ import type {
 import logger from '@funhouse-atelier/logger'
 import { updateUser } from '~/services/user.server'
 import { useState, useEffect } from 'react'
-import { useRouteLoaderData, useActionData } from '@remix-run/react'
+import { useRouteLoaderData, useActionData, Form } from '@remix-run/react'
 import { appSettingsFormData } from '~/utilities/zod/user'
 import zodParse from '~/utilities/zod/parser'
 import { MainContainer, Container } from '~/components/containers'
 import { Heading } from '~/components/typography'
-import { Form } from '@remix-run/react'
 import { SingletonTextField } from '~/components/forms'
 
 const log = logger({ name: '@app/routes/settings.tsx', level: 2 })
+log.debug('logger instantiated')
 
 export const action: ActionFunction = async (routeHandlerArgs) => {
   const formData = await routeHandlerArgs.request.formData()
@@ -36,7 +36,7 @@ export default function AppSettingsRoute() {
   const [formErrors, setFormErrors] = useState<AppSettingsFormErrors>({})
 
   useEffect(() => {
-    if (me) setFormValues({ ...formValues, displayName: me.displayName })
+    if (me) setFormValues((f) => ({ ...f, displayName: me.displayName }))
   }, [me])
 
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function AppSettingsRoute() {
             handleChange={handleChange}
             error={formErrors.displayName}
             activeFieldName={activeFieldName}
-            onCancel={handleCancel}
+            handleCancel={handleCancel}
             setActiveFieldName={setActiveFieldName}
           />
         </Form>

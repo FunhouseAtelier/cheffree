@@ -2,6 +2,7 @@ import logger from '@funhouse-atelier/logger'
 import { z } from 'zod'
 
 const log = logger({ name: '@/app/utilities/zod/common.ts', level: 2 })
+log.debug('logger instantiated')
 
 export const id = z.string().regex(/^[a-f\d]{24}$/)
 export type Id = z.infer<typeof id>
@@ -18,6 +19,7 @@ export type CreatedAt = z.infer<typeof createdAt>
 export const updatedAt = z.date()
 export type UpdatedAt = z.infer<typeof updatedAt>
 
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 export const requireSomeProperty = (obj: any) => {
   for (const val of Object.values(obj)) {
     if (val !== undefined) return true
