@@ -7,13 +7,13 @@ import { json, redirect } from '@remix-run/node'
 const log = logger({ name: '@/app/routes/recipe.new.ts', level: 2 })
 
 export const action: ActionFunction = async (routeHandlerArgs) => {
-  const createRecipeResult = await createRecipe({ routeHandlerArgs })
-  if (createRecipeResult.failure) {
+  const { success, failure } = await createRecipe({ routeHandlerArgs })
+  if (failure) {
     throw json(null, {
       status: 500,
-      statusText: createRecipeResult.failure.reason,
+      statusText: failure.reason,
     })
   }
-  const { id58 } = createRecipeResult.success.data
+  const { id58 } = success.data.recipe
   throw redirect(`/recipe/${id58}/edit`)
 }

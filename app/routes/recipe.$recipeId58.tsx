@@ -8,7 +8,8 @@ import { Heading } from '~/components/typography'
 import { Text } from '~/components/typography'
 import { useLoaderData } from '@remix-run/react'
 import { useUser } from '@clerk/remix'
-import { EditDocumentIconButton, UserButton } from '~/components/buttons'
+import { UserBanner } from '~/components/banners'
+import { EditDocumentButton } from '~/components/buttons'
 
 const log = logger({
   name: '@/app/routes/recipe.$recipeId58.tsx',
@@ -16,7 +17,7 @@ const log = logger({
 })
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
-  const { success } = await requireAuthorizedToViewRecipe({ routeHandlerArgs })
+  const { success } = await requireAuthorizedToViewRecipe(routeHandlerArgs)
   const { recipe } = success.data
   return { recipe }
 }
@@ -27,7 +28,7 @@ export default function ViewRecipeRoute() {
 
   return (
     <MainContainer size="lg">
-      <UserButton
+      <UserBanner
         id58={recipe.author.id58}
         displayName={recipe.author.displayName}
         imageUrl={recipe.author.imageUrl}
@@ -35,35 +36,50 @@ export default function ViewRecipeRoute() {
       <Heading className="flex items-center gap-x-[0.5em]">
         {recipe.title || `Untitled Recipe ${recipe.id58}`}
         {recipe.author.id58 === clerkMe?.publicMetadata.id58 && (
-          <EditDocumentIconButton to={`/recipe/${recipe.id58}/edit`} />
+          <EditDocumentButton to={`/recipe/${recipe.id58}/edit`} />
         )}
       </Heading>
-      <Text Tag="p">{recipe.description}</Text>
-      <Heading Tag="h2">
-        Yield:{' '}
-        {recipe.yieldAmt
-          ? `${recipe.yieldAmt.qty} ${recipe.yieldAmt.unit}`
-          : ''}
-      </Heading>
-      <Heading Tag="h2">Ingredients:</Heading>
-      <ul>
-        {recipe.ingredients.map((ingredient: Ingredient) => (
-          <li key={ingredient.key}>
-            {ingredient.qty} {ingredient.unit} {ingredient.item}
-          </li>
-        ))}
-      </ul>
-      <Heading Tag="h2">Process:</Heading>
-      <ol className="list-decimal ml-[2.5em] mb-[4em]">
-        {recipe.steps.map((step: Step) => (
-          <li
-            key={step.key}
-            className="my-[0.5em]"
-          >
-            {step.text}
-          </li>
-        ))}
-      </ol>
+      <Text
+        Tag="p"
+        className="my-[0.5em]"
+      >
+        {recipe.description}
+      </Text>
+      {recipe.yieldAmt && (
+        <Heading
+          Tag="h2"
+          className="my-[0.5em]"
+        >
+          Yield: {recipe.yieldAmt.qty} {recipe.yieldAmt.unit}
+        </Heading>
+      )}
+      {!!recipe.ingredients.length && (
+        <div className="my-[0.5em]">
+          <Heading Tag="h2">Ingredients:</Heading>
+          <ul className="my-[0.5em]">
+            {recipe.ingredients.map((ingredient: Ingredient) => (
+              <li key={ingredient.key}>
+                {ingredient.qty} • {ingredient.unit} • {ingredient.item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {!!recipe.steps.length && (
+        <div className="my-[0.5em]">
+          <Heading Tag="h2">Process:</Heading>
+          <ol className="list-decimal ml-[1.75em]">
+            {recipe.steps.map((step: Step) => (
+              <li
+                key={step.key}
+                className="my-[0.25em]"
+              >
+                {step.text}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
     </MainContainer>
   )
 }

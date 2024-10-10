@@ -1,36 +1,36 @@
 import type { ActionFunction } from '@remix-run/node'
 import type {
-  AppSettingsForm,
+  AppSettingsFormData,
   AppSettingsFormErrors,
-  BasicUserData,
+  UserBasicData,
 } from '~/utilities/zod/user'
 
 import logger from '@funhouse-atelier/logger'
-import { updateMe } from '~/services/user.server'
+import { updateUser } from '~/services/user.server'
 import { useState, useEffect } from 'react'
 import { useRouteLoaderData, useActionData } from '@remix-run/react'
-import { appSettingsForm } from '~/utilities/zod/user'
+import { appSettingsFormData } from '~/utilities/zod/user'
 import zodParse from '~/utilities/zod/parser'
 import { MainContainer, Container } from '~/components/containers'
-import { Heading, Text } from '~/components/typography'
+import { Heading } from '~/components/typography'
 import { Form } from '@remix-run/react'
-import { SingletonTextFieldSet } from '~/components/forms'
+import { SingletonTextField } from '~/components/forms'
 
 const log = logger({ name: '@app/routes/settings.tsx', level: 2 })
 
 export const action: ActionFunction = async (routeHandlerArgs) => {
   const formData = await routeHandlerArgs.request.formData()
   const updates = Object.fromEntries(formData)
-  const updateMeResult = await updateMe({ routeHandlerArgs, updates })
-  return { actionErrors: updateMeResult.failure?.errors }
+  const { failure } = await updateUser({ routeHandlerArgs, updates })
+  return { actionErrors: failure?.errors }
 }
 
 export default function AppSettingsRoute() {
-  const { me } = useRouteLoaderData<{ me: BasicUserData }>('root') ?? {}
+  const { me } = useRouteLoaderData<{ me: UserBasicData }>('root') ?? {}
   const { actionErrors } = useActionData<typeof action>() ?? {}
 
   const [activeFieldName, setActiveFieldName] = useState<string | null>(null)
-  const [formValues, setFormValues] = useState<AppSettingsForm>({
+  const [formValues, setFormValues] = useState<AppSettingsFormData>({
     displayName: '',
   })
   const [formErrors, setFormErrors] = useState<AppSettingsFormErrors>({})
@@ -50,7 +50,7 @@ export default function AppSettingsRoute() {
     const { name, value } = event.target as HTMLInputElement
     const newFormValues = { ...formValues, [name]: value }
     setFormValues(newFormValues)
-    const zodParseResult = zodParse(newFormValues, appSettingsForm)
+    const zodParseResult = zodParse(newFormValues, appSettingsFormData)
     if (zodParseResult.success) {
       setFormErrors({})
     } else {
@@ -71,21 +71,23 @@ export default function AppSettingsRoute() {
   return (
     <MainContainer>
       <Heading className="text-center">App Settings</Heading>
-      <Text Tag="p">Click on a field to edit the value.</Text>
-      <Container size="sm">
+      <Container
+        centered
+        containerSize="sm"
+        className="my-[1em]"
+      >
         <Form
           method="post"
           onSubmit={handleSubmit}
-          className="flex flex-col gap-y-[0.125em]"
+          className="flex flex-col gap-y-[0.5em]"
         >
-          <SingletonTextFieldSet
+          <SingletonTextField
             fieldName="displayName"
             label="Display Name"
             placeholder="What do you want to be called?"
             required
-            autoFocus
             value={formValues.displayName}
-            onChange={handleChange}
+            handleChange={handleChange}
             error={formErrors.displayName}
             activeFieldName={activeFieldName}
             onCancel={handleCancel}

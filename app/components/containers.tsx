@@ -2,13 +2,13 @@ import logger from '@funhouse-atelier/logger'
 
 const log = logger({ name: '@/app/components/containers.tsx', level: 2 })
 
-type ContainerTag = 'div' | 'main' | 'span'
-type BaselineSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
+type ContainerTag = 'div' | 'header' | 'main' | 'span'
+type BaselineTextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl'
 type ContainerSize = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'fluid'
 type LeadingOption = 'none' | 'tight' | 'snug' | 'normal' | 'relaxed' | 'loose'
 
 const responsiveTextClassesByBaselineSize: {
-  [key in BaselineSize]: string
+  [key in BaselineTextSize]: string
 } = {
   'xs': 'text-xs sm:text-sm lg:text-base',
   'sm': 'text-sm sm:text-base lg:text-lg',
@@ -43,26 +43,44 @@ const maxWidthClassByContainerSize: {
   'fluid': 'max-w-full',
 }
 
-export const ResponsiveBaselineContainer = ({
+export const Container = ({
   children,
   Tag = 'div',
-  baselineSize = 'md',
+  textSize = 'md',
   leading = 'normal',
   containerSize = 'md',
+  centered = false,
+  flex = false,
+  inlineFlex = false,
+  column = false,
+  center = '',
   className,
 }: {
   children: React.ReactNode
   Tag?: ContainerTag
-  baselineSize?: BaselineSize
+  textSize?: BaselineTextSize
   leading?: LeadingOption
   containerSize?: ContainerSize
+  centered?: boolean
+  flex?: boolean
+  inlineFlex?: boolean
+  column?: boolean
+  center?: '' | 'x' | 'y' | 'xy' | 'yx'
   className?: string
 }) => (
   <Tag
     className={`
-      ${responsiveTextClassesByBaselineSize[baselineSize]}
+      ${responsiveTextClassesByBaselineSize[textSize]}
       ${responsiveLeadingClassesByLeadingOption[leading]}
       ${maxWidthClassByContainerSize[containerSize]}
+      ${centered && 'mx-auto'}
+      ${flex && 'flex'}
+      ${inlineFlex && 'inline-flex'}
+      ${column && 'flex-col'}
+      ${!column && center.includes('x') && 'justify-center'}
+      ${!column && center.includes('y') && 'items-center'}
+      ${column && center.includes('x') && 'justify-center'}
+      ${column && center.includes('y') && 'items-center'}
       ${className ?? ''}
     `}
   >
@@ -79,61 +97,15 @@ export const MainContainer = ({
   size?: ContainerSize
   className?: string
 }) => (
-  <ResponsiveBaselineContainer
+  <Container
     Tag="main"
     containerSize={size}
+    centered
     className={`
-      mx-auto p-[0.5em] break-words  
+      p-[0.5em] break-words
       ${className ?? ''}
     `}
   >
     {children}
-  </ResponsiveBaselineContainer>
+  </Container>
 )
-
-/*  */
-
-export const Container = ({
-  children,
-  size = 'fluid',
-  className,
-}: {
-  children: React.ReactNode
-  size?: ContainerSize
-  className?: string
-}) => {
-  return (
-    <div
-      className={`
-        mx-auto p-[0.5em] break-words
-        ${maxWidthClassByContainerSize[size]}
-        ${className ?? ''}
-      `}
-    >
-      {children}
-    </div>
-  )
-}
-
-export const FlexContainer = ({
-  children,
-  size = 'fluid',
-  className,
-}: {
-  children: React.ReactNode
-  size?: ContainerSize
-  className?: string
-}) => {
-  return (
-    <div
-      className={`
-        flex
-        break-words
-        ${maxWidthClassByContainerSize[size]}
-        ${className ?? ''}
-      `}
-    >
-      {children}
-    </div>
-  )
-}

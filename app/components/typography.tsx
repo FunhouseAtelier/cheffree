@@ -88,7 +88,6 @@ export const Text = ({
     className={`
       ${responsiveTextClassesByBaselineSize[size]}
       ${responsiveLeadingClassesByLeadingOption[leading]}
-      ${Tag === 'p' ? 'my-[0.75em]' : ''}
       ${className ?? ''}
     `}
   >

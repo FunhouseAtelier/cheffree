@@ -43,13 +43,13 @@ const log = logger({
 })
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
-  const { success } = await requireAuthorizedToEditRecipe({ routeHandlerArgs })
+  const { success } = await requireAuthorizedToEditRecipe(routeHandlerArgs)
   const { recipe } = success.data
   return { recipe }
 }
 
 export const action: ActionFunction = async (routeHandlerArgs) => {
-  const { failure } = await updateRecipe({ routeHandlerArgs })
+  const { failure } = await updateRecipe(routeHandlerArgs)
   if (!failure) throw redirect(`/recipe/${routeHandlerArgs.params.recipeId58}`)
   return { actionErrors: failure.errors }
 }
@@ -113,7 +113,7 @@ export default function EditRecipeRoute() {
         key: ingredientData.key,
         qty: name.endsWith('Qty') ? value : ingredientData.qty,
         unit: name.endsWith('Unit') ? value : ingredientData.unit,
-        item: name.endsWith('Name') ? value : ingredientData.item,
+        item: name.endsWith('Item') ? value : ingredientData.item,
       }
       const lastIngredientData = ingredients[ingredients.length - 1]
       if (
@@ -274,11 +274,17 @@ export default function EditRecipeRoute() {
           )}
         </ClientOnly>
         <AddLineButton handleAdd={() => handleAdd('steps')} />
-        <div className="flex gap-x-[1em]">
-          <FormCancelButton to={`/recipe/${recipe.id58}`}>
+        <div className="flex gap-x-[1em] mt-4">
+          <FormCancelButton
+            to={`/recipe/${recipe.id58}`}
+            className="w-full"
+          >
             Cancel
           </FormCancelButton>
-          <FormSubmitButton disabled={!!Object.keys(formErrors).length}>
+          <FormSubmitButton
+            disabled={!!Object.keys(formErrors).length}
+            className="w-full"
+          >
             Save Changes
           </FormSubmitButton>
         </div>
@@ -287,7 +293,7 @@ export default function EditRecipeRoute() {
       </Form>
       <Form
         action={`/recipe/${recipe.id58}/delete`}
-        className="flex flex-col gap-y-[0.5em]"
+        className="flex justify-center"
       >
         <FormDeleteButton>Delete Recipe</FormDeleteButton>
       </Form>

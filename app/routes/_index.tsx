@@ -1,57 +1,50 @@
 import type { LoaderFunction } from '@remix-run/node'
-import type { BasicUserData } from '~/utilities/zod/user'
+import type { RecipeBasicData } from '~/utilities/zod/recipe'
 
 import logger from '@funhouse-atelier/logger'
-import { getAllUsers } from '~/services/user.server'
-import { useLoaderData, useRouteLoaderData } from '@remix-run/react'
+import { getAllRecipes } from '~/services/recipe.server'
 import { MainContainer } from '~/components/containers'
-import { Heading, TextLink } from '~/components/typography'
+import { Heading } from '~/components/typography'
+import { Form, useLoaderData } from '@remix-run/react'
+import { FormSubmitButton } from '~/components/buttons'
+import { RecipeBanner } from '~/components/banners'
+import { FormError } from '~/components/forms'
 
 const log = logger({ name: '@/app/routes/_index.tsx', level: 2 })
 
-export const loader: LoaderFunction = async () => {
-  const getAllUsersResult = await getAllUsers()
-  const users = getAllUsersResult.success?.data.users ?? []
-  return { users }
+export const loader: LoaderFunction = async (routeHandlerArgs) => {
+  const { success, failure } = await getAllRecipes('basic', {
+    routeHandlerArgs,
+  })
+  if (success) {
+    const { recipes } = success.data
+    return { recipes }
+  }
+  return { loaderError: failure.reason }
 }
 
-export default function IndexRoute() {
-  const { users } = useLoaderData<typeof loader>()
-  const { me } = useRouteLoaderData<{ me: BasicUserData }>('root') ?? {}
+export default function HomeRoute() {
+  const { recipes, loaderError } = useLoaderData<typeof loader>()
 
   return (
-    <MainContainer>
-      <Heading className="text-center">Home Page</Heading>
-      <Heading Tag="h2">
-        {me ? `Welcome, ${me.displayName}!` : 'Greetings, traveler!'}
-      </Heading>
-      <Heading Tag="h3">Features:</Heading>
-      <ul>
-        <li className="my-[0.25em]">
-          <TextLink
-            to="/recipe/feed"
-            size="lg"
-          >
-            Recipe Feed
-          </TextLink>
-        </li>
-      </ul>
-      <Heading Tag="h3">Member List:</Heading>
-      <ul>
-        {users.map((user: BasicUserData) => (
-          <li
-            key={user.id58}
-            className="my-[0.25em]"
-          >
-            <TextLink
-              to={`/user/${user.id58}`}
-              size="lg"
-            >
-              {user.displayName}
-            </TextLink>
-          </li>
+    <MainContainer size="lg">
+      <Heading className="text-center">Recipe Feed</Heading>
+      <Form
+        method="post"
+        action="/recipe/new"
+        className="flex justify-center my-[1em]"
+      >
+        <FormSubmitButton>Create a new recipe</FormSubmitButton>
+      </Form>
+      <div className="flex flex-col gap-y-[1em] my-[2em]">
+        {recipes.map((recipe: RecipeBasicData) => (
+          <RecipeBanner
+            key={recipe.id58}
+            recipe={recipe}
+          />
         ))}
-      </ul>
+      </div>
+      <FormError>{loaderError}</FormError>
     </MainContainer>
   )
 }

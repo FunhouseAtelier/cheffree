@@ -3,8 +3,8 @@ import type { Ingredients, Steps } from '~/utilities/zod/recipe'
 import logger from '@funhouse-atelier/logger'
 import {
   AddLineButton,
-  FormCancelIconButton,
-  FormSubmitIconButton,
+  SingletonCancelButton,
+  SingletonSubmitButton,
 } from './buttons'
 import { CheckIcon, UpDownIcon, TrashIcon } from '~/components/icons'
 import { Text } from './typography'
@@ -27,6 +27,7 @@ import {
 } from '@hello-pangea/dnd'
 import { AddIcon } from '~/components/icons'
 import { UUID } from '~/utilities/zod/common'
+import { Container } from './containers'
 import './forms.css'
 
 const log = logger({ name: '@/app/components/forms.tsx', level: 2 })
@@ -35,25 +36,27 @@ export const Checkbox = ({ checked }: { checked: boolean }) => (
   <button
     type="button"
     className={`
-        inline-flex items-center justify-center
-        size-[1.75em]
-        border-2 sm:border-[3px] lg:border-4
-        rounded-[0.25em]
+        inline-flex justify-center items-center
+        size-[2em]
         drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        transition-colors duration-300 ease-out active:transition-none
+        border-2 sm:border-[3px] lg:border-4
+        rounded-[0.5em]
+        ring-inset ring-2
+        [transition-property:background-color,box-shadow,opacity]
+        duration-200 ease-out
         text-zinc-200
+        focus:ring-yellow-400 focus:outline-none
+        active:transition-none        
         ${
           checked
             ? `
-              bg-cyan-800/80 border-cyan-500
-              disabled:bg-cyan-800/50
-              hover:bg-cyan-800 
-              active:bg-cyan-500`
+              border-cyan-500 ring-cyan-800
+              bg-cyan-800
+              disabled:opacity-50 active:bg-cyan-500`
             : `
-              bg-zinc-800/80 border-zinc-500
-              disabled:bg-zinc-800/50
-              hover:bg-zinc-800
-              active:bg-zinc-500`
+              border-zinc-500 ring-zinc-800
+              bg-zinc-800
+              disabled:opacity-50 active:bg-zinc-500`
         }
       `}
   >
@@ -139,20 +142,20 @@ export const TextField = ({
       className={`
         block
         w-full
-        py-[0.25em] px-[0.5em]
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
         border-2 sm:border-[3px] lg:border-4
         rounded-[0.5em]
-        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        transition-colors duration-300 ease-out
+        py-[0.25em] px-[0.5em]
+        ring-inset ring-2
+        transition-shadow duration-200 ease-out
+        ring-yellow-950
         bg-yellow-950
-        focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none        
+        focus:ring-yellow-400 focus:outline-none
+        active:transition-none   
         ${
           error
-            ? `
-              text-red-200 border-red-400 
-              ring-1 sm:ring-2 lg:ring ring-red-600`
-            : `
-              text-zinc-200 border-yellow-700 `
+            ? `border-red-500 text-red-200`
+            : `border-yellow-700 text-zinc-200`
         }
       `}
     />
@@ -198,20 +201,20 @@ export const TextAreaField = ({
         className={`
           block
           w-full
-          py-[0.25em] px-[0.5em]
+          drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
           border-2 sm:border-[3px] lg:border-4
           rounded-[0.5em]
-          drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-          transition-colors duration-300 ease-out                    
+          py-[0.25em] px-[0.5em]
+          ring-inset ring-2
+          transition-shadow duration-200 ease-out
+          ring-yellow-950
           bg-yellow-950
-          focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
+          focus:ring-yellow-400 focus:outline-none
+          active:transition-none 
           ${
             error
-              ? `
-                text-red-200 border-red-400
-                ring-1 sm:ring-2 lg:ring ring-red-600`
-              : `
-                text-zinc-200 border-yellow-700`
+              ? `border-red-500 text-red-200`
+              : `border-yellow-700 text-zinc-200`
           }
         `}
       />
@@ -238,11 +241,12 @@ export const YieldAmtField = ({
   return (
     <fieldset className="flex flex-col gap-y-[0.25em]">
       <FieldLabel htmlFor="yieldAmtQtyInput">Yield</FieldLabel>
-      <span
+      <div
         className={`
+          flex items-center
           w-[18em]
-          rounded-[0.5em]          
           drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+          rounded-[0.5em]
         `}
       >
         <input
@@ -252,15 +256,16 @@ export const YieldAmtField = ({
           value={value.qty}
           onChange={handleChange}
           className={`
-            inline-flex items-center
-            h-[2.25rem] sm:h-[2.625rem] lg:h-[3rem]
             w-[6em]
-            px-[0.5em]
             border-2 sm:border-[3px] lg:border-4
             rounded-l-[0.5em]
-            transition-colors duration-300 ease-out
-            text-zinc-200 bg-yellow-950 border-yellow-700 
-            focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
+            py-[0.25em] px-[0.5em]
+            ring-inset ring-2
+            transition-shadow duration-200 ease-out
+            border-yellow-700 ring-yellow-950
+            bg-yellow-950 text-zinc-200
+            focus:ring-yellow-400 focus:outline-none
+            active:transition-none
           `}
         />
         <select
@@ -269,15 +274,16 @@ export const YieldAmtField = ({
           value={value.unit}
           onChange={handleChange}
           className={`
-            inline-flex items-center
-            h-[2.25rem] sm:h-[2.625rem] lg:h-[3rem]
-            w-[12em]
-            px-[0.5em] 
+            h-full w-[12em]
             border-2 sm:border-[3px] lg:border-4
             rounded-r-[0.5em]
-            transition-colors duration-300 ease-out
-            text-zinc-200 bg-yellow-950 border-yellow-700 
-            focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
+            py-[0.25em] px-[0.5em]
+            ring-inset ring-2
+            transition-shadow duration-200 ease-out
+            border-yellow-700 ring-yellow-950
+            bg-yellow-950 text-zinc-200
+            focus:ring-yellow-400 focus:outline-none
+            active:transition-none
           `}
         >
           <option value="">(unit)</option>
@@ -290,7 +296,7 @@ export const YieldAmtField = ({
             </option>
           ))}
         </select>
-      </span>
+      </div>
     </fieldset>
   )
 }
@@ -331,9 +337,9 @@ export const IngredientField = ({
           ref={provided.innerRef}
           className="
             ingredientFieldset
-            py-[0.25em]
-            rounded-[0.5em]
             drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+            py-[0.25em]
+            rounded-[0.5em]            
           "
         >
           <div className="collapsingFields">
@@ -345,9 +351,12 @@ export const IngredientField = ({
                   w-[2em]
                   border-2 sm:border-[3px] lg:border-4
                   rounded-tl-[0.5em] sm:rounded-bl-[0.5em]
-                  transition-colors duration-300 ease-out
-                  bg-yellow-700 border-yellow-700
-                  focus:bg-yellow-600 focus:border-yellow-400 focus:outline-none
+                  ring-inset ring-2
+                  transition-shadow duration-200 ease-out
+                  border-yellow-700 ring-yellow-700 
+                  bg-yellow-700 text-zinc-800
+                  focus:ring-yellow-400 focus:outline-none
+                  active:transition-none
                 "
               >
                 <UpDownIcon />
@@ -360,13 +369,14 @@ export const IngredientField = ({
                 onChange={handleChange}
                 className={`
                   qtyInput
-                  px-[0.5em] py-[0.125em]
                   border-2 sm:border-[3px] lg:border-4
-                  transition-colors duration-300 ease-out
-                  text-zinc-200
-                  bg-yellow-950 border-yellow-700
-                  focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
-
+                  py-[0.25em] px-[0.5em]
+                  ring-inset ring-2
+                  transition-shadow duration-200 ease-out
+                  border-yellow-700 ring-yellow-950
+                  bg-yellow-950 text-zinc-200
+                  focus:ring-yellow-400 focus:outline-none
+                  active:transition-none
                 `}
               />
               <select
@@ -376,12 +386,14 @@ export const IngredientField = ({
                 onChange={handleChange}
                 className={`
                   unitInput
-                  px-[0.5em] py-[0.125em]
                   border-2 sm:border-[3px] lg:border-4
-                  transition-colors duration-300 ease-out
-                  text-zinc-200
-                  bg-yellow-950 border-yellow-700
-                  focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
+                  px-[0.5em] py-[0.125em]
+                  ring-inset ring-2
+                  transition-shadow duration-200 ease-out
+                  border-yellow-700 ring-yellow-950
+                  bg-yellow-950 text-zinc-200
+                  focus:ring-yellow-400 focus:outline-none
+                  active:transition-none
                 `}
               >
                 <option value="">(unit)</option>
@@ -404,12 +416,15 @@ export const IngredientField = ({
                 onChange={handleChange}
                 className={`
                   itemInput
-                  px-[0.5em] py-[0.125em]
                   border-2 sm:border-[3px] lg:border-4
                   rounded-b-[0.5em] sm:rounded-b-none
-                  transition-colors duration-300 ease-out
-                  text-zinc-200 bg-yellow-950 border-yellow-700
-                  focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
+                  py-[0.25em] px-[0.5em]
+                  ring-inset ring-2
+                  transition-shadow duration-200 ease-out
+                  border-yellow-700 ring-yellow-950
+                  bg-yellow-950 text-zinc-200
+                  focus:ring-yellow-400 focus:outline-none
+                  active:transition-none
                 `}
               />
             </div>
@@ -418,14 +433,16 @@ export const IngredientField = ({
               onClick={() => handleCancel('ingredients', +lineNumber - 1)}
               className={`
                 deleteButton
-                inline-flex items-center justify-center
+                inline-flex justify-center items-center
                 w-[2em]
                 border-2 sm:border-[3px] lg:border-4
                 rounded-tr-[0.5em] sm:rounded-br-[0.5em]
-                transition-colors duration-300 ease-out
-                text-zinc-200 bg-red-800 border-red-500
-                hover:bg-red-700
-                focus:bg-red-700 focus:border-yellow-400 focus:outline-none
+                ring-inset ring-2
+                transition-shadow duration-200 ease-out
+                border-red-700 ring-red-900
+                bg-red-900 text-zinc-200
+                focus:ring-yellow-400 focus:outline-none
+                active:transition-none
               `}
             >
               <TrashIcon />
@@ -450,10 +467,15 @@ export const IngredientList = ({
   ) => void
 }) => (
   <Droppable droppableId="ingredientList">
-    {(provided) => (
+    {(provided, snapshot) => (
       <div
         {...provided.droppableProps}
         ref={provided.innerRef}
+        className={`
+          py-[0.25em] px-[0.5em]
+          rounded-[0.25em]
+          ${snapshot.isDraggingOver ? 'bg-emerald-900/30' : 'bg-zinc-900/15'}
+        `}
       >
         {ingredients.map((ingredient, index) => (
           <IngredientField
@@ -495,21 +517,31 @@ export const ProcessField = ({
       <fieldset
         {...provided.draggableProps}
         ref={provided.innerRef}
-        className="py-[0.125em] flex drop-shadow sm:drop-shadow-md lg:drop-shadow-lg"
+        className="
+          flex
+          drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+          py-[0.25em]
+          rounded-[0.5em]
+        "
       >
         <div className="grow flex">
-          <span
+          <a
             {...provided.dragHandleProps}
             className="
-            inline-flex justify-center items-center
-            h-full
-            w-[1.25em]
-            rounded-l-[0.5em]
-            bg-yellow-700
-          "
+              inline-flex justify-center items-center
+              w-[2em]
+              border-2 sm:border-[3px] lg:border-4              
+              rounded-l-[0.5em]
+              ring-inset ring-2
+              transition-shadow duration-200 ease-out
+              border-yellow-700 ring-yellow-700 
+              bg-yellow-700 text-zinc-800
+              focus:ring-yellow-400 focus:outline-none
+              active:transition-none
+            "
           >
             <UpDownIcon />
-          </span>
+          </a>
           <textarea
             id={`step_${lineNumber}_TextInput`}
             name={`step_${lineNumber}_Text`}
@@ -517,32 +549,34 @@ export const ProcessField = ({
             rows={3}
             onChange={handleChange}
             className="
-            grow
-            px-[0.5em] py-[0.25em]
-            border-2 sm:border-[3px] lg:border-4
-            transition-colors duration-300 ease-out
-            text-zinc-200 bg-yellow-950 border-yellow-700
-            focus:bg-yellow-900 focus:border-yellow-400 focus:outline-none
-          "
+              grow
+              border-2 sm:border-[3px] lg:border-4
+              py-[0.25em] px-[0.5em]
+              ring-inset ring-2
+              transition-shadow duration-200 ease-out
+              border-yellow-700 ring-yellow-950
+              bg-yellow-950 text-zinc-200
+              focus:ring-yellow-400 focus:outline-none
+              active:transition-none
+            "
           />
           <button
             type="button"
             onClick={() => handleCancel('steps', +lineNumber - 1)}
-            tabIndex={-1}
             className={`
-            inline-flex items-center justify-center
-            h-full
-            w-[2.25rem] sm:w-[2.625rem] lg:w-[3rem]
-            border-2 sm:border-[3px] lg:border-4
-            rounded-r-[0.5em]
-            transition-colors duration-300 ease-out          
-            text-zinc-200 bg-red-800/80 border-red-500
-            hover:bg-red-800         
-          `}
+              inline-flex justify-center items-center
+              w-[2em]
+              border-2 sm:border-[3px] lg:border-4
+              rounded-r-[0.5em]
+              ring-inset ring-2
+              transition-shadow duration-200 ease-out
+              border-red-700 ring-red-900
+              bg-red-900 text-zinc-200
+              focus:ring-yellow-400 focus:outline-none
+              active:transition-none
+            `}
           >
-            <Text size="lg">
-              <TrashIcon />
-            </Text>
+            <TrashIcon />
           </button>
         </div>
       </fieldset>
@@ -563,10 +597,15 @@ export const ProcessList = ({
   ) => void
 }) => (
   <Droppable droppableId="processList">
-    {(provided) => (
+    {(provided, snapshot) => (
       <div
         {...provided.droppableProps}
         ref={provided.innerRef}
+        className={`
+          py-[0.25em] px-[0.5em]
+          rounded-[0.25em]
+          ${snapshot.isDraggingOver ? 'bg-emerald-900/30' : 'bg-zinc-900/15'}
+        `}
       >
         {steps.map((step, index) => (
           <ProcessField
@@ -584,16 +623,14 @@ export const ProcessList = ({
   </Droppable>
 )
 
-/*  */
-
-export const SingletonTextFieldSet = ({
+export const SingletonTextField = ({
   fieldName,
   label,
   placeholder = '',
   required = false,
   autoFocus = false,
   value,
-  onChange,
+  handleChange,
   error,
   activeFieldName,
   onCancel,
@@ -605,26 +642,22 @@ export const SingletonTextFieldSet = ({
   required?: boolean
   autoFocus?: boolean
   value: string
-  onChange: (event: React.FormEvent) => void
+  handleChange: (event: React.FormEvent) => void
   error?: string
   activeFieldName: string | null
   onCancel: (event: React.MouseEvent) => void
   setActiveFieldName: Function
 }) => {
   return (
-    <fieldset>
-      <div
-        className="
-          text-sm sm:text-base lg:text-lg
-          leading-normal sm:leading-normal lg:leading-normal
-          flex gap-x-[1em]
-          font-semibold
-        "
-      >
-        <label htmlFor={`${fieldName}Input`}>{label}</label>
-        <strong className="font-semibold text-red-700">{error}</strong>
+    <fieldset className="flex flex-col gap-y-[0.25em]">
+      <div className="flex gap-x-[1em]">
+        <FieldLabel htmlFor={`${fieldName}Input`}>{label}</FieldLabel>
+        <FieldError>{error}</FieldError>
       </div>
-      <div className="flex my-[0.25em] gap-x-[0.5em]">
+      <Container
+        flex
+        className="gap-x-[0.5em]"
+      >
         {activeFieldName === fieldName ? (
           <>
             <input
@@ -633,36 +666,56 @@ export const SingletonTextFieldSet = ({
               name={fieldName}
               placeholder={placeholder}
               required={required}
-              autoFocus={autoFocus}
+              autoFocus
               value={value}
-              onChange={onChange}
-              className="
-                rounded-[0.25em]
-                px-[0.5em]
-                grow flex items-center
-                text-zinc-200
-                bg-yellow-950
+              onChange={handleChange}
+              className={`
+                grow
                 drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-              "
+                border-2 sm:border-[3px] lg:border-4
+                rounded-[0.5em]
+                py-[0.25em] px-[0.5em]
+                ring-inset ring-2
+                transition-shadow duration-200 ease-out
+                ring-yellow-950
+                bg-yellow-950
+                focus:ring-yellow-400 focus:outline-none
+                active:transition-none   
+                ${
+                  error
+                    ? `border-red-500 text-red-200`
+                    : `border-yellow-700 text-zinc-200`
+                }
+              `}
             />
-            <FormSubmitIconButton disabled={!!error} />
-            <FormCancelIconButton onClick={onCancel} />
+            <SingletonSubmitButton disabled={!!error} />
+            <SingletonCancelButton onClick={onCancel} />
           </>
         ) : (
           <>
-            <div
+            <button
+              type="button"
               onClick={() => setActiveFieldName(fieldName)}
               className="
-                flex items-center grow px-[0.5em] h-9 sm:h-10 lg:h-12 rounded-[0.25em] bg-yellow-300
+                grow flex items-center
+                h-[2.25em] sm:h-[2.3333em] lg:h-[2.4em]
+                border-2 sm:border-[3px] lg:border-4
+                rounded-[0.5em]
+                px-[0.5em]
+                transition-colors duration-200 ease-out
+                border-lime-200
+                bg-lime-200
+                focus:ring-2 focus:ring-yellow-400 focus:outline-none
+                active:transition-none
               "
             >
               {value}
-            </div>
-            <div className="size-9 sm:size-10 lg:size-12" />
-            <div className="size-9 sm:size-10 lg:size-12" />
+            </button>
+            <div className="size-[2.25em] sm:size-[2.3333em] lg:size-[2.4em]" />
+            <div className="size-[2.25em] sm:size-[2.3333em] lg:size-[2.4em]" />
           </>
         )}
-      </div>
+      </Container>
     </fieldset>
   )
 }
@@ -672,41 +725,5 @@ export const FormError = ({ children }: { children: React.ReactNode }) => {
     <strong className="min-h-[1.625em] block font-semibold text-center text-red-700">
       {children}
     </strong>
-  )
-}
-
-export const TestIngredientField = () => {
-  return (
-    <fieldset
-      className="
-        ingredientFieldset
-        my-[0.125em]
-        rounded-[0.5em]
-        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-      "
-    >
-      <div className="collapsingFields">
-        <div className="inputGroup-1">
-          <input
-            type="text"
-            name="qty"
-            placeholder="qty"
-          />
-          <input
-            type="text"
-            name="unit"
-            placeholder="unit"
-          />
-        </div>
-        <div className="inputGroup-2">
-          <input
-            type="text"
-            name="item"
-            placeholder="item"
-          />
-        </div>
-        <button type="button">&times;</button>
-      </div>
-    </fieldset>
   )
 }

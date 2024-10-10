@@ -1,27 +1,30 @@
 import logger from '@funhouse-atelier/logger'
 import { z } from 'zod'
-import { id58, uuid } from './common'
+import {
+  id,
+  id58,
+  uuid,
+  requireSomeProperty,
+  requireSomePropertyMsg,
+} from './common'
 import { displayName, imageUrl } from './user'
 
 const log = logger({ name: '@/app/utilities/zod/recipe.ts', level: 2 })
 
-const isPublished = z.boolean()
 const title = z.string().min(1).max(64)
+export type Title = z.infer<typeof title>
+
 const description = z.string().max(1024)
+export type Description = z.infer<typeof description>
+
+const isPublished = z.boolean()
+export type isPublished = z.infer<typeof isPublished>
 
 const author = z.object({
   id58,
   displayName,
   imageUrl,
 })
-
-const basicRecipeData = z.object({
-  id58,
-  title,
-  description,
-  author,
-})
-export type BasicRecipeData = z.infer<typeof basicRecipeData>
 
 const yieldAmt = z
   .object({
@@ -50,6 +53,25 @@ export type Ingredients = z.infer<typeof ingredients>
 const steps = z.array(step)
 export type Steps = z.infer<typeof steps>
 
+const recipeBasicData = z.object({
+  id58,
+  title,
+  description,
+  author,
+})
+export type RecipeBasicData = z.infer<typeof recipeBasicData>
+
+const getRecipeWhereArgs = z
+  .object({
+    id,
+    id58,
+  })
+  .partial()
+  .refine(requireSomeProperty, requireSomePropertyMsg)
+export type GetRecipeWhereArgs = z.infer<typeof getRecipeWhereArgs>
+/**
+ *
+ */
 export const editRecipeFormData = z.object({
   isPublished,
   title,

@@ -7,7 +7,6 @@ import {
   UserButton as ClerkUserButton,
 } from '@clerk/remix'
 import { CheckIcon, XmarkIcon, EditDocumentIcon } from '~/components/icons'
-import { BasicUserData } from '~/utilities/zod/user'
 import { Link } from '@remix-run/react'
 import { Text } from './typography'
 import { AddIcon } from '~/components/icons'
@@ -38,22 +37,23 @@ export const NavButton = ({
     isPending: boolean
   }) => {
     return `
-      text-base sm:text-lg lg:text-xl
-      leading-normal sm:leading-normal lg:leading-normal
-      h-[2em]
-      px-[0.5em]
-      border-[0.125em] border-emerald-500
-      rounded-[0.25em]
       drop-shadow-sm sm:drop-shadow lg:drop-shadow-md
-      flex items-center justify-center
+      border-2
+      rounded-[0.25em]
+      px-[0.5em] py-[0.125em]
+      ring-inset ring-2
+      [transition-property:background-color,box-shadow]
+      duration-200 ease-out
+      border-emerald-500
       text-zinc-200
-      transition-colors duration-300 ease-out active:transition-none
+      active:transition-none
+      focus:ring-yellow-400 focus:outline-none
       ${
         isActive
-          ? 'bg-emerald-500/80'
+          ? 'ring-emerald-500 bg-emerald-500'
           : isPending
-          ? 'bg-emerald-500'
-          : 'bg-emerald-800/80 hover:bg-emerald-800 active:bg-emerald-500'
+          ? 'ring-emerald-500/75 bg-emerald-500/75'
+          : 'ring-emerald-800 bg-emerald-800 active:bg-emerald-500'
       }
       ${className ?? ''}
     `
@@ -77,6 +77,8 @@ export const AccountSettingsButton = () => {
       <ClerkUserButton
         appearance={{
           elements: {
+            userButtonTrigger:
+              'focus:ring-2 focus:ring-yellow-400 focus:outline-none',
             avatarBox: 'size-8 sm:size-9 lg:size-10',
           },
         }}
@@ -104,17 +106,17 @@ export const SignUpNavButton = ({
     <SignUpButton mode="modal">
       <button
         className={`
-          text-base sm:text-lg lg:text-xl
-          leading-normal sm:leading-normal lg:leading-normal
-          h-[2em]
-          px-[0.5em]
-          border-[0.125em] border-emerald-500
-          rounded-[0.25em]
           drop-shadow-sm sm:drop-shadow lg:drop-shadow-md
-          flex items-center justify-center
-          text-zinc-200
-          bg-emerald-800/80 hover:bg-emerald-800 active:bg-emerald-500
-          transition-colors duration-300 ease-out active:transition-none
+          border-2
+          rounded-[0.25em]
+          px-[0.5em] py-[0.125em]
+          ring-inset ring-2
+          [transition-property:background-color,box-shadow]
+          duration-200 ease-out 
+          border-emerald-500 ring-emerald-800
+          bg-emerald-800 text-zinc-200
+          active:bg-emerald-500 active:transition-none
+          focus:ring-yellow-400 focus:outline-none
           ${className ?? ''}
         `}
       >
@@ -143,17 +145,17 @@ export const LogInNavButton = ({
     <SignInButton mode="modal">
       <button
         className={`
-          text-base sm:text-lg lg:text-xl
-          leading-normal sm:leading-normal lg:leading-normal
-          h-[2em]
-          px-[0.5em]
-          border-[0.125em] border-emerald-500
-          rounded-[0.25em]
           drop-shadow-sm sm:drop-shadow lg:drop-shadow-md
-          flex items-center justify-center
-          text-zinc-200
-          bg-emerald-800/80 hover:bg-emerald-800 active:bg-emerald-500          
-          transition-colors duration-300 ease-out active:transition-none
+          border-2
+          rounded-[0.25em]
+          px-[0.5em] py-[0.125em]
+          ring-inset ring-2
+          [transition-property:background-color,box-shadow]
+          duration-200 ease-out 
+          border-emerald-500 ring-emerald-800
+          bg-emerald-800 text-zinc-200
+          active:bg-emerald-500 active:transition-none
+          focus:ring-yellow-400 focus:outline-none
           ${className ?? ''}
         `}
       >
@@ -179,16 +181,18 @@ export const FormSubmitButton = ({
       disabled={disabled}
       className={`
         text-lg sm:text-xl lg:text-2xl
-        leading-normal sm:leading-normal lg:leading-normal
-        my-[0.75em]
-        h-[2.5em] w-full
-        border-[0.125em] border-emerald-500
-        rounded-[1.25em]
         drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        flex items-center justify-center
-        text-zinc-200 bg-emerald-800/80
-        hover:bg-emerald-800 active:bg-emerald-500 disabled:bg-emerald-800/50
-        transition-colors duration-300 ease-out active:transition-none
+        border-2 sm:border-[3px] lg:border-4
+        rounded-[1.25em]
+        py-[0.5em] px-[1em]
+        ring-inset ring-2
+        text-center
+        [transition-property:box-shadow,opacity]
+        duration-200 ease-out
+        border-emerald-500 ring-emerald-800
+        bg-emerald-800 text-zinc-200
+        disabled:opacity-50
+        focus:ring-yellow-400 focus:outline-none
         ${className ?? ''}
       `}
     >
@@ -213,16 +217,18 @@ export const FormCancelButton = ({
       to={to}
       className={`
         text-lg sm:text-xl lg:text-2xl
-        leading-normal sm:leading-normal lg:leading-normal
-        my-[0.75em]
-        h-[2.5em] w-full
-        border-[0.125em] border-zinc-500
-        rounded-[1.25em]
         drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        flex items-center justify-center
-        text-zinc-200 bg-zinc-800/80
-        hover:bg-zinc-800 active:bg-zinc-500 disabled:bg-zinc-800/50
-        transition-colors duration-300 ease-out active:transition-none
+        border-2 sm:border-[3px] lg:border-4
+        rounded-[1.25em]
+        py-[0.5em] px-[1em]
+        ring-inset ring-2
+        text-center
+        [transition-property:box-shadow,opacity]
+        duration-200 ease-out
+        border-zinc-500 ring-zinc-800
+        bg-zinc-800 text-zinc-200
+        disabled:opacity-50
+        focus:ring-yellow-400 focus:outline-none
         ${className ?? ''}
       `}
     >
@@ -246,16 +252,18 @@ export const FormDeleteButton = ({
       disabled={disabled}
       className={`
         text-lg sm:text-xl lg:text-2xl
-        leading-normal sm:leading-normal lg:leading-normal
-        my-[0.75em]
-        h-[2.5em] w-full
-        border-[0.125em] border-red-500
-        rounded-[1.25em]
         drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        flex items-center justify-center
-        text-zinc-200 bg-red-800/80
-        hover:bg-red-800 active:bg-red-500 disabled:bg-red-800/50
-        transition-colors duration-300 ease-out active:transition-none
+        border-2 sm:border-[3px] lg:border-4
+        rounded-[1.25em]
+        py-[0.5em] px-[1em]
+        ring-inset ring-2
+        text-center
+        [transition-property:box-shadow,opacity]
+        duration-200 ease-out
+        border-red-700 ring-red-900
+        bg-red-900 text-zinc-200
+        disabled:opacity-50
+        focus:ring-yellow-400 focus:outline-none
         ${className ?? ''}
       `}
     >
@@ -265,7 +273,7 @@ export const FormDeleteButton = ({
 }
 
 /* TODO: add pending UI when form is submitting to show the submission is being performed and to prevent multiple simultaneous submissions. */
-export const FormSubmitIconButton = ({
+export const SingletonSubmitButton = ({
   disabled,
   className,
 }: {
@@ -277,26 +285,30 @@ export const FormSubmitIconButton = ({
       type="submit"
       disabled={disabled}
       className={`
-        text-lg sm:text-xl lg:text-2xl
-        leading-normal sm:leading-normal lg:leading-normal
-        size-[2em]
-        border-[0.125em] border-emerald-500
-        rounded-[0.25em]
+        inline-flex justify-center items-center
+        size-[2.25em] sm:size-[2.3333em] lg:size-[2.4em]
         drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        flex items-center justify-center
-        text-zinc-200 bg-emerald-800/80
-        hover:bg-emerald-800 active:bg-emerald-500 disabled:bg-emerald-800/50
-        transition-colors duration-300 ease-out active:transition-none
+        border-2 sm:border-[3px] lg:border-4
+        rounded-[0.5em]
+        ring-inset ring-2        
+        [transition-property:box-shadow,opacity]
+        duration-200 ease-out
+        border-emerald-500 ring-emerald-800
+        bg-emerald-800 text-zinc-200
+        disabled:opacity-50
+        focus:ring-yellow-400 focus:outline-none
         ${className ?? ''}
       `}
     >
-      <CheckIcon />
+      <Text size="lg">
+        <CheckIcon />
+      </Text>
     </button>
   )
 }
 
 /* TODO: add pending UI when form is submitting to show the submission is being performed and to prevent multiple simultaneous submissions. */
-export const FormCancelIconButton = ({
+export const SingletonCancelButton = ({
   onClick,
   className,
 }: {
@@ -308,42 +320,28 @@ export const FormCancelIconButton = ({
       type="button"
       onClick={onClick}
       className={`
-        text-lg sm:text-xl lg:text-2xl
-        leading-normal sm:leading-normal lg:leading-normal
-        size-[2em]
-        border-[0.125em] border-zinc-500
-        rounded-[0.25em]
+        inline-flex justify-center items-center
+        size-[2.25em] sm:size-[2.3333em] lg:size-[2.4em]
         drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        flex items-center justify-center
-        text-zinc-200 bg-zinc-800/80
-        hover:bg-zinc-800 active:bg-zinc-500 disabled:bg-zinc-800/50
-        transition-colors duration-300 ease-out active:transition-none
+        border-2 sm:border-[3px] lg:border-4
+        rounded-[0.5em]
+        ring-inset ring-2
+        [transition-property:box-shadow,opacity]
+        duration-200 ease-out
+        border-zinc-500 ring-zinc-800
+        bg-zinc-800 text-zinc-200
+        focus:ring-yellow-400 focus:outline-none
         ${className ?? ''}
       `}
     >
-      <XmarkIcon />
+      <Text size="lg">
+        <XmarkIcon />
+      </Text>
     </button>
   )
 }
 
-export const UserButton = ({ id58, displayName, imageUrl }: BasicUserData) => {
-  return (
-    <Link
-      to={`/user/${id58}`}
-      prefetch="viewport"
-      className="text-lg sm:text-xl lg:text-2xl leading-relaxed sm:leading-relaxed lg:leading-relaxed inline-flex items-center bg-lime-200 rounded-[0.25em]"
-    >
-      <img
-        src={imageUrl}
-        alt="user image"
-        className="h-[1.625em] w-auto rounded-l-[0.25em]"
-      />
-      <span className="font-semibold px-[0.5em]">{displayName}</span>
-    </Link>
-  )
-}
-
-export const EditDocumentIconButton = ({
+export const EditDocumentButton = ({
   to,
   className,
 }: {
@@ -354,20 +352,38 @@ export const EditDocumentIconButton = ({
     <Link
       to={to}
       className={`
-        text-lg sm:text-xl lg:text-2xl
-        leading-normal sm:leading-normal lg:leading-normal
-        size-[2em]
-        border-[0.125em] border-amber-500
-        rounded-[0.25em]
+        text-base sm:text-lg lg:text-xl
+        inline-flex justify-center items-center
+        size-[2.25em] sm:size-[2.3333em] lg:size-[2.4em]
         drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        inline-flex items-center justify-center
-        text-zinc-200 bg-amber-800/80
-        hover:bg-amber-800 active:bg-amber-500 disabled:bg-amber-800/50
-        transition-colors duration-300 ease-out active:transition-none
+        border-2 sm:border-[3px] lg:border-4
+        rounded-[0.5em]
+        ring-inset ring-2        
+        [transition-property:box-shadow,opacity]
+        duration-200 ease-out
+        border-amber-500 ring-amber-800
+        bg-amber-800 text-zinc-200
+        disabled:opacity-50
+        focus:ring-yellow-400 focus:outline-none
         ${className ?? ''}
       `}
+      // className={`
+      //   text-lg sm:text-xl lg:text-2xl
+      //   leading-normal sm:leading-normal lg:leading-normal
+      //   size-[2em]
+      //   border-[0.125em] border-amber-500
+      //   rounded-[0.25em]
+      //   drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+      //   inline-flex items-center justify-center
+      //   text-zinc-200 bg-amber-800/80
+      //   hover:bg-amber-800 active:bg-amber-500 disabled:bg-amber-800/50
+      //   transition-colors duration-200 ease-out active:transition-none
+      //   ${className ?? ''}
+      // `}
     >
-      <EditDocumentIcon />
+      <Text size="lg">
+        <EditDocumentIcon />
+      </Text>
     </Link>
   )
 }
@@ -381,17 +397,18 @@ export const AddLineButton = ({
     <button
       type="button"
       onClick={handleAdd}
-      tabIndex={-1}
       className={`
-        inline-flex items-center justify-center
-        size-[2.25rem] sm:size-[2.625rem] lg:size-[3rem]
+        inline-flex justify-center items-center
+        size-[2.5em]
         ml-auto
+        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
         border-2 sm:border-[3px] lg:border-4
         rounded-[0.5em]
-        drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
-        transition-colors duration-300 ease-out
-        text-zinc-200 bg-emerald-800/80 border-emerald-500
-        hover:bg-emerald-800
+        ring-inset ring-2
+        transition-shadow duration-200 ease-out
+        border-emerald-500 ring-emerald-800
+        bg-emerald-800 text-zinc-200
+        focus:ring-yellow-400 focus:outline-none
       `}
     >
       <Text size="lg">

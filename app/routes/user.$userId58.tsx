@@ -2,9 +2,8 @@ import type { LoaderFunction } from '@remix-run/node'
 
 import logger from '@funhouse-atelier/logger'
 
-import { getUserById58 } from '~/services/user.server'
-import { json } from '@remix-run/node'
-import { base58 } from 'base-id'
+import { getUser } from '~/services/user.server'
+import { json, redirect } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 import { MainContainer } from '~/components/containers'
 import { DateTime } from 'luxon'
@@ -19,28 +18,9 @@ export const loader: LoaderFunction = async (routeHandlerArgs) => {
       statusText: 'Missing userId58 param.',
     })
   }
-  const getUserById58Result = await getUserById58({ id58 })
-  if (getUserById58Result.failure) {
-    throw json(null, {
-      status: 500,
-      statusText: 'Failed to fetch user data.',
-    })
-  }
-  const foundUser = getUserById58Result.success.data.user
-  if (!foundUser) {
-    throw json(null, {
-      status: 404,
-      statusText: 'User not found.',
-    })
-  }
-  const { id, displayName, imageUrl, createdAt, updatedAt } = foundUser
-  const user = {
-    id58: base58.encode(id),
-    displayName,
-    imageUrl,
-    createdAt,
-    updatedAt,
-  }
+  const { success, failure } = await getUser('profile', { id58 })
+  if (failure) throw redirect('/')
+  const { user } = success.data
   return { user }
 }
 
@@ -55,7 +35,7 @@ export default function UserProfileRoute() {
         className="
           my-[0.5em] p-[0.5em]
           rounded-sm sm:rounded lg:rounded-md
-          bg-lime-200
+          bg-cyan-200
           drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
         "
       >
@@ -86,7 +66,10 @@ export default function UserProfileRoute() {
         <div className="shrink-0 -mt-16 sm:-mt-[4.5rem] lg:-mt-20 px-[1em]">
           {user ? (
             <>
-              <a href={user.imageUrl} target="_blank">
+              <a
+                href={user.imageUrl}
+                target="_blank"
+              >
                 <img
                   src={user.imageUrl}
                   alt="user avatar"

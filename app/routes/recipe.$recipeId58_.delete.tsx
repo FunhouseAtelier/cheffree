@@ -19,7 +19,7 @@ const log = logger({
 })
 
 export const loader: LoaderFunction = async (routeHandlerArgs) => {
-  const { success } = await requireAuthorizedToEditRecipe({ routeHandlerArgs })
+  const { success } = await requireAuthorizedToEditRecipe(routeHandlerArgs)
   const { recipe } = success.data
   return { recipe }
 }

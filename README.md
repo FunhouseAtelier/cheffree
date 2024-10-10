@@ -6,20 +6,15 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-- Get away from using opacity to show hover effects on buttons.
-- Change background color of droppable area when dragging over.
-- Put trash/add buttons back in the tabstop flow, and add styles when active.
-- Add select fields to DB queries to optimize transactions/traffic.
-- Refactor and revise cosmetics of all components.
-- Revise cosmetics on all pages.
+- Refactored all components.
 
 _good enough for v0.2.0?_
 
-- Add Cloudinary image uploads of recipes.
 - Add infinite scrolling to recipe feed page.
+- Add Cloudinary image uploads of recipes.
 
-- Improve input and display of quantities to allow for more conventional formats than strictly decimal values.
-- make unit read singular/plural, depending on qty.
+- Improve input and display of quantities to accomodate standard practices.
+- Make units read as singular/plural depending on qty.
 - Implement standard unit abbreviations.
 
 - Allow for scaling the recipe size by converting the ingredient quantites as the desired yield is adjusted.
@@ -33,7 +28,19 @@ _good enough for v0.2.0?_
 - Implement sub-recipes.
 - Implement feeback regarding best practices for recipe-authoring. \*(per Scooter)
 
+- Handle errors more gracefully.
+- Handle suspense fallbacks better.
+- Handle case when user has deleted their Clerk Account and wants their ChefFree data to be purged. (Email link to do it.)
+
 ## Revision History
+
+### 0.1.29
+
+- Put trash/add buttons back in the tabstop flow.
+- Switched to box shadow for indication of focus instead of border.
+- Revised cosmetics of all components and pages.
+- Addeded select fields to DB queries to optimize transactions/traffic.
+- Refactored all services and zod schemas.
 
 ### 0.1.28
 

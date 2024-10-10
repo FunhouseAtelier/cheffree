@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs, ActionFunctionArgs } from '@remix-run/node'
-import type { Id58 } from '~/utilities/zod/common'
+import type { GetRecipeWhereArgs } from '~/utilities/zod/recipe'
 
 import logger from '@funhouse-atelier/logger'
 import prisma from './prisma.server'
@@ -8,107 +8,124 @@ import { redirect } from '@remix-run/react'
 import { createClerkClient } from '@clerk/remix/api.server'
 import { base58 } from 'base-id'
 import {
-  BasicRecipeData,
+  RecipeBasicData,
   editRecipeFormData,
   EditRecipeFormData,
 } from '~/utilities/zod/recipe'
 import zodParse from '~/utilities/zod/parser'
-import { requireAuthorizedToEditRecipe } from './auth.server'
+import {
+  requireAuthenticated,
+  requireAuthorizedToEditRecipe,
+} from './auth.server'
+import { replaceIdWithId58 } from '~/utilities/data'
 
-const log = logger({ name: '@/app/services/recipe.server.ts', level: 0 })
+const log = logger({ name: '@/app/services/recipe.server.ts', level: 2 })
 
 const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,
 })
+
+const selectByScope = {
+  basic: {
+    title: true,
+    description: true,
+    author: {
+      select: {
+        id: true,
+        displayName: true,
+        imageUrl: true,
+      },
+    },
+  },
+  view: {
+    isPublished: true,
+    title: true,
+    description: true,
+    author: {
+      select: {
+        id: true,
+        displayName: true,
+        imageUrl: true,
+      },
+    },
+    yieldAmt: true,
+    ingredients: true,
+    steps: true,
+  },
+  edit: {
+    isPublished: true,
+    title: true,
+    description: true,
+    author: {
+      select: {
+        id: true,
+        displayName: true,
+        imageUrl: true,
+      },
+    },
+    yieldAmt: true,
+    ingredients: true,
+    steps: true,
+  },
+}
 
 export const createRecipe = async ({
   routeHandlerArgs,
 }: {
   routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
 }) => {
-  const { userId: clerkId, sessionClaims } = await getAuth(routeHandlerArgs)
-  if (!clerkId) throw redirect('/log-in')
+  const authResult = await requireAuthenticated({ routeHandlerArgs })
+  const { sessionClaims } = authResult.success.data
+
   const userId58 = sessionClaims.metadata.id58
-  if (!userId58) {
-    return {
-      failure: { reason: 'Failed to find your id58 in your session claims.' },
-    }
-  }
+  if (!userId58) throw redirect('/onboarding')
+
   try {
-    const newRecipe = await prisma.recipe.create({
-      data: {
-        authorId: base58.decode(userId58),
-      },
+    const recipe = await prisma.recipe.create({
+      data: { authorId: base58.decode(userId58).toLowerCase() },
+      select: { id: true },
     })
-    return { success: { data: { id58: base58.encode(newRecipe.id) } } }
+    const data = { recipe: replaceIdWithId58(recipe) }
+    return { success: { data } }
   } catch (error) {
-    log.error('Unexpected error when creating the recipe record:\n', error)
-    return {
-      failure: {
-        reason: 'Unable to create a new recipe at this time.',
-      },
-    }
+    log.error('Failed to create recipe:\n', error)
+    return { failure: { reason: 'Failed to create recipe.' } }
   }
 }
 
-export const getRecipeById58 = async ({ id58 }: { id58: Id58 }) => {
+export const getRecipe = async (
+  scope: keyof typeof selectByScope,
+  { id, id58 }: GetRecipeWhereArgs
+) => {
+  if (!id && id58) id = base58.decode(id58).toLowerCase()
+
   try {
     const recipe = await prisma.recipe.findUnique({
-      where: { id: base58.decode(id58) },
+      where: { id },
+      select: { id: true, ...selectByScope[scope] },
     })
-    return { success: { data: { recipe } } }
-  } catch (error) {
-    return { failure: { error } }
-  }
-}
 
-/* TODO: improve error handling when parsing */
-export const updateRecipe = async ({
-  routeHandlerArgs,
-}: {
-  routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
-}) => {
-  await requireAuthorizedToEditRecipe({ routeHandlerArgs })
-  const { recipeId58 } = routeHandlerArgs.params
-  const formData = (await routeHandlerArgs.request.json()) as EditRecipeFormData
-  log.debug('formData:\n', formData)
-  const { isPublished, title, description, yieldAmt, ingredients, steps } =
-    formData
-  const updates = {
-    isPublished,
-    title,
-    description,
-    yieldAmt: yieldAmt.qty || yieldAmt.unit ? yieldAmt : { qty: '', unit: '' },
-    ingredients: ingredients.filter((i) => !!(i.qty || i.unit || i.item)),
-    steps: steps.filter((s) => !!s.text),
-  }
-  log.debug('updates:\n', updates)
-  const zodParseResult = zodParse(updates, editRecipeFormData)
-  log.debug('zodParseResult:\n', zodParseResult)
-  if (zodParseResult.failure) {
-    return { failure: zodParseResult.failure }
-  }
-  try {
-    await prisma.recipe.update({
-      where: { id: base58.decode(recipeId58) },
-      data: { ...zodParseResult.success.data },
-    })
-    return { success: true }
-  } catch (error) {
-    log.error('Unexpected error when updating the recipe record:\n', error)
-    return {
-      failure: {
-        errors: { _global: 'Unable to update the recipe record at this time.' },
-      },
+    if (!recipe) return { failure: { reason: 'Recipe not found.' } }
+
+    const data = {
+      ...replaceIdWithId58(recipe),
+      author: replaceIdWithId58(recipe.author),
     }
+    return { success: { data } }
+  } catch (error) {
+    log.error('Unable to get recipe basic data:\n', error)
+    return { failure: { reason: 'Failed to get recipe.' } }
   }
 }
 
-export const getRecipes = async ({
-  routeHandlerArgs,
-}: {
-  routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
-}) => {
+export const getAllRecipes = async (
+  scope: keyof typeof selectByScope,
+  {
+    routeHandlerArgs,
+  }: {
+    routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
+  }
+) => {
   const { sessionClaims } = await getAuth(routeHandlerArgs)
   const meId = sessionClaims
     ? base58.decode(sessionClaims.metadata.id58).toLowerCase()
@@ -120,36 +137,55 @@ export const getRecipes = async ({
       }
     : { isPublished: true }
   try {
-    const foundRecipes = await prisma.recipe.findMany({
+    const recipes = await prisma.recipe.findMany({
       where,
       select: {
         id: true,
-        title: true,
-        description: true,
-        author: {
-          select: {
-            id: true,
-            displayName: true,
-            imageUrl: true,
-          },
-        },
+        ...selectByScope[scope],
       },
       orderBy: [{ updatedAt: 'desc' }],
     })
-    const recipes: BasicRecipeData[] = foundRecipes.map((recipe) => ({
-      id58: base58.encode(recipe.id),
-      title: recipe.title ?? '',
-      description: recipe.description ?? '',
-      author: {
-        id58: base58.encode(recipe.author.id),
-        displayName: recipe.author.displayName,
-        imageUrl: recipe.author.imageUrl,
-      },
-    }))
-    return { success: { data: { recipes } } }
+    const data = {
+      recipes: recipes.map((recipe) => ({
+        ...replaceIdWithId58(recipe),
+        author: replaceIdWithId58(recipe.author),
+      })),
+    }
+    return { success: { data } }
   } catch (error) {
-    log.error('Unable to get recipe feed:\n', error)
-    return { failure: { error } }
+    log.error('Failed to get recipes:\n', error)
+    return { failure: { reason: 'Failed to get recipes.' } }
+  }
+}
+
+export const updateRecipe = async (
+  routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
+) => {
+  await requireAuthorizedToEditRecipe(routeHandlerArgs)
+  const { recipeId58 } = routeHandlerArgs.params
+  const formData = (await routeHandlerArgs.request.json()) as EditRecipeFormData
+  const updates = {
+    ...formData,
+    ingredients: formData.ingredients.filter(
+      (i) => !!(i.qty || i.unit || i.item)
+    ),
+    steps: formData.steps.filter((s) => !!s.text),
+  }
+  const { success, failure } = zodParse(updates, editRecipeFormData)
+  if (failure) return { failure }
+  try {
+    await prisma.recipe.update({
+      where: { id: base58.decode(recipeId58).toLowerCase() },
+      data: { ...success.data },
+    })
+    return { success: true }
+  } catch (error) {
+    log.error('Failed to update recipe:\n', error)
+    return {
+      failure: {
+        errors: { _global: 'Failed to update recipe.' },
+      },
+    }
   }
 }
 
@@ -158,17 +194,17 @@ export const deleteRecipe = async ({
 }: {
   routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
 }) => {
-  await requireAuthorizedToEditRecipe({ routeHandlerArgs })
+  await requireAuthorizedToEditRecipe(routeHandlerArgs)
   const { recipeId58 } = routeHandlerArgs.params
   try {
     await prisma.recipe.delete({
-      where: { id: base58.decode(recipeId58) },
+      where: { id: base58.decode(recipeId58).toLowerCase() },
     })
     return { success: true }
   } catch (error) {
     return {
       failure: {
-        errors: { _global: 'Unable to delete recipe record at this time.' },
+        errors: { _global: 'Failed to delete recipe.' },
       },
     }
   }

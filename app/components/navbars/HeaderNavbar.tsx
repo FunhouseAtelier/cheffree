@@ -4,29 +4,30 @@ import {
   AccountSettingsButton,
   SignUpNavButton,
   LogInNavButton,
-} from './buttons'
-import { KitchenSetIcon, GearIcon } from './icons'
+} from '../buttons'
+import { KitchenSetIcon, GearIcon } from '../icons'
 import { SignedIn, SignedOut } from '@clerk/remix'
+import { Container } from '../containers'
 
-const log = logger({ name: '@/app/components/navbars.ts', level: 2 })
+const log = logger({
+  name: '@/app/components/navbars/HeaderNavbar.ts',
+  level: 2,
+})
 
-export function HeaderNavbar() {
+export default function HeaderNavbar() {
   return (
-    /* Use Tailwind utility classes to set responsive font size, then use "em" relative units to scale the elements relative to the responsive font size. */
-    <header
-      className="
-        text-base sm:text-lg lg:text-xl
-        p-[0.5em]
-      "
+    <Container
+      Tag="header"
+      containerSize="fluid"
+      className="p-[0.5em]"
     >
       {/* Use drop shadow to give the navbar an appearance of being lifted up from the page background, and give the background color a gradient so it doesn't look so plain. */}
       <nav
         className="
-          h-[3em]
-          px-[0.5em]
-          rounded-[0.25em]
-          drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
           flex items-center gap-x-[0.5em]
+          drop-shadow sm:drop-shadow-md lg:drop-shadow-lg
+          rounded-[0.25em]
+          p-[0.5em]
           bg-gradient-to-br from-emerald-100 to-teal-200
         "
       >
@@ -55,6 +56,6 @@ export function HeaderNavbar() {
           <LogInNavButton>Log in</LogInNavButton>
         </SignedOut>
       </nav>
-    </header>
+    </Container>
   )
 }

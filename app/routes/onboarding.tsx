@@ -1,12 +1,15 @@
 import type { ActionFunction, LoaderFunction } from '@remix-run/node'
-import type { OnboardingForm, OnboardingFormErrors } from '~/utilities/zod/user'
+import type {
+  OnboardingFormData,
+  OnboardingFormErrors,
+} from '~/utilities/zod/user'
 
 import logger from '@funhouse-atelier/logger'
 import { requireAuthenticated } from '~/services/auth.server'
-import { onboardMe } from '~/services/user.server'
+import { createUser } from '~/services/user.server'
 import { useState, useEffect } from 'react'
 import { redirectDocument, useActionData } from '@remix-run/react'
-import { onboardingForm } from '~/utilities/zod/user'
+import { onboardingFormData } from '~/utilities/zod/user'
 import zodParse from '~/utilities/zod/parser'
 import { MainContainer, Container } from '~/components/containers'
 import { Heading, Text } from '~/components/typography'
@@ -25,18 +28,16 @@ export const loader: LoaderFunction = async (routeHandlerArgs) => {
 export const action: ActionFunction = async (routeHandlerArgs) => {
   const formData = await routeHandlerArgs.request.formData()
   const updates = Object.fromEntries(formData)
-  const onboardMeResult = await onboardMe({ routeHandlerArgs, updates })
-  if (onboardMeResult.success) {
-    throw redirectDocument(`/user/${onboardMeResult.success.data.me.id58}`)
-  }
-  return { actionErrors: onboardMeResult.failure.errors }
+  const { success, failure } = await createUser({ routeHandlerArgs, updates })
+  if (success) throw redirectDocument(`/user/${success.data.user.id58}`)
+  return { actionErrors: failure.errors }
 }
 
 export default function OnboardingRoute() {
   const { actionErrors } = useActionData<typeof action>() ?? {}
   const { isLoaded, user: clerkMe } = useUser()
 
-  const [formValues, setFormValues] = useState<OnboardingForm>({
+  const [formValues, setFormValues] = useState<OnboardingFormData>({
     displayName: '',
   })
   const [formErrors, setFormErrors] = useState<OnboardingFormErrors>({})
@@ -55,7 +56,7 @@ export default function OnboardingRoute() {
     const { name, value } = event.target as HTMLInputElement
     const newFormValues = { ...formValues, [name]: value }
     setFormValues(newFormValues)
-    const zodParseResult = zodParse(newFormValues, onboardingForm)
+    const zodParseResult = zodParse(newFormValues, onboardingFormData)
     if (zodParseResult.success) {
       setFormErrors({})
     } else {
@@ -66,16 +67,22 @@ export default function OnboardingRoute() {
   return (
     <MainContainer>
       <Heading className="text-center">Onboarding</Heading>
-      <Text Tag="p">
-        To complete the setup of your ChefFree account, please review your
-        profile information and make any changes you want before it is
-        published.
-      </Text>
+      <div className="my-[1em]">
+        <Text Tag="p">
+          To complete the setup of your ChefFree account, please review your
+          profile information and make any changes you want before it is
+          published.
+        </Text>
+      </div>
       {isLoaded && (
-        <Container size="sm">
+        <Container
+          centered
+          containerSize="sm"
+          className="my-[1em]"
+        >
           <Form
             method="post"
-            className="flex flex-col gap-y-[0.125em]"
+            className="flex flex-col gap-y-[0.5em]"
           >
             <TextField
               fieldName="displayName"
@@ -87,7 +94,10 @@ export default function OnboardingRoute() {
               handleChange={handleChange}
               error={formErrors.displayName}
             />
-            <FormSubmitButton disabled={!!Object.keys(formErrors).length}>
+            <FormSubmitButton
+              disabled={!!Object.keys(formErrors).length}
+              className="my-[1em]"
+            >
               Create Profile
             </FormSubmitButton>
             <FormError>{formErrors._global}</FormError>
