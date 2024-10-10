@@ -100,8 +100,10 @@ export const getRecipe = async (
     if (!recipe) return { failure: { reason: 'Recipe not found.' } }
 
     const data = {
-      ...replaceIdWithId58(recipe),
-      author: replaceIdWithId58(recipe.author),
+      recipe: {
+        ...replaceIdWithId58(recipe),
+        author: replaceIdWithId58(recipe.author),
+      },
     }
     return { success: { data } }
   } catch (error) {
@@ -181,11 +183,9 @@ export const updateRecipe = async (
   }
 }
 
-export const deleteRecipe = async ({
-  routeHandlerArgs,
-}: {
+export const deleteRecipe = async (
   routeHandlerArgs: LoaderFunctionArgs | ActionFunctionArgs
-}) => {
+) => {
   await requireAuthorizedToEditRecipe(routeHandlerArgs)
   const { recipeId58 } = routeHandlerArgs.params
   try {

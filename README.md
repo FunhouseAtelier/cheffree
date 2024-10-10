@@ -32,6 +32,10 @@ _good enough for v0.2.0?_
 
 ## Revision History
 
+### 0.1.31
+
+- Completed bug hunt.
+
 ### 0.1.30
 
 - Refactored all components.

@@ -90,33 +90,6 @@ export const AccountSettingsButton = () => {
   )
 }
 
-export const AuthButton = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) => (
-  <button
-    className={`
-      drop-shadow-sm sm:drop-shadow lg:drop-shadow-md
-      border-2
-      rounded-[0.25em]
-      px-[0.5em] py-[0.125em]
-      ring-inset ring-2
-      [transition-property:background-color,box-shadow]
-      duration-200 ease-out 
-      border-emerald-500 ring-emerald-800
-      bg-emerald-800 text-zinc-200
-      active:bg-emerald-500 active:transition-none
-      focus:ring-yellow-400 focus:outline-none
-      ${className ?? ''}
-    `}
-  >
-    {children}
-  </button>
-)
-
 export const SignUpNavButton = ({
   children,
   className,
@@ -134,7 +107,24 @@ export const SignUpNavButton = ({
   /* Otherwise render a button that will open the Clerk sign up modal. */
   return (
     <SignUpButton mode="modal">
-      <AuthButton className={className}>{children}</AuthButton>
+      <button
+        className={`
+      drop-shadow-sm sm:drop-shadow lg:drop-shadow-md
+      border-2
+      rounded-[0.25em]
+      px-[0.5em] py-[0.125em]
+      ring-inset ring-2
+      [transition-property:background-color,box-shadow]
+      duration-200 ease-out 
+      border-emerald-500 ring-emerald-800
+      bg-emerald-800 text-zinc-200
+      active:bg-emerald-500 active:transition-none
+      focus:ring-yellow-400 focus:outline-none
+      ${className ?? ''}
+    `}
+      >
+        {children}
+      </button>
     </SignUpButton>
   )
 }
@@ -156,7 +146,24 @@ export const LogInNavButton = ({
   /* Otherwise render a button that will open the Clerk sign in modal. */
   return (
     <SignInButton mode="modal">
-      <AuthButton className={className}>{children}</AuthButton>
+      <button
+        className={`
+      drop-shadow-sm sm:drop-shadow lg:drop-shadow-md
+      border-2
+      rounded-[0.25em]
+      px-[0.5em] py-[0.125em]
+      ring-inset ring-2
+      [transition-property:background-color,box-shadow]
+      duration-200 ease-out 
+      border-emerald-500 ring-emerald-800
+      bg-emerald-800 text-zinc-200
+      active:bg-emerald-500 active:transition-none
+      focus:ring-yellow-400 focus:outline-none
+      ${className ?? ''}
+    `}
+      >
+        {children}
+      </button>
     </SignInButton>
   )
 }
@@ -259,7 +266,7 @@ export const FormDeleteButton = ({
   className?: string
 }) => (
   <FormButton
-    type="button"
+    type="submit"
     disabled={disabled}
     className={`
       border-red-700 ring-red-900

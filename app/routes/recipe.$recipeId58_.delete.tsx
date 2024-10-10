@@ -25,8 +25,8 @@ export const loader: LoaderFunction = async (routeHandlerArgs) => {
 }
 
 export const action: ActionFunction = async (routeHandlerArgs) => {
-  const { failure } = await deleteRecipe({ routeHandlerArgs })
-  if (!failure) throw redirect(`/recipe/feed`)
+  const { failure } = await deleteRecipe(routeHandlerArgs)
+  if (!failure) throw redirect(`/`)
   return { actionErrors: failure.errors }
 }
 
@@ -43,16 +43,21 @@ export default function EditRecipeRoute() {
   return (
     <MainContainer size="lg">
       <Heading className="text-center">Delete Recipe</Heading>
-      <Text Tag="p">
-        Are you sure you want to delete this recipe? Deleting a recipe is
-        permanent and cannot be undone.
-      </Text>
+      <div className="my-[1em]">
+        <Text Tag="p">
+          Are you sure you want to delete this recipe? Deleting a recipe is
+          permanent and cannot be undone.
+        </Text>
+      </div>
       <Form method="post">
-        <div className="flex gap-x-[1em]">
-          <FormCancelButton to={`/recipe/${recipe.id58}`}>
+        <div className="flex gap-x-[1em] my-[1em]">
+          <FormCancelButton
+            to={`/recipe/${recipe.id58}`}
+            className="w-full"
+          >
             Cancel
           </FormCancelButton>
-          <FormDeleteButton>Delete Recipe</FormDeleteButton>
+          <FormDeleteButton className="w-full">Delete Recipe</FormDeleteButton>
         </div>
         <FormError>{formErrors._global}</FormError>
       </Form>
@@ -60,7 +65,7 @@ export default function EditRecipeRoute() {
         key={recipe.id58}
         to={`/recipe/${recipe.id58}`}
         prefetch="viewport"
-        className="my-4 text-base sm:text-lg lg:text-xl bg-lime-200 p-[0.5em] rounded-[0.25em] block"
+        className="my-[1em] text-base sm:text-lg lg:text-xl bg-lime-200 p-[0.5em] rounded-[0.25em] block"
       >
         <div className="text-lg sm:text-xl lg:text-2xl leading-relaxed sm:leading-relaxed lg:leading-relaxed flex items-center">
           <img

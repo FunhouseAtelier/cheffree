@@ -48,12 +48,14 @@ export const RecipeBanner = ({ recipe }: { recipe: RecipeBasicData }) => (
         Tag="h2"
         size="xl"
       >
-        {recipe.title}
+        {recipe.title ?? recipe.id58}
       </Heading>
-      <Text Tag="p">
-        {recipe.description.slice(0, 512)}
-        {recipe.description.length > 512 && '[...]'}
-      </Text>
+      {recipe.description && (
+        <Text Tag="p">
+          {recipe.description.slice(0, 512)}
+          {recipe.description.length > 512 && '[...]'}
+        </Text>
+      )}
     </Container>
   </Link>
 )

@@ -64,8 +64,8 @@ export default function EditRecipeRoute() {
     yieldAmt: recipe.yieldAmt ?? { qty: '', unit: '' },
     ingredients: recipe.ingredients.length
       ? recipe.ingredients
-      : [{ key: uuidv4(), data: { qty: '', unit: '', name: '' } }],
-    steps: recipe.steps.length ? recipe.steps : [{ key: uuidv4(), data: '' }],
+      : [{ key: uuidv4(), qty: '', unit: '', item: '' }],
+    steps: recipe.steps.length ? recipe.steps : [{ key: uuidv4(), text: '' }],
   })
   const [formErrors, setFormErrors] = useState<EditRecipeFormErrors>({})
 

@@ -26,6 +26,7 @@ const selectByScope = {
   },
   onboarding: {
     email: true,
+    displayName: true,
     imageUrl: true,
     updatedAt: true,
   },

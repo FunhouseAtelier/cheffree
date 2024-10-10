@@ -11,7 +11,6 @@ import { getAuth } from '@clerk/remix/ssr.server'
 /* Import the Prisma Client to handle database operations. */
 import prisma from './prisma.server'
 /* Import the `base58` function to convert IDs between MongoDB ObjectId types and shorter base-58 strings. Because IDs are often used in dynamic route URLs it is preferable to shorten the length of IDs from 24 characters to 17 characters, using the base-58 system popularized by Twitter, which is similar to base-64 format but excludes any characters that are not alphanumeric, along with some characters that may look amiguous, namely `O`/`0` and `I`/`l`. */
-import { base58 } from 'base-id'
 import { getUser } from './user.server'
 import { id58 } from '~/utilities/zod/common'
 import { getRecipe } from './recipe.server'
@@ -133,6 +132,7 @@ export const requireAuthorizedToEditRecipe = async (
   if (!sessionClaims) throw redirect('/log-in')
   const { recipeId58 } = routeHandlerArgs.params
   const zodParseResult = id58.safeParse(recipeId58)
+  log.debug(zodParseResult)
   if (!zodParseResult.success) {
     throw json(null, {
       status: 400,
@@ -158,7 +158,7 @@ export const requireAuthorizedToEditRecipe = async (
   }
 
   const { recipe } = success.data
-  if (recipe.author.id !== base58.decode(userId58).toLowerCase()) {
+  if (recipe.author.id58 !== userId58) {
     throw json(null, {
       status: 403,
       statusText: 'Recipe not authored by you.',
@@ -200,7 +200,7 @@ export const requireAuthorizedToViewRecipe = async (
     const { sessionClaims } = await getAuth(routeHandlerArgs)
     if (!sessionClaims) throw redirect('/log-in')
     const { id58: userId58 } = sessionClaims.metadata
-    if (recipe.author.id !== base58.decode(userId58).toLowerCase()) {
+    if (recipe.author.id58 !== userId58) {
       throw json(null, {
         status: 403,
         statusText: 'Recipe not published and not authored by you.',
