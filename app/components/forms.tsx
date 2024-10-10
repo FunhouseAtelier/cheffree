@@ -650,6 +650,8 @@ export const SingletonTextField = ({
               placeholder={placeholder}
               required={required}
               value={value}
+              /* eslint-disable-next-line jsx-a11y/no-autofocus */
+              autoFocus
               onChange={handleChange}
               className={`
                 grow

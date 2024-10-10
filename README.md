@@ -6,10 +6,10 @@ A web app for storing and sharing recipes.
 
 ## Currently Under Development
 
-_good enough for v0.2.0?_
-
 - Add infinite scrolling to recipe feed page.
 - Add Cloudinary image uploads of recipes.
+
+## Future Plans
 
 - Improve input and display of quantities to accomodate standard practices.
 - Make units read as singular/plural depending on qty.
@@ -17,8 +17,6 @@ _good enough for v0.2.0?_
 
 - Allow for scaling the recipe size by converting the ingredient quantites as the desired yield is adjusted.
 - Allow for conversion between imperial and metric units.
-
-## Future Plans
 
 - Connect with other users.
 - Share recipes with other users.
@@ -31,6 +29,11 @@ _good enough for v0.2.0?_
 - Handle case when user has deleted their Clerk Account and wants their ChefFree data to be purged. (Email link to do it.)
 
 ## Revision History
+
+### **0.2.0**
+
+- Added minor revision number to About page and auto-focus to singleton form fields.
+- Recipe CRUD functionality complete.
 
 ### 0.1.31
 
