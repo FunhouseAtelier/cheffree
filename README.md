@@ -27,10 +27,15 @@ A web app for storing and sharing recipes.
 - Handle errors more gracefully.
 - Handle suspense fallbacks better.
 - Handle case when user has deleted their Clerk Account and wants their ChefFree data to be purged. (Email link to do it.)
+- Have a contact/support page.
 
 ## Revision History
 
-### **0.2.0**
+### 0.2.1
+
+- Changed contact email on About page to support at Funhouse Atelier dedicated domain.
+
+### 0.2.0
 
 - Added minor revision number to About page and auto-focus to singleton form fields.
 - Recipe CRUD functionality complete.

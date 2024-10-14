@@ -35,7 +35,7 @@ export default function HomeRoute() {
         action="/recipe/new"
         className="flex justify-center my-[1em]"
       >
-        <FormSubmitButton>Create a new recipe</FormSubmitButton>
+        <FormSubmitButton>Author a new recipe</FormSubmitButton>
       </Form>
       <div className="flex flex-col gap-y-[1em] my-[2em]">
         {recipes.map((recipe: RecipeBasicData) => (

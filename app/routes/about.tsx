@@ -21,8 +21,8 @@ export default function AboutRoute() {
         <Text Tag="p">
           If you have any feedback or questions about the app, please contact us
           at{' '}
-          <TextExternalLink href="mailto:funhouse_atelier@protonmail.com">
-            funhouse_atelier@protonmail.com
+          <TextExternalLink href="mailto:support@funhouse-atelier.com">
+            support@funhouse-atelier.com
           </TextExternalLink>
         </Text>
       </div>
